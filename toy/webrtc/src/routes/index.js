@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/openvidu',
     name: 'OpenVidu',
-    component: () => import('@/components/OpenVidu'),
+    component: () => import('@/views/OpenVidu'),
   },
 ];
 
