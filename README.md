@@ -34,6 +34,7 @@
 
 ## 📉 프로젝트 일정 관리 (Updated 21.04.22)
 
-![gantt](/Users/youngcheol/ssafyproject/project3/docs/0_images/gantt.png)
+![gantt](./docs/0_images/gantt.png)
 
 <br>
+
