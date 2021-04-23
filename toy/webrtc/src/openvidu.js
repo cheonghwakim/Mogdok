@@ -62,8 +62,11 @@ window.onbeforeunload = function() {
  *   3) The token must be consumed in Sessi1on.connect() method
  */
 
-var OPENVIDU_SERVER_URL = 'https://' + location.hostname + ':8080';
-var OPENVIDU_SERVER_SECRET = 'MY_SECRET';
+// var OPENVIDU_SERVER_URL = 'https://' + location.hostname + ':8080';
+// var OPENVIDU_SERVER_URL = 'https://' + location.hostname + ':8080';
+// var OPENVIDU_SERVER_SECRET = 'MY_SECRET';
+const OPENVIDU_SERVER_URL = 'http://k4a101.p.ssafy.io:4443/api/sessions';
+const OPENVIDU_SERVER_SECRET = '123456789';
 
 async function getToken(mySessionId) {
   const session = await createSession(mySessionId);
@@ -80,6 +83,8 @@ async function createSession(sessionId) {
     headers: {
       Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,POST',
     },
     body: JSON.stringify({ customSessionId: sessionId }),
   })
