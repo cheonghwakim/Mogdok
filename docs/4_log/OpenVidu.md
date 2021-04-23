@@ -30,3 +30,4 @@ vim application.properties
 * DOMAIN_OR_PUBLIC_IP=k4a401.a.ssafy.io
 * OPENVIDU_SECRET=MY_SECRET
 * HTTPS_PORT=4443
+
