@@ -60,3 +60,39 @@ $ sudo apt-get remove nginx nginx-common # 설정 파일을 제외한 모든 파
 $ sudo apt-get purge nginx nginx-common  # 모든 것을 제거합니다.
 $ sudo apt-get autoremove # 위의 명령을 사용한 후에는 더 이상 필요하지 않은 nginx에서 사용하는 종속성을 제거하기 위해이 명령을 사용하십시오.
 ```
+
+## Deployment
+### Root Permission
+```
+$ sudo su
+```
+
+### Change Path
+openvidu를 설치하는 권장 폴더는 /opt입니다. On Premise와 관련된 문서의 모든 지침은 이 설치 경로로 가정한다.
+```
+$ cd /opt
+```
+
+### Installation
+다음 명령을 실행하여 설치 스크립트를 다운로드하고 실행합니다.
+```
+curl https://s3-eu-west-1.amazonaws.com/aws.openvidu.io/install_openvidu_latest.sh | bash
+```
+이렇게 하면 모든 필수 파일이 openvidu폴더로 다운로드 되고 아래와 같이 기본적인 명령어 메시지가 나타납니다.
+```
+=======================================
+Openvidu Platform successfully installed.
+=======================================
+
+1. Go to openvidu folder:
+$ cd openvidu
+
+2. Configure DOMAIN_OR_PUBLIC_IP and OPENVIDU_SECRET in .env file:
+$ nano .env
+
+3. Start OpenVidu
+$ ./openvidu start
+
+For more information, check:
+https://docs.openvidu.io/en/2.17.0/deployment/deploying-on-premises/
+```
