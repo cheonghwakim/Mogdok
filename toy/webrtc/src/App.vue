@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>몽실이네 독서실 WebRTC test</h1>
+    <h1>몽실이네 독서실 WebRTC test!</h1>
     <router-link to="openvidu">OpenVidu</router-link>
     <router-view></router-view>
   </div>
