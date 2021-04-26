@@ -1,6 +1,8 @@
 package toy.mongsil.tutorial.entity;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
+
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -16,5 +18,13 @@ public class User {
 	@Id
 	private String userId;
 	
-	private LocalDateTime studyStart;
+	private String nickname;
+	
+	private String email;
+	
+	private String category;
+	
+	private String kakaoId;
+	
+	private Date createtime;
 }
