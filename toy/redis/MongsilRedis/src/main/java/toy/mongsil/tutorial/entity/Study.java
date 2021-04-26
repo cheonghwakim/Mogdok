@@ -20,4 +20,5 @@ public class Study {
 
 	private Date studytime;
 
+	
 }
