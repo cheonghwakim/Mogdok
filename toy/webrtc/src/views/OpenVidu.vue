@@ -13,14 +13,23 @@
             <label>Session</label>
             <input v-model="mySessionId" class="form-control" type="text" required />
           </p>
+          <div id="main-video" class="col-md-6">
+            <h3>입장 전에 내 화면을 확인하세요</h3>
+            <div id="beforeJoinCam" ref="beforeJoinCam"></div>
+            <user-video :stream-manager="beforeJoin" />
+          </div>
           <p class="text-center">
             <button class="btn btn-lg btn-success" @click="joinSession()">Join!</button>
           </p>
         </div>
       </div>
     </div>
-
     <div id="session" v-if="session">
+      <div>
+        <button class="btn btn-lg btn-success" @click="cameraState ? cameraOff() : cameraOn()">
+          Camera {{ cameraState ? 'OFF' : 'ON' }}!
+        </button>
+      </div>
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
         <input
@@ -31,9 +40,9 @@
           value="Leave session"
         />
       </div>
-      <div id="main-video" class="col-md-6">
+      <!-- <div id="main-video" class="col-md-6">
         <user-video :stream-manager="mainStreamManager" />
-      </div>
+      </div> -->
       <div id="video-container" class="col-md-6">
         <user-video
           :stream-manager="publisher"
@@ -55,7 +64,6 @@ import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import UserVideo from '../components/UserVideo';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
-// const OPENVIDU_SERVER_URL = 'https://' + location.hostname + ':4443';
 const OPENVIDU_SERVER_URL = 'https://k4a401.p.ssafy.io';
 const OPENVIDU_SERVER_SECRET = 'ssafy';
 export default {
@@ -65,8 +73,10 @@ export default {
   },
   data() {
     return {
+      cameraState: false,
       OV: undefined,
       session: undefined,
+      beforeJoin: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
       subscribers: [],
@@ -77,17 +87,21 @@ export default {
   methods: {
     joinSession() {
       // --- Get an OpenVidu object ---
-      this.OV = new OpenVidu();
+      // this.OV = new OpenVidu();
       // --- Init a session ---
+      this.OV = new OpenVidu();
       this.session = this.OV.initSession();
       // --- Specify the actions when events take place in the session ---
       // On every new Stream received...
       this.session.on('streamCreated', ({ stream }) => {
+        console.log('%cOpenVidu.vue line:97 stream', 'color: #007acc;', stream);
         const subscriber = this.session.subscribe(stream);
         this.subscribers.push(subscriber);
       });
       // On every Stream destroyed...
       this.session.on('streamDestroyed', ({ stream }) => {
+        console.log('%cOpenVidu.vue line:102 ', 'color: #007acc;', stream);
+        console.log('%cOpenVidu.vue line:104 ', 'color: #007acc;', stream.connection.data);
         const index = this.subscribers.indexOf(stream.streamManager, 0);
         if (index >= 0) {
           this.subscribers.splice(index, 1);
@@ -100,21 +114,8 @@ export default {
         this.session
           .connect(token, { clientData: this.myUserName })
           .then(() => {
-            // --- Get your own camera stream with the desired properties ---
-            let publisher = this.OV.initPublisher(undefined, {
-              audioSource: false, // The source of audio. If undefined default microphone
-              videoSource: undefined, // The source of video. If undefined default webcam
-              publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
-              publishVideo: true, // Whether you want to start publishing with your video enabled or not
-              resolution: '320x240', // The resolution of your video
-              frameRate: 30, // The frame rate of your video
-              insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
-              mirror: false, // Whether to mirror your local video or not
-            });
-            this.mainStreamManager = publisher;
-            this.publisher = publisher;
-            // --- Publish your stream ---
-            this.session.publish(this.publisher);
+            // 세션에 성공적으로 입장
+            console('session IN');
           })
           .catch((error) => {
             console.log('There was an error connecting to the session:', error.code, error.message);
@@ -205,6 +206,29 @@ export default {
           .then((data) => resolve(data.token))
           .catch((error) => reject(error.response));
       });
+    },
+    cameraOn() {
+      // --- Get your own camera stream with the desired properties ---
+      let publisher = this.OV.initPublisher(undefined, {
+        audioSource: false, // The source of audio. If undefined default microphone
+        videoSource: undefined, // The source of video. If undefined default webcam
+        publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
+        publishVideo: true, // Whether you want to start publishing with your video enabled or not
+        resolution: '320x240', // The resolution of your video
+        frameRate: 30, // The frame rate of your video
+        insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
+        mirror: false, // Whether to mirror your local video or not
+      });
+      this.mainStreamManager = publisher;
+      this.publisher = publisher;
+      // --- Publish your stream ---
+      this.session.publish(this.publisher);
+      this.cameraState = true;
+    },
+    cameraOff() {
+      this.session.unpublish(this.publisher);
+      this.publisher = undefined;
+      this.cameraState = false;
     },
   },
 };
