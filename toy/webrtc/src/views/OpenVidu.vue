@@ -56,8 +56,8 @@ import { OpenVidu } from 'openvidu-browser';
 import UserVideo from '../components/UserVideo';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 // const OPENVIDU_SERVER_URL = 'https://' + location.hostname + ':4443';
-const OPENVIDU_SERVER_URL = 'http://k4a101.p.ssafy.io:4443/api/sessions';
-const OPENVIDU_SERVER_SECRET = '123456789';
+const OPENVIDU_SERVER_URL = 'https://k4a401.p.ssafy.io';
+const OPENVIDU_SERVER_SECRET = 'ssafy';
 export default {
   name: 'App',
   components: {
@@ -158,13 +158,13 @@ export default {
             `${OPENVIDU_SERVER_URL}/openvidu/api/sessions`,
             JSON.stringify({
               customSessionId: sessionId,
-            })
-            // {
-            //   auth: {
-            //     username: 'OPENVIDUAPP',
-            //     password: OPENVIDU_SERVER_SECRET,
-            //   },
-            // }
+            }),
+            {
+              auth: {
+                username: 'OPENVIDUAPP',
+                password: OPENVIDU_SERVER_SECRET,
+              },
+            }
           )
           .then((response) => response.data)
           .then((data) => resolve(data.id))
