@@ -11,16 +11,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@RedisHash("rest") //해당 클래스의 인스턴스가 레디스에 적재될 때 @RedisHash의 인수를 키로 해당 인스턴스를 값으로 적재되도록 합니다.
-public class Rest {
-	
+@RedisHash("study")
+public class Study {
 	@Id
-	private int  RestId;
-	
+	private int StudyId;
+
 	private String UserId;
-	
-	private Date restStart;
-	
-	private Date restEnd;
+
+	private Date studytime;
 
 }
