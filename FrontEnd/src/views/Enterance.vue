@@ -86,15 +86,25 @@ export default {
          flex-direction: column;
          align-items: center;
 
+         // roomList가 모여있는 공간
          .roomList {
-            border: 1px solid blue;
+            margin-top: 20px;
+
+            /* border: 1px solid blue; */
+
+            // 방 갯수가 넘쳤을 경우, 가로 스크롤 제공
+            overflow-x: auto;
+            overflow-y: hidden;
+
+            /* padding: 0 50px; */
 
             width: 100%;
-            height: 200px;
+            height: 220px;
 
             display: flex;
             justify-content: center;
 
+            // 개별 room (=door)
             .roomItem {
                margin: 0px 5px;
             }
