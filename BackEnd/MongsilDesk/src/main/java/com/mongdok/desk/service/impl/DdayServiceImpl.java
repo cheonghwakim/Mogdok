@@ -16,7 +16,7 @@ import com.mongdok.desk.common.response.ErrorResponse;
 import com.mongdok.desk.dao.DdayDao;
 import com.mongdok.desk.model.Dday;
 import com.mongdok.desk.model.request.dday.DdayRequest;
-import com.mongdok.desk.model.response.DdayResponse;
+import com.mongdok.desk.model.response.dday.DdayResponse;
 import com.mongdok.desk.service.DdayService;
 
 @Service

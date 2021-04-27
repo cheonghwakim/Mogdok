@@ -18,7 +18,7 @@ import com.mongdok.desk.dao.MemoDao;
 import com.mongdok.desk.model.Memo;
 import com.mongdok.desk.model.request.memo.MemoCreateRequest;
 import com.mongdok.desk.model.request.memo.MemoUpdateRequest;
-import com.mongdok.desk.model.response.MemoResponse;
+import com.mongdok.desk.model.response.memo.MemoResponse;
 import com.mongdok.desk.service.MemoService;
 @Service
 public class MemoServiceImpl implements MemoService{

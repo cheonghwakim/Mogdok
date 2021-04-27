@@ -17,7 +17,7 @@ import com.mongdok.desk.dao.UserDao;
 import com.mongdok.desk.model.Guestbook;
 import com.mongdok.desk.model.request.guestbook.GuestBookUpdateRequest;
 import com.mongdok.desk.model.request.guestbook.GuestbookCreateRequest;
-import com.mongdok.desk.model.response.GuestBookResponse;
+import com.mongdok.desk.model.response.guestbook.GuestBookResponse;
 import com.mongdok.desk.service.GuestBookService;
 
 @Service

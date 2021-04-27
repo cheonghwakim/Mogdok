@@ -1,4 +1,4 @@
-package com.mongdok.desk.model.response;
+package com.mongdok.desk.model.response.memo;
 
 import lombok.Data;
 

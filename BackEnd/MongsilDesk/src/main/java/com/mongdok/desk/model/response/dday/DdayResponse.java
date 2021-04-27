@@ -1,4 +1,4 @@
-package com.mongdok.desk.model.response;
+package com.mongdok.desk.model.response.dday;
 
 import java.util.Date;
 

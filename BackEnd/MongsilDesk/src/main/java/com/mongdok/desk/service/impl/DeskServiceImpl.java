@@ -22,12 +22,12 @@ import com.mongdok.desk.model.Desk;
 import com.mongdok.desk.model.Guestbook;
 import com.mongdok.desk.model.Memo;
 import com.mongdok.desk.model.request.desk.DeskRequest;
-import com.mongdok.desk.model.response.DdayResponse;
-import com.mongdok.desk.model.response.DeskAllResponse;
-import com.mongdok.desk.model.response.DeskResponse;
-import com.mongdok.desk.model.response.GuestBookOnlyIdResponse;
-import com.mongdok.desk.model.response.GuestBookResponse;
-import com.mongdok.desk.model.response.MemoResponse;
+import com.mongdok.desk.model.response.dday.DdayResponse;
+import com.mongdok.desk.model.response.desk.DeskAllResponse;
+import com.mongdok.desk.model.response.desk.DeskResponse;
+import com.mongdok.desk.model.response.guestbook.GuestBookOnlyIdResponse;
+import com.mongdok.desk.model.response.guestbook.GuestBookResponse;
+import com.mongdok.desk.model.response.memo.MemoResponse;
 import com.mongdok.desk.service.DeskService;
 
 @Service
