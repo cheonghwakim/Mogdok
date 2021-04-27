@@ -53,9 +53,6 @@
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
       </div>
-      <!-- <div id="main-video" class="col-md-6">
-        <user-video :stream-manager="mainStreamManager" />
-      </div> -->
       <div id="video-container" class="col-md-6">
         <user-video
           v-if="isPublished"
@@ -104,9 +101,8 @@ export default {
   methods: {
     joinSession() {
       // --- Get an OpenVidu object ---
-      // this.OV = new OpenVidu();
-      // --- Init a session ---
       if (!this.OV) this.OV = new OpenVidu();
+      // --- Init a session ---
       this.session = this.OV.initSession();
       // --- Specify the actions when events take place in the session ---
       // On every new Stream received...
@@ -142,10 +138,10 @@ export default {
     },
     leaveSession() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
-      this.session.disconnect();
+      if (this.session) this.session.disconnect();
+      this.cameraOff();
       this.session = undefined;
       this.mainStreamManager = undefined;
-      this.publisher = undefined;
       this.subscribers = [];
       this.OV = undefined;
       window.removeEventListener('beforeunload', this.leaveSession);
@@ -154,17 +150,6 @@ export default {
       if (this.mainStreamManager === stream) return;
       this.mainStreamManager = stream;
     },
-    /**
-     * --------------------------
-     * SERVER-SIDE RESPONSIBILITY
-     * --------------------------
-     * These methods retrieve the mandatory user token from OpenVidu Server.
-     * This behavior MUST BE IN YOUR SERVER-SIDE IN PRODUCTION (by using
-     * the API REST, openvidu-java-client or openvidu-node-client):
-     *   1) Initialize a Session in OpenVidu Server	(POST /openvidu/api/sessions)
-     *   2) Create a Connection in OpenVidu Server (POST /openvidu/api/sessions/<SESSION_ID>/connection)
-     *   3) The Connection.token must be consumed in Session.connect() method
-     */
     getToken(mySessionId) {
       return this.createSession(mySessionId).then((sessionId) => this.createToken(sessionId));
     },
@@ -237,22 +222,23 @@ export default {
         insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
         mirror: false, // Whether to mirror your local video or not
       });
-      // this.mainStreamManager = publisher;
       this.publisher = publisher;
-      console.log('%cOpenVidu.vue line:234 this.publisher', 'color: #007acc;', this.publisher);
-      // this.session.publish(this.publisher);
-      // --- Publish your stream ---
-      // this.publishSession();
       this.cameraState = true;
     },
     cameraOff() {
-      this.session.unpublish(this.publisher);
+      if (this.session && this.isPublished) {
+        // 세션에 들어가있고 "publish 중인 상태"에서는 unpublish 해야 함
+        this.session.unpublish(this.publisher);
+      } else {
+        // 세션을 통해 unpublish하지 않은 경우에 카메라를 OFF할 경우,
+        // 카메라 자원이 여전히 실행 중이므로 카메라 자원을 해제하는 작업을 해주어야 함
+        if (this.publisher) this.publisher.stream.disposeMediaStream();
+      }
       this.publisher = undefined;
       this.cameraState = false;
       this.isPublished = false;
     },
     publishSession() {
-      console.log('%cOpenVidu.vue line:243 this.publisher', 'color: #007acc;', this.publisher);
       this.session
         .publish(this.publisher)
         .then(() => {
