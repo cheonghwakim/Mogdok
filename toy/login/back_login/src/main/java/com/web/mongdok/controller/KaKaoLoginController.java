@@ -11,34 +11,47 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.web.mongdok.dto.SignupReqDto;
+import com.web.mongdok.service.JwtService;
 import com.web.mongdok.service.KakaoAPI;
+import com.web.mongdok.utils.RedisUtil;
  
 @CrossOrigin
-@RestController
+@RestController("/oauth")
 public class KaKaoLoginController {
 	
     @Autowired
     private KakaoAPI kakaologin;
     
-    @GetMapping("/klogin")
+    @Autowired
+    private RedisUtil redisUtil;
+    
+    @GetMapping("/klogin") // 로그인 토큰 발급
     public HashMap<String, String> klogin(@RequestParam String authorize_code) {
     	String access_token = kakaologin.getAccessToken(authorize_code);
         HashMap<String, String> userinfo = kakaologin.getUserInfo(access_token);
+//        System.out.println(userinfo.get("email"));
         
-        System.out.println(userinfo.get("email"));
+        SignupReqDto user = new SignupReqDto();
+        user.setEmail(userinfo.get("email"));
+        user.setId(userinfo.get("id"));
+        user.setAccess_token(access_token);
+        
+        final String token = JwtService.create(user);
+        redisUtil.setDataExpire(token, user.getEmail(), JwtService.REFRESH_TOKEN_VALIDATION_SECOND);
+        
         return userinfo;
     }
     
     @PostMapping("/login")
     public String login(@RequestBody SignupReqDto form) {
-    	String pass;
+    	String access_token;
 		String email = null;
-		String uname;
+		String id;
 		
     	try {
-    		pass = form.getPassword();
+    		access_token = form.getAccess_token();
     		email = form.getEmail();
-    		uname = form.getUname();
+    		id = form.getId();
     	
     	} catch (Exception e) {
     		e.printStackTrace();

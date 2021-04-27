@@ -8,8 +8,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SignupReqDto {
+	
 	private String email;
-	private String password;
-	private String uname;
+	private String access_token;
+	private String id;
 	
 }
