@@ -37,7 +37,7 @@ public class KaKaoLoginController {
         user.setAccess_token(access_token);
         
         final String token = JwtService.create(user);
-        redisUtil.setDataExpire(token, user.getEmail(), JwtService.REFRESH_TOKEN_VALIDATION_SECOND);
+        redisUtil.setDataExpire(user.getEmail(), token, JwtService.REFRESH_TOKEN_VALIDATION_SECOND);
         
         return userinfo;
     }
@@ -59,5 +59,4 @@ public class KaKaoLoginController {
     	}
         return email;
     }
-    
 }
