@@ -25,26 +25,40 @@
       </div>
     </div>
     <div id="session" v-if="session">
+      <input
+        class="btn btn-large btn-danger"
+        type="button"
+        id="buttonLeaveSession"
+        @click="leaveSession"
+        value="세션에서 나가기"
+        style="backgroundColor:red;color:white"
+      />
+      <h4>
+        세션에 접속하려면 Camera ON 버튼을 클릭해서 내 모습을 확인한 뒤 "세션에 접속하기"버튼을
+        클릭해주세요
+      </h4>
       <div>
+        <div v-if="publisher">
+          <ov-video :stream-manager="publisher" />
+        </div>
         <button class="btn btn-lg btn-success" @click="cameraState ? cameraOff() : cameraOn()">
-          Camera {{ cameraState ? 'OFF' : 'ON' }}!
+          Camera
+          {{ cameraState ? 'OFF' : 'ON' }}
+        </button>
+        <br />
+        <button v-if="!isPublished" :disabled="!cameraState" @click="publishSession()">
+          세션에 접속하기
         </button>
       </div>
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
-        <input
-          class="btn btn-large btn-danger"
-          type="button"
-          id="buttonLeaveSession"
-          @click="leaveSession"
-          value="Leave session"
-        />
       </div>
       <!-- <div id="main-video" class="col-md-6">
         <user-video :stream-manager="mainStreamManager" />
       </div> -->
       <div id="video-container" class="col-md-6">
         <user-video
+          v-if="isPublished"
           :stream-manager="publisher"
           @click.native="updateMainVideoStreamManager(publisher)"
         />
@@ -63,6 +77,7 @@
 import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import UserVideo from '../components/UserVideo';
+import OvVideo from '../components/OvVideo';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 const OPENVIDU_SERVER_URL = 'https://k4a401.p.ssafy.io';
 const OPENVIDU_SERVER_SECRET = 'ssafy';
@@ -70,10 +85,12 @@ export default {
   name: 'App',
   components: {
     UserVideo,
+    OvVideo,
   },
   data() {
     return {
       cameraState: false,
+      isPublished: false,
       OV: undefined,
       session: undefined,
       beforeJoin: undefined,
@@ -89,7 +106,7 @@ export default {
       // --- Get an OpenVidu object ---
       // this.OV = new OpenVidu();
       // --- Init a session ---
-      this.OV = new OpenVidu();
+      if (!this.OV) this.OV = new OpenVidu();
       this.session = this.OV.initSession();
       // --- Specify the actions when events take place in the session ---
       // On every new Stream received...
@@ -115,7 +132,7 @@ export default {
           .connect(token, { clientData: this.myUserName })
           .then(() => {
             // 세션에 성공적으로 입장
-            console('session IN');
+            console('세션에 참가했습니다');
           })
           .catch((error) => {
             console.log('There was an error connecting to the session:', error.code, error.message);
@@ -125,7 +142,7 @@ export default {
     },
     leaveSession() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
-      if (this.session) this.session.disconnect();
+      this.session.disconnect();
       this.session = undefined;
       this.mainStreamManager = undefined;
       this.publisher = undefined;
@@ -208,6 +225,7 @@ export default {
       });
     },
     cameraOn() {
+      if (!this.OV) this.OV = new OpenVidu();
       // --- Get your own camera stream with the desired properties ---
       let publisher = this.OV.initPublisher(undefined, {
         audioSource: false, // The source of audio. If undefined default microphone
@@ -219,16 +237,30 @@ export default {
         insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
         mirror: false, // Whether to mirror your local video or not
       });
-      this.mainStreamManager = publisher;
+      // this.mainStreamManager = publisher;
       this.publisher = publisher;
+      console.log('%cOpenVidu.vue line:234 this.publisher', 'color: #007acc;', this.publisher);
+      // this.session.publish(this.publisher);
       // --- Publish your stream ---
-      this.session.publish(this.publisher);
+      // this.publishSession();
       this.cameraState = true;
     },
     cameraOff() {
       this.session.unpublish(this.publisher);
       this.publisher = undefined;
       this.cameraState = false;
+      this.isPublished = false;
+    },
+    publishSession() {
+      console.log('%cOpenVidu.vue line:243 this.publisher', 'color: #007acc;', this.publisher);
+      this.session
+        .publish(this.publisher)
+        .then(() => {
+          this.isPublished = true;
+        })
+        .catch(() => {
+          this.isPublished = false;
+        });
     },
   },
 };
