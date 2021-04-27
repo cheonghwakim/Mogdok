@@ -277,13 +277,14 @@ export default {
         });
     },
     sendMessage() {
+      if (!this.inputMessage.trim()) return;
       if (this.session) {
         // signalOptions의 to가 undefined일 경우, 모든 참가자에게 메시지를 전송함
         this.session
           .signal({
             data: this.inputMessage,
             to: this.clickedUserConnection
-              ? [this.clickedUserConnection]
+              ? [this.session.connection, this.clickedUserConnection]
               : this.clickedUserConnection,
             type: 'message',
           })
