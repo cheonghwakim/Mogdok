@@ -28,6 +28,7 @@ public class KaKaoLoginController {
     private RedisUtil redisUtil;
     
     @GetMapping("/klogin") // 로그인 토큰 발급
+
     public ResponseEntity<?> klogin(@RequestParam String authorizeCode) {
     	
     	try {
