@@ -41,10 +41,6 @@
         <div v-if="publisher">
           <ov-video :stream-manager="publisher" />
         </div>
-        <!-- <button class="btn btn-lg btn-success" @click="cameraState ? cameraOff() : cameraOn()">
-          Camera
-          {{ cameraState ? 'OFF' : 'ON' }}
-        </button> -->
         <button class="btn btn-lg btn-success" @click="cameraOff()">
           Camera Off
         </button>
@@ -60,26 +56,30 @@
           </button>
         </div>
         <br />
-        <button v-if="!isPublished" :disabled="!cameraState" @click="publishSession()">
-          세션에 접속하기
-        </button>
       </div>
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
       </div>
-      <div id="video-container" class="col-md-6">
-        <user-video
+      <div id="seat-container" class="col-md-6">
+        <!-- <user-video
           v-if="isPublished"
           :stream-manager="publisher"
           @click.native="updateUserNameToSendMessage(publisher)"
-        />
+        /> -->
         <user-video
-          v-for="sub in subscribers"
-          :key="sub.stream.connection.connectionId"
+          v-for="(sub, index) in subscribers"
+          :key="sub || 'seat' + index"
           :stream-manager="sub"
-          @click.native="updateUserNameToSendMessage(sub)"
+          @click.native="
+            publishSession($event, index);
+            updateUserNameToSendMessage(sub);
+          "
+          style="display:inline-block"
         />
       </div>
+      <br />
+      <br />
+      <hr />
       <div>
         세션에 존재하는 사람을 클릭하면 해당 사람에게 메시지를 보낼 수 있습니다. 나를 클릭하면
         '모두에게'로 바뀝니다.
@@ -108,6 +108,7 @@ import OvVideo from '../components/OvVideo';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 const OPENVIDU_SERVER_URL = 'https://k4a401.p.ssafy.io';
 const OPENVIDU_SERVER_SECRET = 'ssafy';
+const USER_MAX_NUMBER = 16;
 export default {
   name: 'App',
   components: {
@@ -129,7 +130,7 @@ export default {
       beforeJoin: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
-      subscribers: [],
+      subscribers: new Array(USER_MAX_NUMBER),
       mySessionId: 'SessionA',
       myUserName: 'Participant' + Math.floor(Math.random() * 100),
     };
@@ -143,13 +144,13 @@ export default {
           return e.kind === 'videoinput';
         });
       });
-
       // --- Init a session ---
       this.session = this.OV.initSession();
       // --- Specify the actions when events take place in the session ---
       // On every new Stream received...
       this.session.on('streamCreated', ({ stream }) => {
         const subscriber = this.session.subscribe(stream);
+        console.log('%cOpenVidu.vue line:166 subscriber', 'color: #007acc;', subscriber);
         this.subscribers.push(subscriber);
       });
       // On every Stream destroyed...
@@ -185,11 +186,12 @@ export default {
       this.cameraOff();
       this.session = undefined;
       this.mainStreamManager = undefined;
-      this.subscribers = [];
+      this.subscribers = new Array(USER_MAX_NUMBER);
       this.OV = undefined;
       window.removeEventListener('beforeunload', this.leaveSession);
     },
     updateUserNameToSendMessage(stream) {
+      if (!stream) return;
       const clikedUserConnection = stream.stream.connection;
       const clikedUserConnectionId = clikedUserConnection.connectionId;
       const clikedUserName = JSON.parse(clikedUserConnection.data).clientData;
@@ -288,10 +290,15 @@ export default {
       this.cameraState = false;
       this.isPublished = false;
     },
-    publishSession() {
+    publishSession(event, seatNo) {
+      console.log('%cOpenVidu.vue line:307 this.subscribers', 'color: #007acc;', this.subscribers);
+      const element = event.currentTarget;
+      console.log('%cOpenVidu.vue line:304 element', 'color: #007acc;', element);
+      // console.log('%cOpenVidu.vue line:297 seatNo', 'color: #007acc;', seatNo);
       this.session
         .publish(this.publisher)
         .then(() => {
+          this.subscribers.splice(seatNo, 1, this.publisher);
           this.isPublished = true;
         })
         .catch(() => {
@@ -330,5 +337,27 @@ export default {
 <style scoped>
 #video-container {
   display: flex;
+}
+.pointer {
+  cursor: pointer;
+}
+/* .seat {
+  min-width: 320px;
+  height: 240px;
+  background-color: lightgray;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: gray;
+  margin: 10px;
+}
+.seat:hover {
+  background-color: gray;
+  color: white;
+} */
+.seat-container {
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>
