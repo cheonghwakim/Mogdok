@@ -102,6 +102,7 @@ export default {
    height: 200px;
    /* background-color: blue; */
 
+   // door에 호버시, 하단 요소들에 효과 적용
    &:hover {
       #doorOpen {
          transform: skew(0deg, -15deg);

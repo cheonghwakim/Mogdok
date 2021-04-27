@@ -1,6 +1,8 @@
 <template lang="">
-   <div class="footer">
-      <h1>FOOTER</h1>
+   <div class="footer floating">
+      <div class="img-wrapper">
+         <img src="@/assets/img/noteLong.svg" alt="" />
+      </div>
    </div>
 </template>
 <script>
@@ -18,11 +20,28 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.footer {
-   background-color: rgb(189, 210, 255);
-   width: 100%;
-   height: 190px;
+@import 'src/assets/css/common';
 
-   flex-shrink: 0; // flex에 영향 없는 고정 요소 셋팅
+.footer {
+   bottom: 0;
+   /* background-color: rgb(173, 199, 254); */
+   width: 100%;
+   height: $footerHeight;
+
+   //flex-shrink: 0; // flex에 영향 없는 고정 요소 셋팅
+   .img-wrapper {
+      width: 50vw;
+      height: auto;
+
+      margin: 0 auto;
+
+      img {
+         width: 100%;
+         height: auto;
+
+         object-fit: cover;
+         object-position: 0px 0px;
+      }
+   }
 }
 </style>

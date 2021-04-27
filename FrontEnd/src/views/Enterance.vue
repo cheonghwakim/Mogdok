@@ -77,7 +77,7 @@ export default {
       width: 70vw;
       height: 90vh;
 
-      border: 1px solid red;
+      /* border: 1px solid red; */
 
       .content {
          margin-top: 5vh;

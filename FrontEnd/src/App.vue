@@ -27,9 +27,20 @@ export default {
    width: 100vw;
    height: 100vh;
 
-   overflow: hidden;
-
    display: flex;
    flex-direction: column;
+
+   // 스크롤바 스타일링
+   ::-webkit-scrollbar {
+      width: 8px;
+   }
+   ::-webkit-scrollbar-thumb {
+      background-color: rgb(203, 203, 203);
+      border-radius: 10px;
+   }
+   ::-webkit-scrollbar-track {
+      background-color: transparent;
+      border-radius: 20px;
+   }
 }
 </style>

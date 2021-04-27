@@ -21,7 +21,7 @@ $gray: rgb(84, 84, 84);
    height: 20px;
 
    border: 2px solid $gray;
-   border-radius: 20px;
+   border-radius: 10px;
    padding: 0px 5px;
 
    display: flex;
@@ -30,14 +30,16 @@ $gray: rgb(84, 84, 84);
 
    color: $gray;
 
+   // 유저 아이콘
    i {
       font-size: 8pt;
    }
 
+   // 인원수 표시
    span {
       font-size: 8pt;
       font-weight: 800;
-      margin-top: 3px;
+      margin-top: 2px;
    }
 }
 </style>

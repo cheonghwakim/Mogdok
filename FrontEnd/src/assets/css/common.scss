@@ -9,3 +9,20 @@ h1 {
     font-family: 'Noto Sans KR', sans-serif;
     font-size: 2em;
 }
+
+h2 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1em;
+    font-weight: 700;
+}
+
+h3 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.floating {
+    position: absolute;
+    z-index: 10;
+ }

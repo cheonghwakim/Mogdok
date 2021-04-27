@@ -4,6 +4,11 @@ $black : #0e0e0e;
 $red : #cd0b0b;
 $green : #074f10;
 
+// 컴포넌트 공통 사이즈
+// Room 내의 헤더와 푸터
+$HeaderHeight : 80px;
+$footerHeight : 190px;
+
 // Breakpoints
 // 최소 크기는 html도 변경
 $breakpoint-mobile: 375px;
