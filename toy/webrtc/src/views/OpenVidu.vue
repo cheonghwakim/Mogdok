@@ -41,10 +41,24 @@
         <div v-if="publisher">
           <ov-video :stream-manager="publisher" />
         </div>
-        <button class="btn btn-lg btn-success" @click="cameraState ? cameraOff() : cameraOn()">
+        <!-- <button class="btn btn-lg btn-success" @click="cameraState ? cameraOff() : cameraOn()">
           Camera
           {{ cameraState ? 'OFF' : 'ON' }}
+        </button> -->
+        <button class="btn btn-lg btn-success" @click="cameraOff()">
+          Camera Off
         </button>
+        <div v-if="!isPublished">
+          켜고싶은 카메라를 선택해서 카메라를 켜고 세션에 접속하세요
+          <br />
+          <button
+            v-for="(item, index) in videoSourceList"
+            :key="'videosourceitem' + index"
+            @click="changeVideoSource(item)"
+          >
+            {{ item.label }}
+          </button>
+        </div>
         <br />
         <button v-if="!isPublished" :disabled="!cameraState" @click="publishSession()">
           세션에 접속하기
@@ -104,6 +118,8 @@ export default {
     return {
       userNameToSendMessage: undefined,
       clickedUserConnection: undefined,
+      selectedVideoSource: undefined,
+      videoSourceList: [],
       inputMessage: '',
       receivedMessages: [],
       cameraState: false,
@@ -122,6 +138,12 @@ export default {
     joinSession() {
       // --- Get an OpenVidu object ---
       if (!this.OV) this.OV = new OpenVidu();
+      this.OV.getDevices().then((res) => {
+        this.videoSourceList = res.filter((e) => {
+          return e.kind === 'videoinput';
+        });
+      });
+
       // --- Init a session ---
       this.session = this.OV.initSession();
       // --- Specify the actions when events take place in the session ---
@@ -237,12 +259,12 @@ export default {
           .catch((error) => reject(error.response));
       });
     },
-    cameraOn() {
+    async cameraOn() {
       if (!this.OV) this.OV = new OpenVidu();
       // --- Get your own camera stream with the desired properties ---
-      let publisher = this.OV.initPublisher(undefined, {
+      let publisher = await this.OV.initPublisherAsync(undefined, {
         audioSource: false, // The source of audio. If undefined default microphone
-        videoSource: undefined, // The source of video. If undefined default webcam
+        videoSource: this.selectedVideoSource, // The source of video. If undefined default webcam
         publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
         publishVideo: true, // Whether you want to start publishing with your video enabled or not
         resolution: '320x240', // The resolution of your video
@@ -296,6 +318,11 @@ export default {
           });
       }
       this.inputMessage = '';
+    },
+    changeVideoSource(videoSource) {
+      this.cameraOff();
+      this.selectedVideoSource = videoSource.deviceId;
+      this.cameraOn();
     },
   },
 };
