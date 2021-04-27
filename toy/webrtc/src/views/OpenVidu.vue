@@ -57,14 +57,30 @@
         <user-video
           v-if="isPublished"
           :stream-manager="publisher"
-          @click.native="updateMainVideoStreamManager(publisher)"
+          @click.native="updateUserNameToSendMessage(publisher)"
         />
         <user-video
           v-for="sub in subscribers"
           :key="sub.stream.connection.connectionId"
           :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)"
+          @click.native="updateUserNameToSendMessage(sub)"
         />
+      </div>
+      <div>
+        세션에 존재하는 사람을 클릭하면 해당 사람에게 메시지를 보낼 수 있습니다. 나를 클릭하면
+        '모두에게'로 바뀝니다.
+      </div>
+      <div>
+        {{ userNameToSendMessage ? userNameToSendMessage : '모두에게 ' }}
+        메시지 전송하기 :
+        <input v-model="inputMessage" type="text" @keyup.enter="sendMessage()" />
+      </div>
+      <hr />
+      <h3>전송받은 메시지</h3>
+      <div v-for="(item, index) in receivedMessages" :key="'rcvmsg' + index">
+        <span style="font-weight:bold">{{ JSON.parse(item.from.data).clientData }}</span
+        >({{ item.from.connectionId }}) :
+        {{ item.data }}
       </div>
     </div>
   </div>
@@ -86,6 +102,10 @@ export default {
   },
   data() {
     return {
+      userNameToSendMessage: undefined,
+      clickedUserConnection: undefined,
+      inputMessage: '',
+      receivedMessages: [],
       cameraState: false,
       isPublished: false,
       OV: undefined,
@@ -107,18 +127,19 @@ export default {
       // --- Specify the actions when events take place in the session ---
       // On every new Stream received...
       this.session.on('streamCreated', ({ stream }) => {
-        console.log('%cOpenVidu.vue line:97 stream', 'color: #007acc;', stream);
         const subscriber = this.session.subscribe(stream);
         this.subscribers.push(subscriber);
       });
       // On every Stream destroyed...
       this.session.on('streamDestroyed', ({ stream }) => {
-        console.log('%cOpenVidu.vue line:102 ', 'color: #007acc;', stream);
-        console.log('%cOpenVidu.vue line:104 ', 'color: #007acc;', stream.connection.data);
         const index = this.subscribers.indexOf(stream.streamManager, 0);
         if (index >= 0) {
           this.subscribers.splice(index, 1);
         }
+      });
+      // 메시지 시그널
+      this.session.on('signal:message', (signalEvent) => {
+        this.receivedMessages.push(signalEvent);
       });
       // --- Connect to the session with a valid user token ---
       // 'getToken' method is simulating what your server-side should do.
@@ -146,9 +167,16 @@ export default {
       this.OV = undefined;
       window.removeEventListener('beforeunload', this.leaveSession);
     },
-    updateMainVideoStreamManager(stream) {
-      if (this.mainStreamManager === stream) return;
-      this.mainStreamManager = stream;
+    updateUserNameToSendMessage(stream) {
+      const clikedUserConnection = stream.stream.connection;
+      const clikedUserConnectionId = clikedUserConnection.connectionId;
+      const clikedUserName = JSON.parse(clikedUserConnection.data).clientData;
+      const mConnectionId = this.session.connection.connectionId;
+
+      this.userNameToSendMessage =
+        mConnectionId === clikedUserConnectionId ? undefined : clikedUserName;
+      this.clickedUserConnection =
+        mConnectionId === clikedUserConnectionId ? undefined : clikedUserConnection;
     },
     getToken(mySessionId) {
       return this.createSession(mySessionId).then((sessionId) => this.createToken(sessionId));
@@ -248,6 +276,31 @@ export default {
           this.isPublished = false;
         });
     },
+    sendMessage() {
+      if (this.session) {
+        // signalOptions의 to가 undefined일 경우, 모든 참가자에게 메시지를 전송함
+        this.session
+          .signal({
+            data: this.inputMessage,
+            to: this.clickedUserConnection
+              ? [this.clickedUserConnection]
+              : this.clickedUserConnection,
+            type: 'message',
+          })
+          .then(() => {
+            console.log('메시지가 성공적으로 전송되었습니다.');
+          })
+          .catch(() => {
+            console.warn('메시지가 전송을 실패했습니다.');
+          });
+      }
+      this.inputMessage = '';
+    },
   },
 };
 </script>
+<style scoped>
+#video-container {
+  display: flex;
+}
+</style>
