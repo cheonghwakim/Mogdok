@@ -1,0 +1,80 @@
+package com.mongdok.desk.service.impl;
+
+
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.mongdok.desk.common.response.BasicResponse;
+import com.mongdok.desk.common.response.CommonResponse;
+import com.mongdok.desk.common.response.ErrorResponse;
+import com.mongdok.desk.dao.MemoDao;
+import com.mongdok.desk.model.Memo;
+import com.mongdok.desk.model.request.memo.MemoCreateRequest;
+import com.mongdok.desk.model.request.memo.MemoUpdateRequest;
+import com.mongdok.desk.service.MemoService;
+@Service
+public class MemoServiceImpl implements MemoService{
+	@Autowired
+	private MemoDao memodao;
+	
+	public static final Logger logger = LoggerFactory.getLogger(DdayServiceImpl.class);
+	
+	//메모 삭제
+	@Override
+	public ResponseEntity<? extends BasicResponse> deleteMemo(int memoId) {
+		
+		try {
+			memodao.deleteByMemoId(memoId);
+		} catch (Exception e) {
+			logger.error("memo삭제 실패 : {}", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+		}
+
+		return ResponseEntity.ok().body(new CommonResponse<String>("memo 삭제완료"));
+	}
+	
+	//메모 생성
+	@Override
+	public ResponseEntity<? extends BasicResponse> createMemo(MemoCreateRequest memoRequest) {
+		Memo memo=new Memo();
+		memo.setDeskId(memoRequest.getDeskId());
+		memo.setContent(memoRequest.getContent());
+		try {
+			memodao.save(memo);
+		} catch (Exception e) {
+			logger.error("memo생성 실패 : {}", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+		}
+		return ResponseEntity.ok().body(new CommonResponse<Memo>(memo));
+	}
+	
+	//메모 수정
+	@Override
+	public ResponseEntity<? extends BasicResponse> updateMemo(MemoUpdateRequest memoRequest) {
+		Memo memo=null;
+		try {
+			Optional<Memo> optional = memodao.findByMemoId(memoRequest.getMemoId());
+			if(optional.isPresent()) {
+				memo=optional.get();
+				memo.setContent(memoRequest.getContent());//내용수정
+				memodao.save(memo);
+			}
+			else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("존재하지 않는 id"));
+			}
+		} catch (Exception e) {
+			logger.error("memo수정 실패 : {}", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+		}
+		return ResponseEntity.ok().body(new CommonResponse<Memo>(memo));
+	}
+}
