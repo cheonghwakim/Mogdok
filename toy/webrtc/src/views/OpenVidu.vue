@@ -13,38 +13,74 @@
             <label>Session</label>
             <input v-model="mySessionId" class="form-control" type="text" required />
           </p>
+          <div id="main-video" class="col-md-6">
+            <h3>입장 전에 내 화면을 확인하세요</h3>
+            <div id="beforeJoinCam" ref="beforeJoinCam"></div>
+            <user-video :stream-manager="beforeJoin" />
+          </div>
           <p class="text-center">
             <button class="btn btn-lg btn-success" @click="joinSession()">Join!</button>
           </p>
         </div>
       </div>
     </div>
-
     <div id="session" v-if="session">
+      <input
+        class="btn btn-large btn-danger"
+        type="button"
+        id="buttonLeaveSession"
+        @click="leaveSession"
+        value="세션에서 나가기"
+        style="backgroundColor:red;color:white"
+      />
+      <h4>
+        세션에 접속하려면 Camera ON 버튼을 클릭해서 내 모습을 확인한 뒤 "세션에 접속하기"버튼을
+        클릭해주세요
+      </h4>
+      <div>
+        <div v-if="publisher">
+          <ov-video :stream-manager="publisher" />
+        </div>
+        <button class="btn btn-lg btn-success" @click="cameraState ? cameraOff() : cameraOn()">
+          Camera
+          {{ cameraState ? 'OFF' : 'ON' }}
+        </button>
+        <br />
+        <button v-if="!isPublished" :disabled="!cameraState" @click="publishSession()">
+          세션에 접속하기
+        </button>
+      </div>
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
-        <input
-          class="btn btn-large btn-danger"
-          type="button"
-          id="buttonLeaveSession"
-          @click="leaveSession"
-          value="Leave session"
-        />
-      </div>
-      <div id="main-video" class="col-md-6">
-        <user-video :stream-manager="mainStreamManager" />
       </div>
       <div id="video-container" class="col-md-6">
         <user-video
+          v-if="isPublished"
           :stream-manager="publisher"
-          @click.native="updateMainVideoStreamManager(publisher)"
+          @click.native="updateUserNameToSendMessage(publisher)"
         />
         <user-video
           v-for="sub in subscribers"
           :key="sub.stream.connection.connectionId"
           :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)"
+          @click.native="updateUserNameToSendMessage(sub)"
         />
+      </div>
+      <div>
+        세션에 존재하는 사람을 클릭하면 해당 사람에게 메시지를 보낼 수 있습니다. 나를 클릭하면
+        '모두에게'로 바뀝니다.
+      </div>
+      <div>
+        {{ userNameToSendMessage ? userNameToSendMessage : '모두에게 ' }}
+        메시지 전송하기 :
+        <input v-model="inputMessage" type="text" @keyup.enter="sendMessage()" />
+      </div>
+      <hr />
+      <h3>전송받은 메시지</h3>
+      <div v-for="(item, index) in receivedMessages" :key="'rcvmsg' + index">
+        <span style="font-weight:bold">{{ JSON.parse(item.from.data).clientData }}</span
+        >({{ item.from.connectionId }}) :
+        {{ item.data }}
       </div>
     </div>
   </div>
@@ -54,19 +90,27 @@
 import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import UserVideo from '../components/UserVideo';
+import OvVideo from '../components/OvVideo';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
-// const OPENVIDU_SERVER_URL = 'https://' + location.hostname + ':4443';
 const OPENVIDU_SERVER_URL = 'https://k4a401.p.ssafy.io';
 const OPENVIDU_SERVER_SECRET = 'ssafy';
 export default {
   name: 'App',
   components: {
     UserVideo,
+    OvVideo,
   },
   data() {
     return {
+      userNameToSendMessage: undefined,
+      clickedUserConnection: undefined,
+      inputMessage: '',
+      receivedMessages: [],
+      cameraState: false,
+      isPublished: false,
       OV: undefined,
       session: undefined,
+      beforeJoin: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
       subscribers: [],
@@ -77,7 +121,7 @@ export default {
   methods: {
     joinSession() {
       // --- Get an OpenVidu object ---
-      this.OV = new OpenVidu();
+      if (!this.OV) this.OV = new OpenVidu();
       // --- Init a session ---
       this.session = this.OV.initSession();
       // --- Specify the actions when events take place in the session ---
@@ -93,6 +137,10 @@ export default {
           this.subscribers.splice(index, 1);
         }
       });
+      // 메시지 시그널
+      this.session.on('signal:message', (signalEvent) => {
+        this.receivedMessages.push(signalEvent);
+      });
       // --- Connect to the session with a valid user token ---
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
@@ -100,21 +148,8 @@ export default {
         this.session
           .connect(token, { clientData: this.myUserName })
           .then(() => {
-            // --- Get your own camera stream with the desired properties ---
-            let publisher = this.OV.initPublisher(undefined, {
-              audioSource: false, // The source of audio. If undefined default microphone
-              videoSource: undefined, // The source of video. If undefined default webcam
-              publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
-              publishVideo: true, // Whether you want to start publishing with your video enabled or not
-              resolution: '320x240', // The resolution of your video
-              frameRate: 30, // The frame rate of your video
-              insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
-              mirror: false, // Whether to mirror your local video or not
-            });
-            this.mainStreamManager = publisher;
-            this.publisher = publisher;
-            // --- Publish your stream ---
-            this.session.publish(this.publisher);
+            // 세션에 성공적으로 입장
+            console('세션에 참가했습니다');
           })
           .catch((error) => {
             console.log('There was an error connecting to the session:', error.code, error.message);
@@ -125,28 +160,24 @@ export default {
     leaveSession() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
       if (this.session) this.session.disconnect();
+      this.cameraOff();
       this.session = undefined;
       this.mainStreamManager = undefined;
-      this.publisher = undefined;
       this.subscribers = [];
       this.OV = undefined;
       window.removeEventListener('beforeunload', this.leaveSession);
     },
-    updateMainVideoStreamManager(stream) {
-      if (this.mainStreamManager === stream) return;
-      this.mainStreamManager = stream;
+    updateUserNameToSendMessage(stream) {
+      const clikedUserConnection = stream.stream.connection;
+      const clikedUserConnectionId = clikedUserConnection.connectionId;
+      const clikedUserName = JSON.parse(clikedUserConnection.data).clientData;
+      const mConnectionId = this.session.connection.connectionId;
+
+      this.userNameToSendMessage =
+        mConnectionId === clikedUserConnectionId ? undefined : clikedUserName;
+      this.clickedUserConnection =
+        mConnectionId === clikedUserConnectionId ? undefined : clikedUserConnection;
     },
-    /**
-     * --------------------------
-     * SERVER-SIDE RESPONSIBILITY
-     * --------------------------
-     * These methods retrieve the mandatory user token from OpenVidu Server.
-     * This behavior MUST BE IN YOUR SERVER-SIDE IN PRODUCTION (by using
-     * the API REST, openvidu-java-client or openvidu-node-client):
-     *   1) Initialize a Session in OpenVidu Server	(POST /openvidu/api/sessions)
-     *   2) Create a Connection in OpenVidu Server (POST /openvidu/api/sessions/<SESSION_ID>/connection)
-     *   3) The Connection.token must be consumed in Session.connect() method
-     */
     getToken(mySessionId) {
       return this.createSession(mySessionId).then((sessionId) => this.createToken(sessionId));
     },
@@ -206,6 +237,70 @@ export default {
           .catch((error) => reject(error.response));
       });
     },
+    cameraOn() {
+      if (!this.OV) this.OV = new OpenVidu();
+      // --- Get your own camera stream with the desired properties ---
+      let publisher = this.OV.initPublisher(undefined, {
+        audioSource: false, // The source of audio. If undefined default microphone
+        videoSource: undefined, // The source of video. If undefined default webcam
+        publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
+        publishVideo: true, // Whether you want to start publishing with your video enabled or not
+        resolution: '320x240', // The resolution of your video
+        frameRate: 30, // The frame rate of your video
+        insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
+        mirror: false, // Whether to mirror your local video or not
+      });
+      this.publisher = publisher;
+      this.cameraState = true;
+    },
+    cameraOff() {
+      if (this.session && this.isPublished) {
+        // 세션에 들어가있고 "publish 중인 상태"에서는 unpublish 해야 함
+        this.session.unpublish(this.publisher);
+      } else {
+        // 세션을 통해 unpublish하지 않은 경우에 카메라를 OFF할 경우,
+        // 카메라 자원이 여전히 실행 중이므로 카메라 자원을 해제하는 작업을 해주어야 함
+        if (this.publisher) this.publisher.stream.disposeMediaStream();
+      }
+      this.publisher = undefined;
+      this.cameraState = false;
+      this.isPublished = false;
+    },
+    publishSession() {
+      this.session
+        .publish(this.publisher)
+        .then(() => {
+          this.isPublished = true;
+        })
+        .catch(() => {
+          this.isPublished = false;
+        });
+    },
+    sendMessage() {
+      if (this.session) {
+        // signalOptions의 to가 undefined일 경우, 모든 참가자에게 메시지를 전송함
+        this.session
+          .signal({
+            data: this.inputMessage,
+            to: this.clickedUserConnection
+              ? [this.clickedUserConnection]
+              : this.clickedUserConnection,
+            type: 'message',
+          })
+          .then(() => {
+            console.log('메시지가 성공적으로 전송되었습니다.');
+          })
+          .catch(() => {
+            console.warn('메시지가 전송을 실패했습니다.');
+          });
+      }
+      this.inputMessage = '';
+    },
   },
 };
 </script>
+<style scoped>
+#video-container {
+  display: flex;
+}
+</style>
