@@ -1,7 +1,7 @@
 <template lang="">
    <div class="door">
       <p>{{ this.room.roomTitle }}</p>
-      <num-person></num-person>
+      <num-person class="NumOfPerson" :current="this.room.roomCurrent" :limit="this.room.roomLimit"></num-person>
       <svg id="svgDoor" width="146" height="193" viewBox="0 0 146 193" fill="none" xmlns="http://www.w3.org/2000/svg">
          <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="146" height="194">
             <path
@@ -106,9 +106,19 @@ export default {
       #doorOpen {
          transform: skew(0deg, -15deg);
       }
-      p {
+
+      p,
+      .NumOfPerson {
          transform: translateY(-20px) skew(0deg, -15deg);
       }
+   }
+
+   .NumOfPerson {
+      position: absolute;
+      z-index: 5;
+
+      bottom: 40px;
+      left: 40px;
    }
 
    p {
