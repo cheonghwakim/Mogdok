@@ -1,6 +1,7 @@
 <template lang="">
    <div class="door">
       <p>{{ this.room.roomTitle }}</p>
+      <num-person></num-person>
       <svg id="svgDoor" width="146" height="193" viewBox="0 0 146 193" fill="none" xmlns="http://www.w3.org/2000/svg">
          <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="146" height="194">
             <path
@@ -79,13 +80,20 @@
       </svg>
    </div>
 </template>
+
 <script>
+import NumPerson from '@/components/ui/NumPerson';
+
 export default {
    props: {
       room: Object,
    },
+   components: {
+      NumPerson,
+   },
 };
 </script>
+
 <style scoped lang="scss">
 .door {
    position: relative;
