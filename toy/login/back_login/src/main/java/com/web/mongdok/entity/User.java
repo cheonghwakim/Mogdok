@@ -22,7 +22,7 @@ public class User {
 	
 	private String category;
 	
-	private String kakaoIdd;
+	private String kakaoId;
 	
 	private String googleId;
 }
