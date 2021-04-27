@@ -1,14 +1,13 @@
 package com.web.mongdok.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class SignupReqDto {
 	
+
 	private String email;
 	private String access_token;
 	private String id;

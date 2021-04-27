@@ -5,13 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
 @Table(name = "user")
-@Getter
-@Setter
+@Data
 public class User {
 	
 	@Id
@@ -24,7 +22,7 @@ public class User {
 	
 	private String category;
 	
-	private String kakao_id;
+	private String kakaoIdd;
 	
-	private String google_id;
+	private String googleId;
 }
