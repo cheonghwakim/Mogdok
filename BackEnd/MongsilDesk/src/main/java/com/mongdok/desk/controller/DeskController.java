@@ -26,14 +26,20 @@ public class DeskController {
 	
 	@GetMapping
 	@ApiOperation(value = "나의 다짐 불러오기")
-	public ResponseEntity<? extends BasicResponse> getPromiseByUserId(String userEmail){
-		return DeskService.getPromiseByUserEmail(userEmail);
+	public ResponseEntity<? extends BasicResponse> getPromiseByUserId(String nickname){
+		return DeskService.getPromiseByUserEmail(nickname);
 	}
 	
 	@PutMapping
 	@ApiOperation(value = "나의 다짐 수정")
 	public ResponseEntity<? extends BasicResponse> updatePromiseByUserId(DeskRequest desk){
 		return DeskService.updatePromiseByUserId(desk);
+	}
+	
+	@GetMapping("/all")
+	@ApiOperation(value = "나의 책상 모든 것 불러오기(메모, 디데이, 방명록, ..)")
+	public ResponseEntity<? extends BasicResponse> getAllInfoDesk(String nickname){
+		return DeskService.getAllInfoDesk(nickname);
 	}
 
 }

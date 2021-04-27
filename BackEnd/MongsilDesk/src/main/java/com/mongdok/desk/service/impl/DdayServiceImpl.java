@@ -4,6 +4,7 @@ package com.mongdok.desk.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import com.mongdok.desk.common.response.ErrorResponse;
 import com.mongdok.desk.dao.DdayDao;
 import com.mongdok.desk.model.Dday;
 import com.mongdok.desk.model.request.dday.DdayRequest;
+import com.mongdok.desk.model.response.DdayResponse;
 import com.mongdok.desk.service.DdayService;
 
 @Service
@@ -42,20 +44,23 @@ public class DdayServiceImpl implements DdayService{
 	//dday 생성
 	@Override
 	public ResponseEntity<? extends BasicResponse> createDday(DdayRequest ddayRequest) {
-		Dday dday=new Dday();
-		dday.setDeskId(ddayRequest.getDeskId());
-		dday.setTitle(ddayRequest.getTitle());
-		dday.setFinishDate(ddayRequest.getFinishDate());
-		Dday createdDday=null;
+		DdayResponse response= new DdayResponse();
+		
 		try {
-			createdDday=ddayDao.save(dday);		
+			Dday dday=new Dday();
+			dday.setDeskId(ddayRequest.getDeskId());
+			dday.setTitle(ddayRequest.getTitle());
+			dday.setFinishDate(ddayRequest.getFinishDate());
+			
+			Dday save=ddayDao.save(dday);		
+			BeanUtils.copyProperties(save,response);//엔티티-> dto 필드 값 복사
 		} catch (Exception e) {
 			logger.error("dday생성 실패 : {}", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
 		}
 
-		return ResponseEntity.ok().body(new CommonResponse<Dday>(createdDday));
+		return ResponseEntity.ok().body(new CommonResponse<DdayResponse>(response));
 	}
 
 }

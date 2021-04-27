@@ -1,9 +1,12 @@
 package com.mongdok.desk.model;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -25,4 +28,15 @@ public class Desk {
 	private String promise;
 	
 	private String userId;
+	
+	@OneToMany(mappedBy = "deskId")
+	private List<Memo> memoList;
+	
+	@OneToMany(mappedBy = "deskId")
+	private List<Dday> ddayList;
+	
+	@OneToMany(mappedBy = "deskId")
+	private List<Guestbook> guestbookList;
+	
+	
 }

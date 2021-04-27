@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import com.mongdok.desk.dao.MemoDao;
 import com.mongdok.desk.model.Memo;
 import com.mongdok.desk.model.request.memo.MemoCreateRequest;
 import com.mongdok.desk.model.request.memo.MemoUpdateRequest;
+import com.mongdok.desk.model.response.MemoResponse;
 import com.mongdok.desk.service.MemoService;
 @Service
 public class MemoServiceImpl implements MemoService{
@@ -43,29 +45,35 @@ public class MemoServiceImpl implements MemoService{
 	//메모 생성
 	@Override
 	public ResponseEntity<? extends BasicResponse> createMemo(MemoCreateRequest memoRequest) {
-		Memo memo=new Memo();
-		memo.setDeskId(memoRequest.getDeskId());
-		memo.setContent(memoRequest.getContent());
+		MemoResponse response =new MemoResponse();
 		try {
-			memodao.save(memo);
+			Memo memo=new Memo();
+			memo.setDeskId(memoRequest.getDeskId());
+			memo.setContent(memoRequest.getContent());
+			Memo save=memodao.save(memo);//엔티티-> dto 필드 값 복사
+			
+			BeanUtils.copyProperties(save,response);
 		} catch (Exception e) {
 			logger.error("memo생성 실패 : {}", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
 		}
-		return ResponseEntity.ok().body(new CommonResponse<Memo>(memo));
+		return ResponseEntity.ok().body(new CommonResponse<MemoResponse>(response));
 	}
 	
 	//메모 수정
 	@Override
 	public ResponseEntity<? extends BasicResponse> updateMemo(MemoUpdateRequest memoRequest) {
-		Memo memo=null;
+		MemoResponse response =new MemoResponse();
+		
 		try {
 			Optional<Memo> optional = memodao.findByMemoId(memoRequest.getMemoId());
 			if(optional.isPresent()) {
-				memo=optional.get();
+				Memo memo=optional.get();
 				memo.setContent(memoRequest.getContent());//내용수정
-				memodao.save(memo);
+				Memo save=memodao.save(memo);
+				
+				BeanUtils.copyProperties(save,response);//엔티티-> dto 필드 값 복사
 			}
 			else {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("존재하지 않는 id"));
@@ -75,6 +83,6 @@ public class MemoServiceImpl implements MemoService{
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
 		}
-		return ResponseEntity.ok().body(new CommonResponse<Memo>(memo));
+		return ResponseEntity.ok().body(new CommonResponse<MemoResponse>(response));
 	}
 }
