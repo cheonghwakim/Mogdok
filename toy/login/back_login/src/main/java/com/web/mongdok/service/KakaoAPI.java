@@ -230,4 +230,31 @@ public class KakaoAPI {
         tokens.put("refreshToken", refreshToken);
         return tokens;
 	}
+
+	public String unlink(String accessToken) {
+		
+        String reqURL = "https://kapi.kakao.com/v1/user/unlink"; // 토큰 정보 보기
+		String result = "";
+		
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+	}
 }

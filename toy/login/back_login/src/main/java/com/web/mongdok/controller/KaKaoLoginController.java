@@ -1,6 +1,5 @@
 package com.web.mongdok.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +40,6 @@ public class KaKaoLoginController {
     
     @Autowired
     private JwtUtil jwtUtil;
-    
-//    @Autowired
-//    private JwtService jwtService;
     
      @Autowired
     private CookieUtil cookieUtil;   
@@ -141,30 +137,13 @@ public class KaKaoLoginController {
     	
 		return new ResponseEntity<>("success", HttpStatus.OK);
     }
-    
-    
-    
-    
-    
-    
-//    @GetMapping("/klogin") // 로그인 토큰 발급
-//    public ResponseEntity<?> klogin(@RequestParam String authorizeCode) {
-//    	
-//    	try {
-//	    	String accessToken = kakaologin.getAccessToken(authorizeCode);
-//	        HashMap<String, String> userInfo = kakaologin.getUserInfo(accessToken);
-//	//        System.out.println(userinfo.get("email"));
-//	        
-//	        SignupReqDto user = new SignupReqDto(userInfo.get("email"), accessToken, userInfo.get("id"));
-//	        
-//	        final String token = JwtService.create(user);
-//	        redisUtil.setDataExpire(user.getEmail(), token, JwtService.REFRESH_TOKEN_VALIDATION_SECOND);
-//        	
-//	        return new ResponseEntity<>(userInfo, HttpStatus.OK);
-//    	
-//    	} catch (Exception e) {
-//    		e.printStackTrace();
-//    		return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
-//    	}
-//    }
+
+    // 연결 끊기 (탈퇴)
+    @GetMapping("/unlink")
+    public ResponseEntity<?> exit(@RequestParam String accessToken) {
+		
+    	System.out.println("토큰 갱신하기: " + kakaoAPI.unlink(accessToken));
+    	
+		return new ResponseEntity<>("success", HttpStatus.OK);
+    }
 }
