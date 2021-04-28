@@ -25,4 +25,6 @@ public interface AuthService {
 	String sendVerificationMail(User user);
 
 	String verifyEmail(String key);
+
+	String VerificationUser(String key);
 }

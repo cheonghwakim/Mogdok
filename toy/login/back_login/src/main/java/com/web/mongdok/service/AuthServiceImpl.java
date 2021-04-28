@@ -94,6 +94,16 @@ public class AuthServiceImpl implements AuthService {
         return "success";
     }
 
+    // refresh_token이 있으면 success
+	@Override
+	public String VerificationUser(String key) {
+		String refresh_token = redisUtil.getData(key);
+		if(refresh_token != null)
+			return "success";
+		
+		return "fail";
+	}
+
 
 
 

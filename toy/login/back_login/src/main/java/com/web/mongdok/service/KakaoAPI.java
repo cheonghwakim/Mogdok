@@ -233,7 +233,7 @@ public class KakaoAPI {
 
 	public String unlink(String accessToken) {
 		
-        String reqURL = "https://kapi.kakao.com/v1/user/unlink"; // 토큰 정보 보기
+        String reqURL = "https://kapi.kakao.com/v1/user/unlink"; // 연결 끊기
 		String result = "";
 		
         try {
