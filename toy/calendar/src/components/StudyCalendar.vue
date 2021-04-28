@@ -60,6 +60,9 @@ export default {
     this.today = date.getDate(); // 오늘 날짜
     this.calendarData();
   },
+  mounted() {
+    this.parseStudyTimeOfDay();
+  },
   methods: {
     calendarData(arg) {
       // 인자를 추가
@@ -129,7 +132,98 @@ export default {
       this.nextMonthStart = weekOfDays[0]; // 이번 달 마지막 주에서 제일 작은 날짜
       return dates;
     },
-    visualizeStudyTimeToCalendar() {},
+    parseStudyTimeOfDay() {
+      // 테스트데이터
+      const studyTimestamp = [
+        {
+          studyId: 1,
+          studyTime: '2021-04-28T00:00:00.000',
+          startTime: '2021-04-28T00:00:00.000',
+          status: 'PAUSE',
+        },
+        {
+          studyId: 2,
+          studyTime: '2021-04-28T01:00:00.000',
+          startTime: '2021-04-28T00:00:00.000',
+          status: 'START',
+        },
+        {
+          studyId: 3,
+          studyTime: '2021-04-28T03:00:00.000',
+          startTime: '2021-04-28T00:00:00.000',
+          status: 'PAUSE',
+        },
+        {
+          studyId: 2,
+          studyTime: '2021-04-28T04:00:00.000',
+          startTime: '2021-04-28T00:00:00.000',
+          status: 'START',
+        },
+        {
+          studyId: 3,
+          studyTime: '2021-04-28T05:00:00.000',
+          startTime: '2021-04-28T00:00:00.000',
+          status: 'PAUSE',
+        },
+        {
+          studyId: 4,
+          studyTime: '2021-04-29T04:00:00.000',
+          startTime: '2021-04-28T00:00:00.000',
+          status: 'END',
+        },
+        {
+          studyId: 1,
+          studyTime: '2021-04-29T00:00:00.000',
+          startTime: '2021-04-29T00:00:00.000',
+          status: 'PAUSE',
+        },
+        {
+          studyId: 2,
+          studyTime: '2021-04-28T04:00:00.000',
+          startTime: '2021-04-28T00:00:00.000',
+          status: 'START',
+        },
+        {
+          studyId: 4,
+          studyTime: '2021-04-29T04:00:00.000',
+          startTime: '2021-04-28T00:00:00.000',
+          status: 'END',
+        },
+      ];
+      const size = studyTimestamp.length;
+      const studyRunningTimeList = [];
+
+      // let hourToMs = 1000 * 60 * 60;
+      let flag = false;
+      let curStartTime = null;
+      let runningTime = 0;
+      for (let i = 0; i < size; i++) {
+        const { studyTime, status, startTime } = studyTimestamp[i];
+        if (status === 'START') {
+          // 공부 시작
+          flag = true;
+          curStartTime = studyTime;
+        } else {
+          if (flag) {
+            runningTime += new Date(studyTime) - new Date(curStartTime);
+            flag = false;
+          }
+          if (status === 'END') {
+            studyRunningTimeList.push({
+              startTime: new Date(startTime + 'Z'), // 로컬 시간으로 변환해서 기록
+              runningTime,
+            });
+            console.log(
+              '%cStudyCalendar.vue line:210 runningTime',
+              'color: #007acc;',
+              runningTime / (1000 * 60 * 60)
+            );
+            runningTime = 0; // 공부가 끝났으므로 다음 공부시간 기록을 위해 초기화
+          }
+        }
+      }
+      console.log('%cStudyCalendar.vue line:190 study', 'color: #007acc;', studyRunningTimeList);
+    },
   },
 };
 </script>
