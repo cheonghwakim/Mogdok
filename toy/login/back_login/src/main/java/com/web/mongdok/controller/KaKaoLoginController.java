@@ -2,7 +2,7 @@ package com.web.mongdok.controller;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.web.mongdok.dto.SignupReqDto;
 import com.web.mongdok.entity.User;
 import com.web.mongdok.service.AuthService;
-import com.web.mongdok.service.JwtService;
 import com.web.mongdok.service.KakaoAPI;
 import com.web.mongdok.utils.CookieUtil;
 import com.web.mongdok.utils.JwtUtil;
@@ -60,21 +59,22 @@ public class KaKaoLoginController {
     	return new ResponseEntity<>(user, HttpStatus.OK);
     }
     
+    // 임시
     @GetMapping("/getUsers")
 	public User userasd() throws NotFoundException {
 	    return authService.findByUserId("asdfsadf");
     }
 
-    @GetMapping("/klogin") // 로그인 토큰 발급
+    @GetMapping("/klogin") // 로그인 토큰 발급 -> redis, 쿠키에 저장
     @ResponseBody
     public ResponseEntity<?> klogin(@RequestParam String authorizeCode, HttpServletResponse res) {
     	
     	try {
-	    	String kakaoAccessToken = kakaologin.getAccessToken(authorizeCode);
-	        HashMap<String, String> userInfo = kakaologin.getUserInfo(kakaoAccessToken);
+	    	Map<String, String> kakaoAccessToken = kakaologin.getAccessToken(authorizeCode);
+	        Map<String, String> userInfo = kakaologin.getUserInfo(kakaoAccessToken.get("accessToken"), kakaoAccessToken.get("refreshToken"));
 	        
 	        // kakaoAccessToken이 너무 길어서 db에 저장 안 됨
-	        SignupReqDto user = new SignupReqDto(userInfo.get("email"), "asdfasdfsa", userInfo.get("id"));
+	        SignupReqDto user = new SignupReqDto(userInfo.get("email"), "asdfasdfsa", "ekekekek", userInfo.get("id"));
 	        
 	        // 만약 유저가 있다면 로그인, 없다면 회원 가입
 	        if(authService.findByUserId(userInfo.get("id")) == null) {
@@ -88,7 +88,7 @@ public class KaKaoLoginController {
             
             Cookie accessToken = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, token);
             Cookie refreshToken = cookieUtil.createCookie(JwtUtil.REFRESH_TOKEN_NAME, refreshJwt);
-            redisUtil.setDataExpire(token, curUser.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
+            redisUtil.setDataExpire(refreshJwt, curUser.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND); // redis에 refresh 토큰 저장
             res.addCookie(accessToken);
             res.addCookie(refreshToken);
             
@@ -98,23 +98,32 @@ public class KaKaoLoginController {
     		e.printStackTrace();
     		return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
     	}
-    }    
+    }
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody SignupReqDto form) {
 		
     	try {
-    		
-    		if(form != null)
-    			return new ResponseEntity<>(form, HttpStatus.OK);
-    		else
+    		if(form == null)
     			return new ResponseEntity<>("null", HttpStatus.ACCEPTED);
     		
     	} catch (Exception e) {
     		e.printStackTrace();
     		return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
     	}
+    	
+    	return new ResponseEntity<>(form, HttpStatus.OK);
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 //    @GetMapping("/klogin") // 로그인 토큰 발급
 //    public ResponseEntity<?> klogin(@RequestParam String authorizeCode) {
@@ -135,5 +144,5 @@ public class KaKaoLoginController {
 //    		e.printStackTrace();
 //    		return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
 //    	}
-//    }  
+//    }
 }

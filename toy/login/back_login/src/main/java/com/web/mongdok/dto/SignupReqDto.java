@@ -7,9 +7,11 @@ import lombok.Data;
 @Data
 public class SignupReqDto {
 	
-
 	private String email;
-	private String access_token;
-	private String id;
 	
+	private String access_token;
+	
+	private String refresh_token;
+	
+	private String id;
 }

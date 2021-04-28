@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -18,11 +19,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class KakaoAPI {
 
-    public String getAccessToken(String authorize_code) {
+    public Map<String, String> getAccessToken(String authorize_code) {
     	System.out.println(authorize_code);
-        String access_Token = "";
-        String refresh_Token = "";
-        String reqURL = "https://kauth.kakao.com/oauth/token";
+        String accessToken = "";
+        String refreshToken = "";
+        String reqURL = "https://kauth.kakao.com/oauth/token"; // 토큰 받기
 
         try {
             URL url = new URL(reqURL);
@@ -53,8 +54,8 @@ public class KakaoAPI {
             JsonParser parser = new JsonParser();
             JsonElement element = parser.parse(result);
 
-            access_Token = element.getAsJsonObject().get("access_token").getAsString();
-            refresh_Token = element.getAsJsonObject().get("refresh_token").getAsString();
+            accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
             
 //            System.out.println("access_token: " + access_Token);
 //            System.out.println("refresh_token: " + refresh_Token);
@@ -63,21 +64,24 @@ public class KakaoAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return access_Token;
+        
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+        return tokens;
     }
 
-    public HashMap<String, String> getUserInfo(String access_Token) {
+    public Map<String, String> getUserInfo(String accessToken, String refreshToken) {
 
-        HashMap<String, String> userInfo = new HashMap<>();
-        String reqURL = "https://kapi.kakao.com/v2/user/me";
+        Map<String, String> userInfo = new HashMap<>();
+        String reqURL = "https://kapi.kakao.com/v2/user/me"; // 사용자 정보 가져오기
 
         try {
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
 
-            conn.setRequestProperty("Authorization", "Bearer " + access_Token);
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
@@ -102,7 +106,8 @@ public class KakaoAPI {
 			 }
 			userInfo.put("id", id);
             userInfo.put("email", email);
-            userInfo.put("access_token", access_Token);
+            userInfo.put("refresh_token", refreshToken);
+            userInfo.put("access_token", accessToken);
             
             
         } catch (IOException e) {
@@ -110,5 +115,43 @@ public class KakaoAPI {
         }
 
         return userInfo;
+    }
+    
+    // 로그 아웃
+    public String Logout() {
+
+        String reqURL = "https://kauth.kakao.com/oauth/logout"; // 로그 아웃
+		String result = "";
+		
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(true);
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("grant_type=authorization_code");
+            sb.append("&client_id=4da2e6372fc055ada48d1942fd63ddcf");
+            sb.append("&logout_redirect_uri=http://localhost:3000/login");
+            
+            bw.write(sb.toString());
+            bw.flush();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+       
+        return result;
     }
 }
