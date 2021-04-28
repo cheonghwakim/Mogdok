@@ -1,6 +1,5 @@
 package com.mongdok.desk.model;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -28,12 +27,10 @@ public class Study {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long studyId;
 	
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date studyTime;
 	
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "", timezone = "Asia/Seoul")
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date startTime;
 
 	private String status;

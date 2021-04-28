@@ -2,8 +2,6 @@ package com.mongdok.desk.model.response.desk;
 
 import java.util.List;
 
-import javax.persistence.OneToMany;
-
 import com.mongdok.desk.model.response.dday.DdayResponse;
 import com.mongdok.desk.model.response.guestbook.GuestBookOnlyIdResponse;
 import com.mongdok.desk.model.response.memo.MemoResponse;
