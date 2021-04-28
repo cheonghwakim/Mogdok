@@ -12,7 +12,7 @@
 <script>
 import LoginKakaoButton from '@/components/LoginKakaoButton';
 import Logo from '@/components/ui/Logo';
-import SvgMongsil from '@/components/svg/SVGMongsil';
+import SvgMongsil from '@/components/svg/SvgMongsil';
 
 export default {
    name: 'Login',
