@@ -1,0 +1,28 @@
+@import "vars";
+
+* {
+    font-family: 'Noto Sans KR', sans-serif;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 2rem;
+}
+
+h2 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+h3 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.floating {
+    position: absolute;
+    z-index: 10;
+ }

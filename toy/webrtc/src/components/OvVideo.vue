@@ -8,16 +8,8 @@ export default {
   props: {
     streamManager: Object,
   },
-  // watch: {
-  //   streamManager: {
-  //     immediate: true,
-  //     handler(value) {
-  //       if (value) this.streamManager.addVideoElement(this.$el);
-  //     },
-  //   },
-  // },
   mounted() {
-    this.streamManager.addVideoElement(this.$el);
+    if (this.streamManager) this.streamManager.addVideoElement(this.$el);
   },
 };
 </script>
