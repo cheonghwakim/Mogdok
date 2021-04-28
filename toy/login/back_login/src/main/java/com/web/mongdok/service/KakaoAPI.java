@@ -119,8 +119,7 @@ public class KakaoAPI {
     
     // 로그 아웃
     public String Logout(String accessToken) {
-
-        Map<String, String> userInfo = new HashMap<>();
+    	
         String reqURL = "https://kapi.kakao.com/v1/user/logout"; // 사용자 정보 가져오기
 		String result = "";
 		
@@ -145,4 +144,88 @@ public class KakaoAPI {
 
         return result;
     }
+
+    // 토큰 정보 보기 (-401: 토큰 값이 잘못되었거나 만료되어 유효하지 않은 경우로 토큰 갱신 필요)
+	public String auth(String accessToken) {
+		
+        String reqURL = "https://kapi.kakao.com/v1/user/access_token_info"; // 토큰 정보 보기
+		String result = "";
+		
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            // 응답이 401이라면 토큰 갱신하기
+            
+            
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+	}
+	
+	// 토큰 갱신하기
+	public Map<String, String> freshToken(String refreshToken) {
+		
+		String accessToken = "";
+        String newRefreshToken = "";
+        String reqURL = "https://kauth.kakao.com/oauth/token"; // 토큰 받기
+
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("grant_type=refresh_token");
+//            sb.append("&client_id=APPKEY");
+            sb.append("&client_id=4da2e6372fc055ada48d1942fd63ddcf");
+            sb.append("&refresh_token=" + refreshToken);
+            sb.append("&redirect_uri=http://localhost:3000/kakaologin");
+            
+            bw.write(sb.toString());
+            bw.flush();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            String result = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+            JsonParser parser = new JsonParser();
+            JsonElement element = parser.parse(result);
+
+            accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            newRefreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+            
+//            System.out.println("access_token: " + access_Token);
+//            System.out.println("refresh_token: " + refresh_Token);
+            br.close();
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+        return tokens;
+	}
 }

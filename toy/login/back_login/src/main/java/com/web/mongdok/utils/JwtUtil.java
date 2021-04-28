@@ -67,7 +67,7 @@ public class JwtUtil {
         return expiration.before(new Date());
     }
 
-    // Access/Refresh Token을 형성
+    // Access/Refresh Token 생성
     public String generateToken(User user) {
         return doGenerateToken(user, TOKEN_VALIDATION_SECOND);
     }
@@ -76,7 +76,7 @@ public class JwtUtil {
         return doGenerateToken(user, REFRESH_TOKEN_VALIDATION_SECOND);
     }
 
-    // : 토큰을 생성, 페이로드에 담길 값은 email
+    // : 토큰을 생성, 페이로드에 담길 값은 email (임시)
     public String doGenerateToken(User user, long expireTime) {
     	SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256 ;
     	

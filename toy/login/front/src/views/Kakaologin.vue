@@ -50,6 +50,8 @@
             </form>
           </div>
           <button @click="logout()">로그아웃</button>
+          <button @click="auth()">토큰 정보보기</button>
+          <button @click="refresh()">토큰 갱신하기</button>
         </div>
       </div>
     </div>
@@ -112,6 +114,20 @@ export default {
     logout() {
       axios
         .get("http://localhost:8080/logout?accessToken=" + this.form.access_token)
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    auth() {
+      axios
+        .get("http://localhost:8080/auth?accessToken=" + this.form.access_token)
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    refresh() {
+      axios
+        .get("http://localhost:8080/refresh?refreshToken=" + this.form.refresh_token)
         .then((res) => {
           console.log(res);
         });

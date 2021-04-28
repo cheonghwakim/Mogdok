@@ -124,11 +124,20 @@ public class KaKaoLoginController {
 		return new ResponseEntity<>("success", HttpStatus.OK);
     }
     
-    // 카카오 계정과 함께 로그 아웃
-    @GetMapping("/klogout")
-    public ResponseEntity<?> logoutWithKakao(@RequestParam String accessToken) {
+    // 카카오 토큰 정보보기 [지금 있는 refresh token값이 유효한지 판단 위함] (액세스 토큰의 유효성 검증하거나 정보 확인하는 API)
+    @GetMapping("/auth")
+    public ResponseEntity<?> auth(@RequestParam String accessToken) {
 		
-    	System.out.println(kakaoAPI.Logout(accessToken));
+    	System.out.println("토큰 정보보기: " + kakaoAPI.auth(accessToken));
+    	
+		return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+    
+    // 토큰 갱신하기
+    @GetMapping("/fresh")
+    public ResponseEntity<?> fresh(@RequestParam String refreshToken) {
+		
+    	System.out.println("토큰 갱신하기: " + kakaoAPI.freshToken(refreshToken));
     	
 		return new ResponseEntity<>("success", HttpStatus.OK);
     }
