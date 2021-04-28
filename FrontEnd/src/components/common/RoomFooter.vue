@@ -24,23 +24,45 @@ export default {
 
 .footer {
    bottom: 0;
+   left: 50%;
+   transform: translate(-50%, 20%);
    /* background-color: rgb(173, 199, 254); */
-   width: 100%;
-   height: $footerHeight;
+   /* height: $footerHeight; */
+
+   width: 50vw;
+   max-width: 600px;
+   min-width: 375px;
+
+   height: auto;
 
    //flex-shrink: 0; // flex에 영향 없는 고정 요소 셋팅
    .img-wrapper {
-      width: 50vw;
-      height: auto;
-
-      margin: 0 auto;
-
       img {
          width: 100%;
          height: auto;
 
          object-fit: cover;
          object-position: 0px 0px;
+      }
+   }
+}
+
+@include tinyMobile {
+   .footer {
+      border: 1px solid red;
+      min-width: 100vw;
+      min-height: $footerHeight;
+      /* transform: scale(1.1); */
+
+      .img-wrapper {
+         height: 190px;
+         img {
+            height: 100%;
+            width: auto;
+
+            object-fit: cover;
+            object-position: 50% 0px;
+         }
       }
    }
 }

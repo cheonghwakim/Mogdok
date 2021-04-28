@@ -31,7 +31,7 @@ export default {
    /* padding-bottom: $footerHeight; */
 
    width: 100%;
-   height: calc(100% - #{$HeaderHeight} - #{$footerHeight} + 50px);
+   height: calc(100% - #{$HeaderHeight});
    background-color: rgb(255, 253, 190);
 
    overflow-y: auto;
