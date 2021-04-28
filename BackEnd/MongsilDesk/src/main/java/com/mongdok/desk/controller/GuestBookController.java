@@ -30,7 +30,7 @@ public class GuestBookController {
 	
 	@GetMapping
 	@ApiOperation(value = "방명록 불러오기")
-	public ResponseEntity<? extends BasicResponse> getGuestBookById(int boardId){
+	public ResponseEntity<? extends BasicResponse> getGuestBookById(long boardId){
 		return guestBookService.getGuestBookById(boardId);
 	}
 	
@@ -49,7 +49,7 @@ public class GuestBookController {
 	@DeleteMapping
 	@Transactional
 	@ApiOperation(value = "방명록 삭제")
-	public ResponseEntity<? extends BasicResponse> deleteGuestBook(int boardId){
+	public ResponseEntity<? extends BasicResponse> deleteGuestBook(long boardId){
 		return guestBookService.deleteGuestBook(boardId);
 	}
 }

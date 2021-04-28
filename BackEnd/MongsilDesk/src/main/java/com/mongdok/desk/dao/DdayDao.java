@@ -8,6 +8,6 @@ import com.mongdok.desk.model.Dday;
 @Repository
 public interface DdayDao extends JpaRepository<Dday, String> {
 
-	void deleteByDdayId(int ddayId);
+	void deleteByDdayId(long ddayId);
 
 }

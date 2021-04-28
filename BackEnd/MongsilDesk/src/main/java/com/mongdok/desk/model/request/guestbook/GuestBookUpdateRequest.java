@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class GuestBookUpdateRequest {
 	private String content;
-	private int boardId;
+	private long boardId;
 }

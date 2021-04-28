@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 @Data
 public class GuestBookResponse {
-	private int boardId;
+	private long boardId;
 	
 	private String content;
 	

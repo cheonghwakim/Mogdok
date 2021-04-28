@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class GuestbookCreateRequest {
 	private String content;
-	private int deskId;
+	private long deskId;
 	private String nickName;
 }

@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 public class DdayResponse {
-	private int ddayId;
+	private long ddayId;
 	
 	private String title;
 	

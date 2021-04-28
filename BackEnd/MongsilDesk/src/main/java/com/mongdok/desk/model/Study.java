@@ -1,17 +1,17 @@
 package com.mongdok.desk.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,15 +26,17 @@ public class Study {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int studyId;
+	private long studyId;
 	
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-	private Date studyDate;
-	
-	@Temporal(TemporalType.TIME)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
+//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date studyTime;
+	
+//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "", timezone = "Asia/Seoul")
+	@Temporal(TemporalType.DATE)
+	private Date startTime;
+
+	private String status;
 
 	private String userId;
 }

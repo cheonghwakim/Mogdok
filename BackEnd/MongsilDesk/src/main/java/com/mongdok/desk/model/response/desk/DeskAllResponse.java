@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 public class DeskAllResponse {
-	private int deskId;
+	private long deskId;
 	
 	private String promise;
 	

@@ -27,7 +27,7 @@ public class Guestbook {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int boardId;
+	private long boardId;
 		
 	private String content;
 	
@@ -37,7 +37,7 @@ public class Guestbook {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Date writeDate;
 	
-	private int deskId;
+	private long deskId;
 	
 	private String userId;
 }

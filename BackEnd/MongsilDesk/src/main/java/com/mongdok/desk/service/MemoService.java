@@ -9,7 +9,7 @@ import com.mongdok.desk.model.request.memo.MemoUpdateRequest;
 
 public interface MemoService {
 
-	public ResponseEntity<? extends BasicResponse> deleteMemo(int memo);
+	public ResponseEntity<? extends BasicResponse> deleteMemo(long memo);
 
 	public ResponseEntity<? extends BasicResponse> createMemo(MemoCreateRequest memoRequest);
 

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class MemoCreateRequest {
-	private int deskId;
+	private long deskId;
 	private String content;
 }

@@ -10,8 +10,8 @@ import com.mongdok.desk.model.Guestbook;
 @Repository
 public interface GuestbookDao extends JpaRepository<Guestbook, String> {
 
-	Optional<Guestbook> findByBoardId(int boardId);
+	Optional<Guestbook> findByBoardId(long boardId);
 
-	void deleteByBoardId(int boardId);
+	void deleteByBoardId(long boardId);
 
 }

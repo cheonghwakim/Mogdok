@@ -10,8 +10,8 @@ import com.mongdok.desk.model.Memo;
 @Repository
 public interface MemoDao extends JpaRepository<Memo, String> {
 
-	void deleteByMemoId(int memo);
+	void deleteByMemoId(long memoId);
 
-	Optional<Memo> findByMemoId(int memoId);
+	Optional<Memo> findByMemoId(long memoId);
 
 }

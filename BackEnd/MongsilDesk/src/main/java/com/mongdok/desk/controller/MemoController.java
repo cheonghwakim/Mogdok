@@ -32,7 +32,7 @@ public class MemoController {
 	@DeleteMapping("/{memoId}")
 	@Transactional
 	@ApiOperation(value = "메모 삭제")
-	public ResponseEntity<? extends BasicResponse> deleteDday(@PathVariable("memoId") int memoId){
+	public ResponseEntity<? extends BasicResponse> deleteDday(@PathVariable("memoId") long memoId){
 		return memoService.deleteMemo(memoId);
 	}
 	@PostMapping

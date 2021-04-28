@@ -19,9 +19,9 @@ import lombok.NoArgsConstructor;
 public class Memo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int memoId;
+	private long memoId;
 		
 	private String content;
 	
-	private int deskId;
+	private long deskId;
 }

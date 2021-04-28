@@ -14,6 +14,7 @@ import com.mongdok.desk.common.response.BasicResponse;
 import com.mongdok.desk.common.response.CommonResponse;
 import com.mongdok.desk.common.response.ErrorResponse;
 import com.mongdok.desk.dao.DdayDao;
+import com.mongdok.desk.exception.ErrorCode;
 import com.mongdok.desk.model.Dday;
 import com.mongdok.desk.model.request.dday.DdayRequest;
 import com.mongdok.desk.model.response.dday.DdayResponse;
@@ -28,14 +29,14 @@ public class DdayServiceImpl implements DdayService{
 	
 	//dday 삭제
 	@Override
-	public ResponseEntity<? extends BasicResponse> deleteDday(int ddayId) {
+	public ResponseEntity<? extends BasicResponse> deleteDday(long ddayId) {
 		
 		try {
 			ddayDao.deleteByDdayId(ddayId);		
 		} catch (Exception e) {
 			logger.error("dday삭제 실패 : {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+			return ResponseEntity.ok()
+					.body(new ErrorResponse(ErrorCode.FAIL_DELETE_DDAY));
 		}
 
 		return ResponseEntity.ok().body(new CommonResponse<String>("dday 삭제완료"));
@@ -56,8 +57,8 @@ public class DdayServiceImpl implements DdayService{
 			BeanUtils.copyProperties(save,response);//엔티티-> dto 필드 값 복사
 		} catch (Exception e) {
 			logger.error("dday생성 실패 : {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+			return ResponseEntity.ok()
+					.body(new ErrorResponse(ErrorCode.FAIL_CREATE_DDAY));
 		}
 
 		return ResponseEntity.ok().body(new CommonResponse<DdayResponse>(response));

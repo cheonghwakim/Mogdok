@@ -25,19 +25,19 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/desk/dday")
 public class DdayController {
 	@Autowired
-	DdayService DdayService;
+	DdayService ddayService;
 	
 	@DeleteMapping("/{ddayId}")
 	@Transactional
 	@ApiOperation(value = "디데이 삭제")
-	public ResponseEntity<? extends BasicResponse> deleteDday(@PathVariable int ddayId){
-		return DdayService.deleteDday(ddayId);
+	public ResponseEntity<? extends BasicResponse> deleteDday(@PathVariable long ddayId){
+		return ddayService.deleteDday(ddayId);
 	}
 	
 	@PostMapping
 	@ApiOperation(value = "디데이 생성")
 	public ResponseEntity<? extends BasicResponse> createDday(DdayRequest ddayRequest){
-		return DdayService.createDday(ddayRequest);
+		return ddayService.createDday(ddayRequest);
 	}
 	
 }

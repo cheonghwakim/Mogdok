@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class MemoResponse {
-	private int memoId;
+	private long memoId;
 	private String content;
 }

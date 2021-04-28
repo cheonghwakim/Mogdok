@@ -14,6 +14,7 @@ import com.mongdok.desk.common.response.CommonResponse;
 import com.mongdok.desk.common.response.ErrorResponse;
 import com.mongdok.desk.dao.GuestbookDao;
 import com.mongdok.desk.dao.UserDao;
+import com.mongdok.desk.exception.ErrorCode;
 import com.mongdok.desk.model.Guestbook;
 import com.mongdok.desk.model.request.guestbook.GuestBookUpdateRequest;
 import com.mongdok.desk.model.request.guestbook.GuestbookCreateRequest;
@@ -31,7 +32,7 @@ public class GuestBookServiceImpl implements GuestBookService {
 
 	//방명록 id로 방명록 정보 불러오기
 	@Override
-	public ResponseEntity<? extends BasicResponse> getGuestBookById(int boardId) {
+	public ResponseEntity<? extends BasicResponse> getGuestBookById(long boardId) {
 		GuestBookResponse response = new GuestBookResponse();
 
 		try {
@@ -44,12 +45,12 @@ public class GuestBookServiceImpl implements GuestBookService {
 				response.setWriteDate(guestbook.getWriteDate());
 				response.setNickName(userDao.findNickNameByUserId(guestbook.getUserId()));//userid를 nickname으로 바꿔보내기
 			} else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("존재하지 않는 boardId"));
+				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 boardId"));
 			}
 		} catch (Exception e) {
 			logger.error("방명록 불러오기 실패 : {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+			return ResponseEntity.ok()
+					.body(new ErrorResponse(ErrorCode.FAIL_GET_GUESTBOOK));
 		}
 
 		return ResponseEntity.ok().body(new CommonResponse<GuestBookResponse>(response));
@@ -74,8 +75,8 @@ public class GuestBookServiceImpl implements GuestBookService {
 
 		} catch (Exception e) {
 			logger.error("방명록 작성 실패 : {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+			return ResponseEntity.ok()
+					.body(new ErrorResponse(ErrorCode.FAIL_GET_GUESTBOOK));
 		}
 		return ResponseEntity.ok().body(new CommonResponse<GuestBookResponse>(response));
 	}
@@ -99,25 +100,25 @@ public class GuestBookServiceImpl implements GuestBookService {
 				response.setNickName(userDao.findNickNameByUserId(guestbook.getUserId()));
 			}
 			else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("존재하지 않는 boardId"));
+				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 boardId"));
 			}
 		} catch (Exception e) {
 			logger.error("방명록 업데이트 실패 : {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+			return ResponseEntity.ok()
+					.body(new ErrorResponse(ErrorCode.FAIL_UPDATE_GUESTBOOK));
 		}
 		return ResponseEntity.ok().body(new CommonResponse<GuestBookResponse>(response));
 	}
 
 	//방명록 삭제
 	@Override
-	public ResponseEntity<? extends BasicResponse> deleteGuestBook(int boardId) {
+	public ResponseEntity<? extends BasicResponse> deleteGuestBook(long boardId) {
 		try {
 			guestBookDao.deleteByBoardId(boardId);
 		} catch (Exception e) {
 			logger.error("방명록 삭제 실패 : {}", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+					.body(new ErrorResponse(ErrorCode.FAIL_DELETE_GUESTBOOK));
 		}
 		return ResponseEntity.ok().body(new CommonResponse<String>("방명록 삭제 완료"));
 	}

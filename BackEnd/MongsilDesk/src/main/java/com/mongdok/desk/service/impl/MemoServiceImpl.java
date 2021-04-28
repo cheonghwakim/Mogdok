@@ -15,6 +15,7 @@ import com.mongdok.desk.common.response.BasicResponse;
 import com.mongdok.desk.common.response.CommonResponse;
 import com.mongdok.desk.common.response.ErrorResponse;
 import com.mongdok.desk.dao.MemoDao;
+import com.mongdok.desk.exception.ErrorCode;
 import com.mongdok.desk.model.Memo;
 import com.mongdok.desk.model.request.memo.MemoCreateRequest;
 import com.mongdok.desk.model.request.memo.MemoUpdateRequest;
@@ -29,16 +30,15 @@ public class MemoServiceImpl implements MemoService{
 	
 	//메모 삭제
 	@Override
-	public ResponseEntity<? extends BasicResponse> deleteMemo(int memoId) {
+	public ResponseEntity<? extends BasicResponse> deleteMemo(long memoId) {
 		
 		try {
 			memodao.deleteByMemoId(memoId);
 		} catch (Exception e) {
 			logger.error("memo삭제 실패 : {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+			return ResponseEntity.ok()
+					.body(new ErrorResponse(ErrorCode.FAIL_DELETE_MEMO));
 		}
-
 		return ResponseEntity.ok().body(new CommonResponse<String>("memo 삭제완료"));
 	}
 	
@@ -55,8 +55,8 @@ public class MemoServiceImpl implements MemoService{
 			BeanUtils.copyProperties(save,response);
 		} catch (Exception e) {
 			logger.error("memo생성 실패 : {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+			return ResponseEntity.ok()
+					.body(new ErrorResponse(ErrorCode.FAIL_CREATE_MEMO));
 		}
 		return ResponseEntity.ok().body(new CommonResponse<MemoResponse>(response));
 	}
@@ -76,12 +76,12 @@ public class MemoServiceImpl implements MemoService{
 				BeanUtils.copyProperties(save,response);//엔티티-> dto 필드 값 복사
 			}
 			else {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("존재하지 않는 id"));
+				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 id"));
 			}
 		} catch (Exception e) {
 			logger.error("memo수정 실패 : {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse("INTERNAL_SERVER_ERROR", "서버 내부 에러"));
+			return ResponseEntity.ok()
+					.body(new ErrorResponse(ErrorCode.FAIL_UPDATE_MEMO));
 		}
 		return ResponseEntity.ok().body(new CommonResponse<MemoResponse>(response));
 	}

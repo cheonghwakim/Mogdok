@@ -24,9 +24,9 @@ import lombok.NoArgsConstructor;
 public class Dday {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int ddayId;
+	private long ddayId;
 	
-	private int deskId;
+	private long deskId;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	private Date finishDate;

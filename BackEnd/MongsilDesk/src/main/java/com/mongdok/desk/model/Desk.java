@@ -23,7 +23,7 @@ public class Desk {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int deskId;
+	private long deskId;
 	
 	private String promise;
 	
