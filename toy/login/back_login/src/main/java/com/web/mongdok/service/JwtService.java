@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.web.mongdok.dto.SignupReqDto;
+import com.web.mongdok.entity.User;
 
 import io.jsonwebtoken.*;
 
@@ -22,18 +23,18 @@ public class JwtService {
     private static Long expireMin = 30L;
 
 	// 로그인 성공시 사용자 정보를 기반으로 JWTToken을 생성하여 반환.
-    public static String create(SignupReqDto user) {
+    public static String create(User curUser) {
         JwtBuilder jwtBuilder = Jwts.builder();
         // JWT Token = Header + Payload + Signature
         
         // Header 설정
         jwtBuilder.setHeaderParam("typ", "JWT"); // 토큰의 타입으로 고정 값.
-        System.out.println(user);
+        System.out.println(curUser);
         // Payload 설정
         jwtBuilder
             .setSubject("로그인토큰") // 토큰의 제목 설정
             .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * expireMin)) // 유효기간 설정
-            .claim("user", user); // 담고 싶은 정보 설정.
+            .claim("user", curUser); // 담고 싶은 정보 설정.
         
         // signature 설정
         jwtBuilder.signWith(SignatureAlgorithm.HS256, signature.getBytes());//암호화

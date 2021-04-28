@@ -79,8 +79,9 @@ export default {
       });
     },
     getToken() {
+      console.log(this.codes);
       axios
-        .get("http://localhost:8080/klogin?authorize_code=" + this.codes)
+        .get("http://localhost:8080/klogin?authorizeCode=" + this.codes)
         .then((res) => {
           this.form.email = res.data.email;
           this.form.access_token = res.data.access_token;
