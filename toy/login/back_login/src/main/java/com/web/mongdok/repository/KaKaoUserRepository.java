@@ -17,4 +17,6 @@ public interface KaKaoUserRepository extends CrudRepository<User, Long> {
 	List<User> findAll();
 
 	Optional<User> findByKakaoId(String id);
+
+	User findByEmail(String email);
 }

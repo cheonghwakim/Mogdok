@@ -26,6 +26,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private EmailService emailService;
+    
 	@Override
 	public void signUpSocialUser(SignupReqDto user) {
 		System.out.println("asdfasdfadsf");
@@ -59,6 +62,39 @@ public class AuthServiceImpl implements AuthService {
 	public List<User> findAll() {
 		return userRepository.findAll();
 	}
+
+	@Override
+	public User findByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
+
+    @Override
+    public String sendVerificationMail(User user) {
+        String VERIFICATION_LINK = "http://localhost:8080/redis/verify/";
+        if(user == null) 
+        	return "멤버가 조회되지 않음";
+        
+        UUID uuid = UUID.randomUUID();
+        redisUtil.setDataExpire(uuid.toString(), user.getEmail(), 60 * 30L); // 저장 기한
+        emailService.sendMail(user.getEmail(), "몽독이 인증메일입니다.", VERIFICATION_LINK + uuid.toString());
+        
+        return "success";
+    }
+
+    @Override
+    public String verifyEmail(String key) {
+        String userEmail = redisUtil.getData(key);
+//        System.out.println("redis result: " + userEmail);
+        User user = userRepository.findByEmail(userEmail);
+//        System.out.println("user: " + user);
+        if(user == null) 
+        	return "멤버가 조회되지않음";
+        
+        redisUtil.deleteData(key);
+        return "success";
+    }
+
+
 
 
 }

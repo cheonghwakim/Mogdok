@@ -19,4 +19,10 @@ public interface AuthService {
     User findByUserId(String id);
     
     List<User> findAll();
+
+	User findByEmail(String email);
+	
+	String sendVerificationMail(User user);
+
+	String verifyEmail(String key);
 }

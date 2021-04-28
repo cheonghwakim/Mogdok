@@ -163,6 +163,8 @@ public class KakaoAPI {
             // 응답이 401이라면 토큰 갱신하기
             
             
+            // 이외의 에러는 로그아웃 처리
+            
             String line = "";
 
             while ((line = br.readLine()) != null) {
