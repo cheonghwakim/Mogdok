@@ -1,7 +1,7 @@
 <template lang="">
    <div class="room">
       <div class="deskList">
-         <div class="deskItem" v-for="key in 100" :key="key">
+         <div class="deskItem" v-for="key in 12" :key="key">
             <room-desk></room-desk>
          </div>
       </div>
@@ -32,7 +32,7 @@ export default {
 
    width: 100%;
    height: calc(100% - #{$HeaderHeight});
-   background-color: rgb(255, 253, 190);
+   /* background-color: rgb(255, 253, 190); */
 
    overflow-y: auto;
 
@@ -42,10 +42,11 @@ export default {
       justify-content: center;
 
       .deskItem {
-         width: 25vw;
+         width: 20vw;
          min-width: 150px;
          min-height: 200px;
-         margin: 5px;
+
+         margin: 10px; // 책상 사이 간격 조정
       }
    }
 }
