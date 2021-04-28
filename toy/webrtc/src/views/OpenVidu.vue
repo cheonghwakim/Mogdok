@@ -61,17 +61,12 @@
         <h1 id="session-title">{{ mySessionId }}</h1>
       </div>
       <div id="seat-container" class="col-md-6">
-        <!-- <user-video
-          v-if="isPublished"
-          :stream-manager="publisher"
-          @click.native="updateUserNameToSendMessage(publisher)"
-        /> -->
         <user-video
           v-for="(sub, index) in subscribers"
           :key="sub || 'seat' + index"
           :stream-manager="sub"
           @click.native="
-            publishSession($event, index);
+            publishSession(index);
             updateUserNameToSendMessage(sub);
           "
           style="display:inline-block"
@@ -106,6 +101,7 @@ import { OpenVidu } from 'openvidu-browser';
 import UserVideo from '../components/UserVideo';
 import OvVideo from '../components/OvVideo';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
+// 민감정보. 실제 프로젝트로 옮길 때 따로 빼서 관리
 const OPENVIDU_SERVER_URL = 'https://k4a401.p.ssafy.io';
 const OPENVIDU_SERVER_SECRET = 'ssafy';
 const USER_MAX_NUMBER = 16;
@@ -165,8 +161,6 @@ export default {
         this.receivedMessages.push(signalEvent);
       });
       // --- Connect to the session with a valid user token ---
-      // 'getToken' method is simulating what your server-side should do.
-      // 'token' parameter should be retrieved and returned by your own backend
       this.getToken(this.mySessionId).then((token) => {
         this.session
           .connect(token, { clientData: this.myUserName })
@@ -181,6 +175,7 @@ export default {
       window.addEventListener('beforeunload', this.leaveSession);
     },
     leaveSession() {
+      // 현재 접속 중인 세션을 나간다. (disconnect)
       // --- Leave the session by calling 'disconnect' method over the Session object ---
       if (this.session) this.session.disconnect();
       this.cameraOff();
@@ -191,12 +186,12 @@ export default {
       window.removeEventListener('beforeunload', this.leaveSession);
     },
     updateUserNameToSendMessage(stream) {
+      // 메시지 보낼 대상을 변경한다
       if (!stream) return;
       const clikedUserConnection = stream.stream.connection;
       const clikedUserConnectionId = clikedUserConnection.connectionId;
       const clikedUserName = JSON.parse(clikedUserConnection.data).clientData;
       const mConnectionId = this.session.connection.connectionId;
-
       this.userNameToSendMessage =
         mConnectionId === clikedUserConnectionId ? undefined : clikedUserName;
       this.clickedUserConnection =
@@ -262,15 +257,16 @@ export default {
       });
     },
     async cameraOn() {
+      // [비동기] 카메라 켜기
       if (!this.OV) this.OV = new OpenVidu();
-      // --- Get your own camera stream with the desired properties ---
+      // --- 카메라를 통해 스트림할 데이터의 속성을 초기화한다 ---
       let publisher = await this.OV.initPublisherAsync(undefined, {
-        audioSource: false, // The source of audio. If undefined default microphone
-        videoSource: this.selectedVideoSource, // The source of video. If undefined default webcam
+        audioSource: false, // 오디오소스. If undefined default microphone
+        videoSource: this.selectedVideoSource, // 비디오소스. If undefined default webcam
         publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
         publishVideo: true, // Whether you want to start publishing with your video enabled or not
         resolution: '320x240', // The resolution of your video
-        frameRate: 30, // The frame rate of your video
+        frameRate: 30, // 프레임. The frame rate of your video
         insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
         mirror: false, // Whether to mirror your local video or not
       });
@@ -278,23 +274,23 @@ export default {
       this.cameraState = true;
     },
     cameraOff() {
+      // 카메라 끄기
       if (this.session && this.isPublished) {
         // 세션에 들어가있고 "publish 중인 상태"에서는 unpublish 해야 함
+        // unpublish는 카메라 자원 해제까지 해주는 메서드 존재
         this.session.unpublish(this.publisher);
       } else {
-        // 세션을 통해 unpublish하지 않은 경우에 카메라를 OFF할 경우,
-        // 카메라 자원이 여전히 실행 중이므로 카메라 자원을 해제하는 작업을 해주어야 함
+        // 세션을 통해 unpublish하지 않은 경우 카메라를 OFF만 하면,
+        // 카메라 자원이 여전히 실행 중이게 되므로 카메라 자원을 해제하는 작업을 해주어야 함
         if (this.publisher) this.publisher.stream.disposeMediaStream();
       }
       this.publisher = undefined;
       this.cameraState = false;
       this.isPublished = false;
     },
-    publishSession(event, seatNo) {
-      console.log('%cOpenVidu.vue line:307 this.subscribers', 'color: #007acc;', this.subscribers);
-      const element = event.currentTarget;
-      console.log('%cOpenVidu.vue line:304 element', 'color: #007acc;', element);
-      // console.log('%cOpenVidu.vue line:297 seatNo', 'color: #007acc;', seatNo);
+    publishSession(seatNo) {
+      // 현재 접속중인 세션에 영상을 publish 함
+      // publish에 성공하면, 내 캠화면을 내가 선택한 element에서 보이도록 함
       this.session
         .publish(this.publisher)
         .then(() => {
@@ -306,9 +302,10 @@ export default {
         });
     },
     sendMessage() {
+      // 클릭한 유저에게 메시지를 전송함
+      // signalOptions의 to가 undefined일 경우, 모든 참가자에게 메시지를 전송함
       if (!this.inputMessage.trim()) return;
       if (this.session) {
-        // signalOptions의 to가 undefined일 경우, 모든 참가자에게 메시지를 전송함
         this.session
           .signal({
             data: this.inputMessage,
@@ -319,14 +316,15 @@ export default {
           })
           .then(() => {
             console.log('메시지가 성공적으로 전송되었습니다.');
+            this.inputMessage = '';
           })
           .catch(() => {
             console.warn('메시지가 전송을 실패했습니다.');
           });
       }
-      this.inputMessage = '';
     },
     changeVideoSource(videoSource) {
+      // 비디오소스(캠)가 변경되면 카메라를 끄고 비디오 소스를 변경한 뒤 다시 카메라를 켬
       this.cameraOff();
       this.selectedVideoSource = videoSource.deviceId;
       this.cameraOn();
@@ -341,21 +339,6 @@ export default {
 .pointer {
   cursor: pointer;
 }
-/* .seat {
-  min-width: 320px;
-  height: 240px;
-  background-color: lightgray;
-  border-radius: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: gray;
-  margin: 10px;
-}
-.seat:hover {
-  background-color: gray;
-  color: white;
-} */
 .seat-container {
   display: flex;
   flex-wrap: wrap;
