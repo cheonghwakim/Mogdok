@@ -56,24 +56,20 @@ public class RedisController {
 	}
 	
 	// user auth (key: 쿠키에 저장된 refresh_token)
-	@PostMapping("/userVerifiy")
+	@PostMapping("/userVerify")
     public ResponseEntity<?> userVerify(@RequestParam String key, HttpServletResponse res) {
-       
+		
 		try {
         	
             if(authService.VerificationUser(key).equals("success"))
-            	return new ResponseEntity<>("success", HttpStatus.OK);
-            else {
-            	// 인증 실패 시 토큰 재 발행
-            	
-            }
+            	return new ResponseEntity<>("exist", HttpStatus.OK);
         
         } catch (Exception e) {
         	e.printStackTrace();
             return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
         }
         
-        return new ResponseEntity<>("unknown", HttpStatus.OK);
+        return new ResponseEntity<>("unknown", HttpStatus.OK); // 이러면 다시 로그인 해야 함
     }
 	
 	// redis 인증 예제 (smtp)

@@ -2,16 +2,20 @@ package com.web.mongdok.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class SignupReqDto {
 	
+	private String userId;
+	
 	private String email;
 	
-	private String access_token;
+	private String kakaoId;
 	
-	private String refresh_token;
-	
-	private String id;
+//	private String access_token;
+//	
+//	private String refresh_token;	
 }

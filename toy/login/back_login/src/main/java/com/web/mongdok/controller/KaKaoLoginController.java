@@ -2,6 +2,7 @@ package com.web.mongdok.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +39,8 @@ public class KaKaoLoginController {
     @Autowired
     private AuthService authService;   
     
-    @Autowired
-    private JwtUtil jwtUtil;
+//    @Autowired
+//    private JwtUtil jwtUtil;
     
      @Autowired
     private CookieUtil cookieUtil;   
@@ -71,15 +72,18 @@ public class KaKaoLoginController {
 	    	String refreshToken = kakaoAccessToken.get("refreshToken");
 	        Map<String, String> userInfo = kakaoAPI.getUserInfo(accessToken, refreshToken);
 	        
-	        // kakaoAccessToken이 너무 길어서 db에 저장 안 됨
-	        SignupReqDto user = new SignupReqDto(userInfo.get("email"), "asdfasdfsa", "ekekekek", userInfo.get("id"));
+	        String uuid = UUID.randomUUID().toString();
 	        
-	        // 만약 유저가 있다면 로그인, 없다면 회원 가입
-	        if(authService.findByUserId(userInfo.get("id")) == null) {
+	        // kakaoAccessToken이 너무 길어서 db에 저장 안 됨 
+
+	        SignupReqDto user = new SignupReqDto(uuid, userInfo.get("email"), userInfo.get("id"));
+	        
+	        // 만약 유저가 없다면 회원 가입
+	        if(authService.findByKakaoId(userInfo.get("id")).isEmpty()) {
 	        	authService.signUpSocialUser(user); // 회원 가입
 	        }
 	        
-	        User curUser = authService.findByUserId(userInfo.get("id"));
+	        User curUser = authService.findByKakaoId(userInfo.get("id")).get();
 	        
 //            final String token = jwtUtil.generateToken(curUser);
 //            final String refreshJwt = jwtUtil.generateRefreshToken(curUser);

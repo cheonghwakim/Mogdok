@@ -10,8 +10,6 @@ import com.web.mongdok.entity.User;
 import com.web.mongdok.repository.KaKaoUserRepository;
 import com.web.mongdok.utils.RedisUtil;
 
-import javax.transaction.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,8 +34,8 @@ public class AuthServiceImpl implements AuthService {
         newUser.setCategory("");
         newUser.setEmail(user.getEmail());
         newUser.setNickname("");
-        newUser.setUserId(user.getId());
-        newUser.setKakaoId(user.getAccess_token());
+        newUser.setUserId(user.getUserId());
+        newUser.setKakaoId(user.getKakaoId());
         
         System.out.println(newUser);
         userRepository.save(newUser);
@@ -102,6 +100,11 @@ public class AuthServiceImpl implements AuthService {
 			return "success";
 		
 		return "fail";
+	}
+
+	@Override
+	public Optional<User> findByKakaoId(String kakaoId) {
+		return userRepository.findByKakaoId(kakaoId);
 	}
 
 

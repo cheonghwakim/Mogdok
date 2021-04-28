@@ -27,4 +27,6 @@ public interface AuthService {
 	String verifyEmail(String key);
 
 	String VerificationUser(String key);
+
+	Optional<User> findByKakaoId(String kakaoId);
 }
