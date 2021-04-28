@@ -163,7 +163,7 @@ export default {
       // --- Connect to the session with a valid user token ---
       this.getToken(this.mySessionId).then((token) => {
         this.session
-          .connect(token, { clientData: this.myUserName })
+          .connect(token, { clientData: `aaaaaa##${this.myUserName}` })
           .then(() => {
             // 세션에 성공적으로 입장
             console('세션에 참가했습니다');
