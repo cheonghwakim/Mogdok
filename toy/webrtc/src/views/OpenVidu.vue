@@ -87,7 +87,7 @@
       <hr />
       <h3>전송받은 메시지</h3>
       <div v-for="(item, index) in receivedMessages" :key="'rcvmsg' + index">
-        <span style="font-weight:bold">{{ JSON.parse(item.from.data).clientData }}</span
+        <span style="font-weight:bold">{{ item.from.data }}</span
         >({{ item.from.connectionId }}) :
         {{ item.data }}
       </div>
@@ -137,7 +137,7 @@ export default {
       if (!this.OV) this.OV = new OpenVidu();
       this.OV.getDevices().then((res) => {
         this.videoSourceList = res.filter((e) => {
-          return e.kind === 'videoinput';
+          return e.kind === 'videoinput' && e.label;
         });
       });
       // --- Init a session ---
@@ -146,7 +146,6 @@ export default {
       // On every new Stream received...
       this.session.on('streamCreated', ({ stream }) => {
         const subscriber = this.session.subscribe(stream);
-        console.log('%cOpenVidu.vue line:166 subscriber', 'color: #007acc;', subscriber);
         this.subscribers.push(subscriber);
       });
       // On every Stream destroyed...
@@ -163,7 +162,7 @@ export default {
       // --- Connect to the session with a valid user token ---
       this.getToken(this.mySessionId).then((token) => {
         this.session
-          .connect(token, { clientData: this.myUserName })
+          .connect(token, `aaaaaa##${this.myUserName}`)
           .then(() => {
             // 세션에 성공적으로 입장
             console('세션에 참가했습니다');
@@ -190,7 +189,7 @@ export default {
       if (!stream) return;
       const clikedUserConnection = stream.stream.connection;
       const clikedUserConnectionId = clikedUserConnection.connectionId;
-      const clikedUserName = JSON.parse(clikedUserConnection.data).clientData;
+      const clikedUserName = clikedUserConnection.data;
       const mConnectionId = this.session.connection.connectionId;
       this.userNameToSendMessage =
         mConnectionId === clikedUserConnectionId ? undefined : clikedUserName;
