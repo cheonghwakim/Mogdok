@@ -4,8 +4,6 @@
    </div>
 </template>
 <script>
-import router from '@/routes/router';
-
 export default {
    components: {},
    props: {},
@@ -17,7 +15,7 @@ export default {
    //lifecycle area
    methods: {
       doKakaoLogin() {
-         router.push({ name: 'Enterance' });
+         this.$router.push({ name: 'Enterance' });
       },
    },
 };

@@ -2,21 +2,21 @@
    <div class="login">
       <div class="container">
          <div class="content">
-            <mongsil></mongsil>
-            <login-kakao></login-kakao>
+            <svg-mongsil></svg-mongsil>
+            <login-kakao-button></login-kakao-button>
          </div>
          <logo></logo>
       </div>
    </div>
 </template>
 <script>
-import LoginKakao from '@/components/LoginKakao';
+import LoginKakaoButton from '@/components/LoginKakaoButton';
 import Logo from '@/components/ui/Logo';
-import Mongsil from '@/components/svg/Mongsil';
+import SvgMongsil from '@/components/svg/SVGMongsil';
 
 export default {
    name: 'Login',
-   components: { LoginKakao, Mongsil, Logo },
+   components: { LoginKakaoButton, SvgMongsil, Logo },
    props: {},
    data() {
       return {};

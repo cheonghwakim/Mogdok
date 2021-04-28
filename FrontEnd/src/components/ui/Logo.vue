@@ -1,13 +1,13 @@
 <template lang="">
    <div class="logo">
-      <mndk-logo></mndk-logo>
+      <svg-mndk-logo></svg-mndk-logo>
       <p>몽실이네 독서실</p>
    </div>
 </template>
 <script>
-import MndkLogo from '@/components/svg/MndkLogo';
+import SvgMndkLogo from '@/components/svg/SvgMndkLogo';
 export default {
-   components: { MndkLogo },
+   components: { SvgMndkLogo },
 };
 </script>
 <style scoped lang="scss">

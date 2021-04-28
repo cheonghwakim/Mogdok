@@ -36,7 +36,7 @@ export default {};
 </script>
 <style scoped lang="scss">
 #head {
-   animation: head-move 4s 1s infinite alternate;
+   animation: head-move 2s 1s infinite alternate;
 }
 
 @keyframes head-move {

@@ -2,7 +2,7 @@
    <div class="enterance">
       <div class="container">
          <div class="content">
-            <sagam></sagam>
+            <svg-sagam></svg-sagam>
             <div class="roomList">
                <div class="roomItem" v-for="(room, idx) in roomList" :key="idx">
                   <enterance-door :room="room"></enterance-door>
@@ -14,13 +14,13 @@
    </div>
 </template>
 <script>
-import Sagam from '@/components/svg/Sagam';
+import SvgSagam from '@/components/svg/SvgSagam';
 import Logo from '@/components/ui/Logo';
 import EnteranceDoor from '@/components/EnteranceDoor';
 
 export default {
    name: 'Enterance',
-   components: { Sagam, Logo, EnteranceDoor },
+   components: { SvgSagam, Logo, EnteranceDoor },
    props: {},
    data() {
       return {

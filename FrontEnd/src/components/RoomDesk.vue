@@ -12,7 +12,7 @@
             사용자 화면
          </div>
          <div class="resting">
-            <sleeping class="character"></sleeping>
+            <svg-sleeping class="character"></svg-sleeping>
          </div>
          <img src="@/assets/img/desk.svg" />
       </div>
@@ -25,9 +25,9 @@
    </div>
 </template>
 <script>
-import Sleeping from '@/components/svg/Sleeping.vue';
+import SvgSleeping from '@/components/svg/SvgSleeping.vue';
 export default {
-   components: { Sleeping },
+   components: { SvgSleeping },
    props: {},
 };
 </script>
