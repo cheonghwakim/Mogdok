@@ -118,40 +118,31 @@ public class KakaoAPI {
     }
     
     // 로그 아웃
-    public String Logout() {
+    public String Logout(String accessToken) {
 
-        String reqURL = "https://kauth.kakao.com/oauth/logout"; // 로그 아웃
+        Map<String, String> userInfo = new HashMap<>();
+        String reqURL = "https://kapi.kakao.com/v1/user/logout"; // 사용자 정보 가져오기
 		String result = "";
 		
         try {
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
 
-            conn.setRequestMethod("GET");
-            conn.setDoOutput(true);
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            StringBuilder sb = new StringBuilder();
-            sb.append("grant_type=authorization_code");
-            sb.append("&client_id=4da2e6372fc055ada48d1942fd63ddcf");
-            sb.append("&logout_redirect_uri=http://localhost:3000/login");
-            
-            bw.write(sb.toString());
-            bw.flush();
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
             String line = "";
-            
 
             while ((line = br.readLine()) != null) {
                 result += line;
             }
 
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-       
+
         return result;
     }
 }

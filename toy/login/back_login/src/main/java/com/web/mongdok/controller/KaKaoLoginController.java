@@ -34,7 +34,7 @@ import javassist.NotFoundException;
 public class KaKaoLoginController {
 	
     @Autowired
-    private KakaoAPI kakaologin;
+    private KakaoAPI kakaoAPI;
     
     @Autowired
     private AuthService authService;   
@@ -70,8 +70,8 @@ public class KaKaoLoginController {
     public ResponseEntity<?> klogin(@RequestParam String authorizeCode, HttpServletResponse res) {
     	
     	try {
-	    	Map<String, String> kakaoAccessToken = kakaologin.getAccessToken(authorizeCode);
-	        Map<String, String> userInfo = kakaologin.getUserInfo(kakaoAccessToken.get("accessToken"), kakaoAccessToken.get("refreshToken"));
+	    	Map<String, String> kakaoAccessToken = kakaoAPI.getAccessToken(authorizeCode);
+	        Map<String, String> userInfo = kakaoAPI.getUserInfo(kakaoAccessToken.get("accessToken"), kakaoAccessToken.get("refreshToken"));
 	        
 	        // kakaoAccessToken이 너무 길어서 db에 저장 안 됨
 	        SignupReqDto user = new SignupReqDto(userInfo.get("email"), "asdfasdfsa", "ekekekek", userInfo.get("id"));
@@ -114,11 +114,24 @@ public class KaKaoLoginController {
     	
     	return new ResponseEntity<>(form, HttpStatus.OK);
     }
+
+    // 로그 아웃
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(@RequestParam String accessToken) {
+		
+    	System.out.println(kakaoAPI.Logout(accessToken));
+    	
+		return new ResponseEntity<>("success", HttpStatus.OK);
+    }
     
-    
-    
-    
-    
+    // 카카오 계정과 함께 로그 아웃
+    @GetMapping("/klogout")
+    public ResponseEntity<?> logoutWithKakao(@RequestParam String accessToken) {
+		
+    	System.out.println(kakaoAPI.Logout(accessToken));
+    	
+		return new ResponseEntity<>("success", HttpStatus.OK);
+    }
     
     
     

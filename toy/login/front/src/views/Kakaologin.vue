@@ -49,6 +49,7 @@
               </div>
             </form>
           </div>
+          <button @click="logout()">로그아웃</button>
         </div>
       </div>
     </div>
@@ -106,6 +107,13 @@ export default {
           } else {
             this.login();
           }
+        });
+    },
+    logout() {
+      axios
+        .get("http://localhost:8080/logout?accessToken=" + this.form.access_token)
+        .then((res) => {
+          console.log(res);
         });
     },
     // onSubmit(event) {
