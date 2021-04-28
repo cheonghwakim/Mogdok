@@ -67,7 +67,9 @@ public class KaKaoLoginController {
     	
     	try {
 	    	Map<String, String> kakaoAccessToken = kakaoAPI.getAccessToken(authorizeCode);
-	        Map<String, String> userInfo = kakaoAPI.getUserInfo(kakaoAccessToken.get("accessToken"), kakaoAccessToken.get("refreshToken"));
+	    	String accessToken = kakaoAccessToken.get("accessToken");
+	    	String refreshToken = kakaoAccessToken.get("refreshToken");
+	        Map<String, String> userInfo = kakaoAPI.getUserInfo(accessToken, refreshToken);
 	        
 	        // kakaoAccessToken이 너무 길어서 db에 저장 안 됨
 	        SignupReqDto user = new SignupReqDto(userInfo.get("email"), "asdfasdfsa", "ekekekek", userInfo.get("id"));
@@ -79,14 +81,18 @@ public class KaKaoLoginController {
 	        
 	        User curUser = authService.findByUserId(userInfo.get("id"));
 	        
-            final String token = jwtUtil.generateToken(curUser);
-            final String refreshJwt = jwtUtil.generateRefreshToken(curUser);
+//            final String token = jwtUtil.generateToken(curUser);
+//            final String refreshJwt = jwtUtil.generateRefreshToken(curUser);
             
-            Cookie accessToken = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, token);
-            Cookie refreshToken = cookieUtil.createCookie(JwtUtil.REFRESH_TOKEN_NAME, refreshJwt);
-            redisUtil.setDataExpire(refreshJwt, curUser.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND); // redis에 refresh 토큰 저장
-            res.addCookie(accessToken);
-            res.addCookie(refreshToken);
+//            Cookie accessToken = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, token);
+//            Cookie refreshToken = cookieUtil.createCookie(JwtUtil.REFRESH_TOKEN_NAME, refreshJwt);
+            
+	        Cookie accessCookie = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, accessToken);
+	        Cookie refreshCookie = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, refreshToken);
+//            redisUtil.setDataExpire(refreshJwt, curUser.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND); // redis에 refresh 토큰 저장
+            redisUtil.setDataExpire(refreshToken, curUser.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND); // redis에 refresh 토큰 저장
+            res.addCookie(accessCookie);
+            res.addCookie(refreshCookie);
             
 	        return new ResponseEntity<>(userInfo, HttpStatus.OK);
     	

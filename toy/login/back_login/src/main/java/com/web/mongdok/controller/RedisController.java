@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class RedisController {
 
 	@Value("${CF_INSTANCE_IP:127.0.0.1}") 
 	private String ip;
+	
+	@Autowired
+	KaKaoLoginController kloginController;
 	
     @Autowired
     private AuthService authService;  
@@ -53,12 +57,16 @@ public class RedisController {
 	
 	// user auth (key: 쿠키에 저장된 refresh_token)
 	@PostMapping("/userVerifiy")
-    public ResponseEntity<?> userVerify(@RequestParam String key) {
+    public ResponseEntity<?> userVerify(@RequestParam String key, HttpServletResponse res) {
        
 		try {
         	
             if(authService.VerificationUser(key).equals("success"))
             	return new ResponseEntity<>("success", HttpStatus.OK);
+            else {
+            	// 인증 실패 시 토큰 재 발행
+            	
+            }
         
         } catch (Exception e) {
         	e.printStackTrace();

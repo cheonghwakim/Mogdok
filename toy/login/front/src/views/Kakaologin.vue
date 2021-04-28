@@ -78,6 +78,7 @@ export default {
   },
   methods: {
     create() {
+      console.log(this.$route.query);
       this.codes = this.$route.query.code;
       this.getToken();
     },
