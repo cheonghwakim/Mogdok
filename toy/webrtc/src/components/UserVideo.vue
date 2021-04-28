@@ -27,7 +27,7 @@ export default {
     getConnectionData() {
       if (!this.streamManager) return '빈자리';
       const { connection } = this.streamManager.stream;
-      return JSON.parse(connection.data).clientData;
+      return connection.data;
     },
   },
 };
