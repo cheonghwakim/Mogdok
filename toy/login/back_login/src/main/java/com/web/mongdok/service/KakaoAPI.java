@@ -161,8 +161,6 @@ public class KakaoAPI {
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             
             // 응답이 401이라면 토큰 갱신하기
-            
-            
             // 이외의 에러는 로그아웃 처리
             
             String line = "";
