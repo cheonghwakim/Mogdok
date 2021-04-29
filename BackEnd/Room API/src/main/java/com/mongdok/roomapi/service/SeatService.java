@@ -1,6 +1,7 @@
 package com.mongdok.roomapi.service;
 
 import com.mongdok.roomapi.model.Seat;
+import com.mongdok.roomapi.model.enums.StudyType;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
@@ -18,14 +19,9 @@ public interface SeatService {
     ResponseEntity<?> releaseSeat(Map<String, String> resource);
 
     /***
-     * 공부시작
+     * 공부시작 / 휴식시작 / 공부종료
      */
-    ResponseEntity<?> startStudy(Seat seat);
-
-    /***
-     * 휴식시작
-     */
-    ResponseEntity<?> restStudy(Seat seat);
+    ResponseEntity<?> typeChange(Seat seat, StudyType type);
 
     /***
      * 앉을 수 있는 좌석이 있는지 여부 확인

@@ -22,6 +22,12 @@ public class SeatElements {
 
 
     // ------------------------ RESPONSE --------------------------- //
-    public static final String NO_SEAT_AVAILABLE = "이용 가능한 좌석이 없습니다.";
-    public static final String SEAT_ALLOCATED = "좌석이 할당되었습니다.";
+    public static final String SEAT_ALLOCATED_SUCCESS = "좌석이 할당되었습니다.";
+    public static final String SEAT_ALLOCATED_NONE = "좌석을 가지고 있지 않습니다.";
+    public static final String SEAT_ALLOCATED_NOT = "이용 가능한 좌석이 없습니다.";
+    public static final String SEAT_ALLOCATED_FAIL = "좌석 할당에 실패했습니다.";
+    public static final String SEAT_RELEASE_SUCCESS = "좌석이 반납되었습니다.";
+    public static final String SEAT_RELEASE_NONE = "반납할 좌석이 없습니다.";
+    public static final String SEAT_RELEASE_FAIL = "좌석 반납에 실패했습니다.";
+
 }

@@ -1,10 +1,15 @@
 package com.mongdok.roomapi.model;
 
 import com.mongdok.roomapi.model.enums.StudyType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * author: pinest94
@@ -14,7 +19,9 @@ import org.springframework.data.redis.core.RedisHash;
 @Data
 @Builder
 @RedisHash("Seats")
-public class Seat {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Seat implements Serializable {
 
     /***
      * 좌석의 기본키
@@ -46,4 +53,9 @@ public class Seat {
      * 해당 좌석의 사용자 상태
      */
     private StudyType studyType;
+
+    /***
+     * 공부 시간 기록 리스트
+     */
+    private List<Timestamp> timestampList;
 }

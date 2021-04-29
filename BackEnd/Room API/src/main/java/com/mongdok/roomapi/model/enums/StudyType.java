@@ -7,9 +7,10 @@ import lombok.Getter;
 @Getter
 public enum StudyType {
 
-    START("공부시작"),
-    PAUSE("휴식시작"),
-    END("공부종료");
+    START("START", "공부시작"),
+    PAUSE("PAUSE", "휴식시작"),
+    END("END","공부종료");
 
     private String title;
+    private String description;
 }

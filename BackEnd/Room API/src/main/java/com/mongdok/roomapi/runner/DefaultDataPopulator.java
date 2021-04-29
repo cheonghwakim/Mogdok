@@ -1,12 +1,16 @@
 package com.mongdok.roomapi.runner;
 
 import com.mongdok.roomapi.model.Seat;
+import com.mongdok.roomapi.model.Timestamp;
 import com.mongdok.roomapi.repository.SeatRedisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * author: pinest94
@@ -38,7 +42,7 @@ public class DefaultDataPopulator implements ApplicationRunner {
 //        System.out.println(seat.toString());
 //        seat = seatRedisRepository.findByUserId("dsDFqnif8s").orElse(null);
 //        System.out.println(seat.toString());
-        System.out.println(redisTemplate.keys("Seats:sessionA*").size());
+        // System.out.println(redisTemplate.keys("Seats:sessionA*").size());
 
 //        seatRedisRepository.findAll().forEach(s -> {
 //            System.out.println("================================");
@@ -49,5 +53,15 @@ public class DefaultDataPopulator implements ApplicationRunner {
 //            System.out.println(s.getStudyType());
 //            System.out.println("================================");
 //        });
+//
+        Optional<Seat> optional = seatRedisRepository.findById("sessionA###1001");
+        if(optional.isPresent()) {
+            List<Timestamp> timestampList = optional.get().getTimestampList();
+            timestampList.forEach(timestamp -> {
+                System.out.println(timestamp.getType() + " : " +timestamp.getTime());
+            });
+        }
+
+
     }
 }

@@ -12,6 +12,4 @@ import java.util.Optional;
 public interface SeatRedisRepository extends CrudRepository<Seat, String> {
 
     Optional<Seat> findByUserId(String userId);
-
-    int countSeats(String sessionId);
 }

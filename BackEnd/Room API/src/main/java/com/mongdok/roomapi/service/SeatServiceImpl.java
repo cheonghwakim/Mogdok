@@ -2,8 +2,10 @@ package com.mongdok.roomapi.service;
 
 import com.mongdok.roomapi.model.Seat;
 import com.mongdok.roomapi.model.SeatElements;
+import com.mongdok.roomapi.model.Timestamp;
 import com.mongdok.roomapi.model.enums.StudyType;
 import com.mongdok.roomapi.repository.SeatRedisRepository;
+import com.mongdok.roomapi.utils.MakeString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,9 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 
 /**
  * author: pinest94
@@ -43,7 +45,7 @@ public class SeatServiceImpl implements SeatService {
 
         // 좌석할당 가능한 지 여부 확인
         if(!isSeatFull(seat.getSessionId()) && isSeat(seat.getSessionId(), seat.getSeatNo())) {
-            return new ResponseEntity<>(SeatElements.NO_SEAT_AVAILABLE, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(SeatElements.SEAT_ALLOCATED_NOT, HttpStatus.CONFLICT);
         }
 
         // 좌석할당 가능한 경우
@@ -57,27 +59,48 @@ public class SeatServiceImpl implements SeatService {
                 .build();
 
         seatRedisRepository.save(newSeat);
-        return new ResponseEntity<>(SeatElements.SEAT_ALLOCATED, HttpStatus.CREATED);
+        return new ResponseEntity<>(SeatElements.SEAT_ALLOCATED_SUCCESS, HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<?> releaseSeat(Map<String, String> resource) {
 
+        String key = MakeString.makeId(resource.get("sessionId"), resource.get("userId"));
+
         // TODO: 해제해야 할 자원이 있는지 확인 -> `없으면 해제할 자원이 없습니다.` 리턴
+        if(!redisTemplate.hasKey(key)) {
+            return new ResponseEntity<>(SeatElements.SEAT_RELEASE_NONE, HttpStatus.OK);
+        }
+
         // TODO: 해당 공부기록 데이터베이스에 저장
+
+
         // TODO: redis key-value 삭제
+        redisTemplate.delete(key);
+
         // TODO: 자원해제 완료 리턴
-        return null;
+        return new ResponseEntity<>(SeatElements.SEAT_RELEASE_SUCCESS, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> startStudy(Seat seat) {
-        return null;
-    }
+    @Transactional
+    public ResponseEntity<?> typeChange(Seat seat, StudyType type) {
+        // TODO: 해당 좌석에 대한 데이터가 있는 지 여부 확인
+        String id = MakeString.makeId(seat.getSessionId(), seat.getUserId());
 
-    @Override
-    public ResponseEntity<?> restStudy(Seat seat) {
-        return null;
+        return seatRedisRepository.findById(id)
+                .map(s-> {
+                    LocalDateTime startTime = LocalDateTime.now(ZoneOffset.UTC);
+                    Timestamp timestamp = Timestamp.builder().time(startTime).type(type).build();
+                    List<Timestamp> timestampList = s.getTimestampList() != null ? s.getTimestampList() : new ArrayList<>();
+                    timestampList.add(timestamp);
+                    s.setTimestampList(timestampList);
+                    s.setStudyType(type);
+
+                    seatRedisRepository.save(s);
+                    return new ResponseEntity(startTime, HttpStatus.OK);
+                })
+                .orElseGet(() -> new ResponseEntity(SeatElements.SEAT_ALLOCATED_NOT, HttpStatus.NO_CONTENT));
     }
 
     /***
