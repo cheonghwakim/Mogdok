@@ -81,7 +81,7 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>desk</name>
+                            <name>mongdok_desk</name>
 
                             <build>
                                 <dockerFileDir>${basedir}</dockerFileDir> <!-- 기본 경로가  src/main/docker 까지 잡혀있음 basedir 환경 변수를 쓰면 프로젝트의 기본 디렉토리를 쓰게됨-->
