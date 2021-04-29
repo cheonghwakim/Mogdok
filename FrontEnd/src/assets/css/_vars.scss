@@ -12,9 +12,10 @@ $footerHeight : 190px;
 // Breakpoints
 // 최소 크기는 html도 변경
 $breakpoint-mobile: 375px;
-$breakpoint-tablet: 600px;
+$breakpoint-tablet: 700px;
 $breakpoint-desktop: 1264px; 
 
+// 아이폰 5
 @mixin tinyMobile {
   @media (max-width: #{$breakpoint-mobile - 1px}) {
     @content;
@@ -38,3 +39,4 @@ $breakpoint-desktop: 1264px;
     @content;
   }
 }
+
