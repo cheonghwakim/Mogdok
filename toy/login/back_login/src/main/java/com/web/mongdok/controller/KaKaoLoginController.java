@@ -75,25 +75,25 @@ public class KaKaoLoginController {
 	        String uuid = UUID.randomUUID().toString();
 	        
 	        // kakaoAccessToken이 너무 길어서 db에 저장 안 됨 
-
 	        SignupReqDto user = new SignupReqDto(uuid, userInfo.get("email"), userInfo.get("id"));
 	        
-	        // 만약 유저가 없다면 회원 가입
-	        if(authService.findByKakaoId(userInfo.get("id")).isEmpty()) {
-	        	authService.signUpSocialUser(user); // 회원 가입
+	        // 만약 유저가 없다면 회원 가입 (소셜 로그인 할 때마다 DB에 접근하는 건 너무 레이턴시가 큼) -> redis로 판단
+	        if(redisUtil.getData(userInfo.get("id")) == null) { 
+	        	
+	        	// 레디스에 없고 db에 있는 경우는 db에서 find 해줘야 함
+	        	if(authService.findByKakaoId(userInfo.get("id")).isEmpty()) {
+	        		authService.signUpSocialUser(user); // 회원 가입
+	        	}
+	        	redisUtil.setData(userInfo.get("id"), refreshToken);
 	        }
 	        
-	        User curUser = authService.findByKakaoId(userInfo.get("id")).get();
+	        // 내 책상 만들기
 	        
-//            final String token = jwtUtil.generateToken(curUser);
-//            final String refreshJwt = jwtUtil.generateRefreshToken(curUser);
-            
-//            Cookie accessToken = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, token);
-//            Cookie refreshToken = cookieUtil.createCookie(JwtUtil.REFRESH_TOKEN_NAME, refreshJwt);
+	        
+	        User curUser = authService.findByKakaoId(userInfo.get("id")).get();
             
 	        Cookie accessCookie = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, accessToken);
 	        Cookie refreshCookie = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, refreshToken);
-//            redisUtil.setDataExpire(refreshJwt, curUser.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND); // redis에 refresh 토큰 저장
             redisUtil.setDataExpire(refreshToken, curUser.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND); // redis에 refresh 토큰 저장
             res.addCookie(accessCookie);
             res.addCookie(refreshCookie);
@@ -153,6 +153,7 @@ public class KaKaoLoginController {
     public ResponseEntity<?> exit(@RequestParam String accessToken) {
 		
     	System.out.println("토큰 갱신하기: " + kakaoAPI.unlink(accessToken));
+    	// db에서 삭제
     	
 		return new ResponseEntity<>("success", HttpStatus.OK);
     }
