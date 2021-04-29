@@ -1,8 +1,7 @@
 package com.mongdok.desk.service.impl;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -33,19 +32,14 @@ public class CalendarServiceImpl implements CalendarService {
 	public static final Logger logger = LoggerFactory.getLogger(DeskServiceImpl.class);
 
 	@Override
-	public ResponseEntity<? extends BasicResponse> getCalendar(int year, int month, String nickname) {
+	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String nickname) {
 		List<StudyResponse> response = new ArrayList<StudyResponse>();
 
 		try {
 			String userId = userDao.findUserIdByNickname(nickname);
 
-			//string을 date 타입으로 변환
-			String from = String.format("%4d-%02d-02", year, month);
-			SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-			Date to = transFormat.parse(from);
-
-			List<Study> list = studyDao.findAllInThisMonth(to, userId);
+			LocalDate date=LocalDate.of(year, month, 1);
+			List<Study> list = studyDao.findAllInThisMonth(date, userId);
 
 			if (!list.isEmpty()) {
 				for (Study study : list) {
@@ -57,8 +51,34 @@ public class CalendarServiceImpl implements CalendarService {
 				return ResponseEntity.ok().body(new CommonResponse<String>("공부 이력이 존재하지 않습니다."));
 			}
 		} catch (Exception e) {
-			logger.error("커밋 달력 불러오기 실패 : {}", e);
-			return ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_CALENDAR));
+			logger.error("년,월 커밋 달력 불러오기 실패 : {}", e);
+			return ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_CALENDAR_MONTH));
+		}
+		return ResponseEntity.ok().body(new CommonResponse<List<StudyResponse>>(response));
+	}
+
+	@Override
+	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String nickname) {
+		List<StudyResponse> response = new ArrayList<StudyResponse>();
+
+		try {
+			String userId = userDao.findUserIdByNickname(nickname);
+
+			LocalDate date=LocalDate.of(year, month, day);
+			List<Study> list = studyDao.findAllInToday(date, userId);
+
+			if (!list.isEmpty()) {
+				for (Study study : list) {
+					StudyResponse input = new StudyResponse();
+					BeanUtils.copyProperties(study, input);
+					response.add(input);
+				}
+			} else {
+				return ResponseEntity.ok().body(new CommonResponse<String>("공부 이력이 존재하지 않습니다."));
+			}
+		} catch (Exception e) {
+			logger.error("년,월,일 커밋 달력 불러오기 실패 : {}", e);
+			return ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_CALENDAR_DAY));
 		}
 		return ResponseEntity.ok().body(new CommonResponse<List<StudyResponse>>(response));
 	}

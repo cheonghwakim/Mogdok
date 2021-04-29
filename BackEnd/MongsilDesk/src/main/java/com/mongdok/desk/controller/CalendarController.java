@@ -21,9 +21,15 @@ public class CalendarController {
 	@Autowired
 	CalendarService calendarService;
 
-	@GetMapping
-	@ApiOperation(value = "나의 책상 모든 것 불러오기(메모, 디데이, 방명록, ..)")
-	public ResponseEntity<? extends BasicResponse> getCalendar(int year, int month, String nickname) {
-		return calendarService.getCalendar(year, month, nickname);
+	@GetMapping("/month")
+	@ApiOperation(value = "커밋 달력 년,월로 불러오기")
+	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String nickname) {
+		return calendarService.getCalendarInMonth(year, month, nickname);
+	}
+
+	@GetMapping("/day")
+	@ApiOperation(value = "커밋 달력 년,월,일로 불러오기")
+	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String nickname) {
+		return calendarService.getCalendarInDay(year, month, day, nickname);
 	}
 }
