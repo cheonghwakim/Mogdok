@@ -6,6 +6,8 @@ import com.mongdok.desk.common.response.BasicResponse;
 
 public interface CalendarService {
 
-	ResponseEntity<? extends BasicResponse> getCalendar(int year, int month, String nickname);
+	ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String nickname);
+
+	ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String nickname);
 
 }
