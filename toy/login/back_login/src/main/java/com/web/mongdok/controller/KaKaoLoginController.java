@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.web.mongdok.dto.SignupReqDto;
 import com.web.mongdok.entity.User;
 import com.web.mongdok.service.AuthService;
+//import com.web.mongdok.service.DeskService;
 import com.web.mongdok.service.KakaoAPI;
 import com.web.mongdok.utils.CookieUtil;
 import com.web.mongdok.utils.JwtUtil;
@@ -40,6 +41,9 @@ public class KaKaoLoginController {
     private AuthService authService;   
     
 //    @Autowired
+//    private DeskService deskService;
+    
+//    @Autowired
 //    private JwtUtil jwtUtil;
     
      @Autowired
@@ -47,20 +51,6 @@ public class KaKaoLoginController {
      
     @Autowired
     private RedisUtil redisUtil;
-    
-    // 임시
-    @GetMapping("/getUser")
-	public ResponseEntity<?> user() {
-	    List<User> user = authService.findAll();
-    	
-    	return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-    
-    // 임시
-    @GetMapping("/getUsers")
-	public User userasd() throws NotFoundException {
-	    return authService.findByUserId("asdfsadf");
-    }
 
     @GetMapping("/klogin") // 로그인 토큰 발급 -> redis, 쿠키에 저장
     @ResponseBody
@@ -83,12 +73,10 @@ public class KaKaoLoginController {
 	        	// 레디스에 없고 db에 있는 경우는 db에서 find 해줘야 함
 	        	if(authService.findByKakaoId(userInfo.get("id")).isEmpty()) {
 	        		authService.signUpSocialUser(user); // 회원 가입
+//	        		deskService.setDesk(userInfo.get("id")); // 내 책상 초기화
 	        	}
 	        	redisUtil.setData(userInfo.get("id"), refreshToken);
 	        }
-	        
-	        // 내 책상 만들기
-	        
 	        
 	        User curUser = authService.findByKakaoId(userInfo.get("id")).get();
             

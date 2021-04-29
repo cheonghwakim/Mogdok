@@ -107,7 +107,4 @@ public class AuthServiceImpl implements AuthService {
 		return userRepository.findByKakaoId(kakaoId);
 	}
 
-
-
-
 }

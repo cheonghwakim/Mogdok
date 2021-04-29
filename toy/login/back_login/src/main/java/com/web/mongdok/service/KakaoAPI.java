@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 public class KakaoAPI {
 
     public Map<String, String> getAccessToken(String authorize_code) {
-    	System.out.println(authorize_code);
         String accessToken = "";
         String refreshToken = "";
         String reqURL = "https://kauth.kakao.com/oauth/token"; // 토큰 받기
