@@ -41,6 +41,8 @@ export default {};
 @import 'src/assets/css/common';
 
 .btnLeaveDesk {
+   cursor: pointer;
+
    &:hover {
       #hand {
          animation: wobble 2s both infinite;

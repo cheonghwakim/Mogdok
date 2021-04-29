@@ -1,5 +1,5 @@
 <template lang="">
-   <div @mouseover="showFooter" class="footer floating" :class="[isOpen ? 'jumping' : '', 'borrow']">
+   <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating">
       <div class="postit-wrapper">
          <div-post-it :type="'study'" :timer="'10:30:20'"></div-post-it>
       </div>
@@ -25,7 +25,7 @@ export default {
    props: {},
    data() {
       return {
-         isOpen: true,
+         isOpen: false,
       };
    },
    computed: {},
@@ -34,22 +34,28 @@ export default {
    methods: {
       showFooter: function() {
          var footer = document.querySelector('.footer.floating');
-         console.log(footer);
-         // footer.classList.add('borrow');
+         console.log('마우스가 위에');
+
+         if (footer.classList.contains('borrow')) {
+            footer.classList.remove('borrow');
+         }
+         footer.classList.add('jumping');
+      },
+
+      hideFooter: function() {
+         var footer = document.querySelector('.footer.floating');
+         console.log('마우스가 범위 밖으로');
+
+         if (footer.classList.contains('jumping')) {
+            footer.classList.remove('jumping');
+         }
+         footer.classList.add('borrow');
       },
    },
 };
 </script>
 <style scoped lang="scss">
 @import 'src/assets/css/common';
-
-.borrow {
-   animation: burrowing 2s 1s ease forwards;
-}
-
-.jumping {
-   animation: burrowing-reverse 2s 1s ease forwards;
-}
 
 .footer {
    bottom: 0;
@@ -148,7 +154,6 @@ export default {
    }
 }
 
-// 가운데 정렬 되어 있는 요소를 버로우 시키기
 @keyframes burrowing-reverse {
    0% {
       transform: translate(-50%, 75%);
@@ -156,5 +161,13 @@ export default {
    100% {
       transform: translate(-50%, 20%);
    }
+}
+
+.borrow {
+   animation: burrowing 2s 1s ease forwards;
+}
+
+.jumping {
+   animation: burrowing-reverse 2s 1s ease forwards;
 }
 </style>

@@ -29,6 +29,8 @@ export default {};
 @import 'src/assets/css/common';
 
 .btnMyDesk {
+   cursor: pointer;
+
    &:hover {
       .desc {
          animation: fade-in 1s forwards;
