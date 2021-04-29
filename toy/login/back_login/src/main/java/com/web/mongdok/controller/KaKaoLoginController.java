@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.web.mongdok.dto.SignupReqDto;
 import com.web.mongdok.entity.User;
 import com.web.mongdok.service.AuthService;
+import com.web.mongdok.service.DeskService;
 //import com.web.mongdok.service.DeskService;
 import com.web.mongdok.service.KakaoAPI;
 import com.web.mongdok.utils.CookieUtil;
@@ -40,8 +41,8 @@ public class KaKaoLoginController {
     @Autowired
     private AuthService authService;   
     
-//    @Autowired
-//    private DeskService deskService;
+    @Autowired
+    private DeskService deskService;
     
 //    @Autowired
 //    private JwtUtil jwtUtil;
@@ -73,7 +74,7 @@ public class KaKaoLoginController {
 	        	// 레디스에 없고 db에 있는 경우는 db에서 find 해줘야 함
 	        	if(authService.findByKakaoId(userInfo.get("id")).isEmpty()) {
 	        		authService.signUpSocialUser(user); // 회원 가입
-//	        		deskService.setDesk(userInfo.get("id")); // 내 책상 초기화
+	        		deskService.setDesk(uuid); // 내 책상 초기화
 	        	}
 	        	redisUtil.setData(userInfo.get("id"), refreshToken);
 	        }
@@ -93,6 +94,8 @@ public class KaKaoLoginController {
     		return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
     	}
     }
+    
+    // 실제 회원 가입 (카카오 로그인 버튼 누르고 -> 회원가입 버튼 누르면 // 회원가입, 내책상 초기화)
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody SignupReqDto form) {
