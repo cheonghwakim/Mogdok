@@ -24,3 +24,4 @@ pnpm-debug.log*
 
 # BackEnd
 application.properties
+BackEnd/MongsilDesk/mongdok.sh
