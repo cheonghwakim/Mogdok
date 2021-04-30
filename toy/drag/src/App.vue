@@ -1,14 +1,17 @@
 <template>
   <div id="app">
     <h1>드래그 테스트</h1>
+    <editable style="display:none"></editable>
     <div>
       <button @click="edit">편집하기</button>
       <button @click="editComplete">편집완료</button>
+      <button v-show="clickedMemo" @click="removeMemo">이 메모 삭제하기</button>
     </div>
     <Moveable
+      ref="moveable"
       v-for="({ memoId, content, className, zIndex }, index) in memos"
       :key="'memo' + memoId"
-      class="moveable"
+      class="moveable-container"
       v-bind="moveable"
       @drag="handleDrag"
       @rotate="handleRotate"
@@ -16,11 +19,10 @@
       @mousedown.native="onClick(index)"
       :className="className"
       :style="{ zIndex }"
-      :props="{ editable: true }"
     >
       <span class="postit">
         <span class="postit-content">
-          {{ content + index }}
+          {{ content }}
         </span>
         <svg
           width="100%"
@@ -81,6 +83,8 @@ export default {
       { memoId: 6, content: '하위6', className: 'movedisable', zIndex: 1 },
     ],
     editable: false,
+    clickedMemo: false,
+    selectedMemoIdx: -1,
   }),
   methods: {
     handleDrag({ target, transform }) {
@@ -95,12 +99,14 @@ export default {
     },
     edit() {
       this.editable = true;
+      this.clickedMemo = false;
       for (let i = 0; i < this.memos.length; i++) {
         this.memos[i].className = 'moveable';
       }
     },
     editComplete() {
       this.editable = false;
+      this.clickedMemo = false;
       for (let i = 0; i < this.memos.length; i++) {
         this.memos[i].className = 'movedisable';
       }
@@ -111,6 +117,8 @@ export default {
     },
     onClick(index) {
       if (!this.editable) return;
+      this.clickedMemo = true;
+      this.selectedMemoIdx = index;
       for (let i = 0; i < this.memos.length; i++) {
         if (i === index) {
           this.memos[i].className = 'clicked';
@@ -121,8 +129,20 @@ export default {
         }
       }
     },
+    removeMemo() {
+      this.$refs.moveable[this.selectedMemoIdx].destroy();
+      this.memos.splice(this.selectedMemoIdx, 1);
+    },
   },
-  mounted() {},
+  mounted() {
+    // this.$refs.moveable[0].useCSS(Editable);
+    console.log(
+      '%cApp.vue line:134 this.$refs.moveable',
+      'color: #007acc;',
+      this.$refs.moveable[0]
+    );
+    // this.$refs.moveable[0].ables = [Editable];
+  },
 };
 </script>
 <style>
@@ -134,6 +154,7 @@ body {
   padding: 0;
 }
 #app {
+  position: relative;
   width: 100%;
   height: 100%;
 }
@@ -141,17 +162,19 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
   /* background-color: red; */
 }
 .postit-content {
   position: absolute;
 }
-.moveable {
-  display: flex;
+.moveable-container {
+  /* position: fixed; */
+  position: absolute;
+  /* display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
   width: 200px;
   height: 200px;
 }
@@ -172,5 +195,6 @@ body {
 .moveable-line,
 .moveable-rotation-line {
   display: block;
+  z-index: 999999;
 }
 </style>
