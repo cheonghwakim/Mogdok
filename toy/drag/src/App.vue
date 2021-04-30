@@ -6,16 +6,19 @@
       <button @click="editComplete">편집완료</button>
     </div>
     <Moveable
-      v-for="({ memoId, content }, index) in memos"
+      v-for="({ memoId, content, className, zIndex }, index) in memos"
       :key="'memo' + memoId"
       class="moveable"
       v-bind="moveable"
       @drag="handleDrag"
       @rotate="handleRotate"
       @scale="handleScale"
-      :className="moveableClassName"
+      @mousedown.native="onClick(index)"
+      :className="className"
+      :style="{ zIndex }"
+      :props="{ editable: true }"
     >
-      <div class="postit">
+      <span class="postit">
         <span class="postit-content">
           {{ content + index }}
         </span>
@@ -39,7 +42,7 @@
             fill="#DCE0C6"
           />
         </svg>
-      </div>
+      </span>
     </Moveable>
   </div>
 </template>
@@ -70,15 +73,14 @@ export default {
       className: 'movedisable',
     },
     memos: [
-      { memoId: 1, content: '하위' },
-      { memoId: 2, content: '하위2' },
-      { memoId: 3, content: '하위3' },
-      { memoId: 4, content: '하위4' },
-      { memoId: 5, content: '하위5' },
-      { memoId: 6, content: '하위6' },
+      { memoId: 1, content: '하위', className: 'movedisable', zIndex: 1 },
+      { memoId: 2, content: '하위2', className: 'movedisable', zIndex: 1 },
+      { memoId: 3, content: '하위3', className: 'movedisable', zIndex: 1 },
+      { memoId: 4, content: '하위4', className: 'movedisable', zIndex: 1 },
+      { memoId: 5, content: '하위5', className: 'movedisable', zIndex: 1 },
+      { memoId: 6, content: '하위6', className: 'movedisable', zIndex: 1 },
     ],
     editable: false,
-    moveableClassName: 'movedisable',
   }),
   methods: {
     handleDrag({ target, transform }) {
@@ -92,17 +94,32 @@ export default {
       target.style.transform = transform;
     },
     edit() {
-      this.moveableClassName = 'moveable';
       this.editable = true;
+      for (let i = 0; i < this.memos.length; i++) {
+        this.memos[i].className = 'moveable';
+      }
     },
     editComplete() {
-      this.moveableClassName = 'movedisable';
       this.editable = false;
+      for (let i = 0; i < this.memos.length; i++) {
+        this.memos[i].className = 'movedisable';
+      }
     },
     handleScale({ target, transform, scale }) {
-      if (scale[0] < 1 || scale[1] < 1) return;
       console.log('onScale scale', scale);
       target.style.transform = transform;
+    },
+    onClick(index) {
+      if (!this.editable) return;
+      for (let i = 0; i < this.memos.length; i++) {
+        if (i === index) {
+          this.memos[i].className = 'clicked';
+          this.memos[i].zIndex = 999;
+        } else {
+          this.memos[i].className = 'moveable';
+          this.memos[i].zIndex = 1;
+        }
+      }
     },
   },
   mounted() {},
@@ -138,10 +155,22 @@ body {
   width: 200px;
   height: 200px;
 }
-.movedisable .moveable-line {
+.moveable .moveable-line {
+  background: black !important;
+}
+.moveable .moveable-control {
   display: none;
 }
-.movedisable .moveable-control {
+.moveable .moveable-rotation-line {
   display: none;
+}
+.movedisable .moveable-line,
+.moveable-control {
+  display: none;
+}
+.clicked .moveable-control,
+.moveable-line,
+.moveable-rotation-line {
+  display: block;
 }
 </style>
