@@ -19,13 +19,13 @@ import com.mongdok.desk.dao.UserDao;
 import com.mongdok.desk.exception.ErrorCode;
 import com.mongdok.desk.model.Dday;
 import com.mongdok.desk.model.Desk;
-import com.mongdok.desk.model.Guestbook;
+import com.mongdok.desk.model.Board;
 import com.mongdok.desk.model.Memo;
 import com.mongdok.desk.model.request.desk.DeskRequest;
+import com.mongdok.desk.model.response.board.BoardOnlyIdResponse;
 import com.mongdok.desk.model.response.dday.DdayResponse;
 import com.mongdok.desk.model.response.desk.DeskAllResponse;
 import com.mongdok.desk.model.response.desk.DeskResponse;
-import com.mongdok.desk.model.response.guestbook.GuestBookOnlyIdResponse;
 import com.mongdok.desk.model.response.memo.MemoResponse;
 import com.mongdok.desk.service.DeskService;
 
@@ -109,10 +109,10 @@ public class DeskServiceImpl implements DeskService {
 					ddaylist.add(dday);
 				}
 
-				List<GuestBookOnlyIdResponse> guestbooklist = new ArrayList<GuestBookOnlyIdResponse>();
+				List<BoardOnlyIdResponse> guestbooklist = new ArrayList<BoardOnlyIdResponse>();
 
-				for (Guestbook origin : desk.getGuestbookList()) {
-					GuestBookOnlyIdResponse guestbook = new GuestBookOnlyIdResponse();
+				for (Board origin : desk.getGuestbookList()) {
+					BoardOnlyIdResponse guestbook = new BoardOnlyIdResponse();
 					BeanUtils.copyProperties(origin, guestbook);
 					guestbooklist.add(guestbook);
 				}

@@ -2,6 +2,7 @@ package com.mongdok.desk.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
 public class Study {
 	
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long studyId;
 	

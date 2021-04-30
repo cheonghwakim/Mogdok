@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mongdok.desk.common.response.BasicResponse;
-import com.mongdok.desk.model.request.guestbook.GuestBookUpdateRequest;
-import com.mongdok.desk.model.request.guestbook.GuestbookCreateRequest;
-import com.mongdok.desk.service.GuestBookService;
+import com.mongdok.desk.model.request.board.BoardCreateRequest;
+import com.mongdok.desk.model.request.board.BoardUpdateRequest;
+import com.mongdok.desk.service.BoardService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,10 +23,10 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "방명록", description = "방명록CRUD")
 @CrossOrigin
 @RestController
-@RequestMapping("/desk/guestbook")
-public class GuestBookController {
+@RequestMapping("/desk/board")
+public class BoardController {
 	@Autowired
-	GuestBookService guestBookService;
+	BoardService guestBookService;
 	
 	@GetMapping
 	@ApiOperation(value = "방명록 불러오기")
@@ -36,13 +36,13 @@ public class GuestBookController {
 	
 	@PostMapping
 	@ApiOperation(value = "방명록 생성")
-	public ResponseEntity<? extends BasicResponse> createGuestBook(GuestbookCreateRequest request){
+	public ResponseEntity<? extends BasicResponse> createGuestBook(BoardCreateRequest request){
 		return guestBookService.createGuestBook(request);
 	}
 	
 	@PutMapping
 	@ApiOperation(value = "방명록 수정")
-	public ResponseEntity<? extends BasicResponse> updateGuestBook(GuestBookUpdateRequest request){
+	public ResponseEntity<? extends BasicResponse> updateGuestBook(BoardUpdateRequest request){
 		return guestBookService.updateGuestBook(request);
 	}
 	

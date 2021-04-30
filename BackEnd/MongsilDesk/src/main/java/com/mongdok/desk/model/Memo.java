@@ -1,5 +1,6 @@
 package com.mongdok.desk.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Memo {
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long memoId;
 		
