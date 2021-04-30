@@ -5,7 +5,9 @@
     <div>
       <button @click="edit">편집하기</button>
       <button @click="editComplete">편집완료</button>
+      <button @click="createMemo">메모 생성</button>
       <button v-show="clickedMemo" @click="removeMemo">이 메모 삭제하기</button>
+      <button v-show="clickedMemo" @click="modifyMemo">내용 작성하기</button>
     </div>
     <Moveable
       ref="moveable"
@@ -46,6 +48,12 @@
         </svg>
       </span>
     </Moveable>
+    <div class="modal" v-show="dialog">
+      <div v-if="memos[selectedMemoIdx]" class="modal-content">
+        <textarea v-model="memos[selectedMemoIdx].content" type="text" class="input-box" />
+        <span class="close" @click="dialog = !dialog">닫기</span>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -85,6 +93,7 @@ export default {
     editable: false,
     clickedMemo: false,
     selectedMemoIdx: -1,
+    dialog: false,
   }),
   methods: {
     handleDrag({ target, transform }) {
@@ -122,7 +131,7 @@ export default {
       for (let i = 0; i < this.memos.length; i++) {
         if (i === index) {
           this.memos[i].className = 'clicked';
-          this.memos[i].zIndex = 999;
+          this.memos[i].zIndex = 3001;
         } else {
           this.memos[i].className = 'moveable';
           this.memos[i].zIndex = 1;
@@ -132,6 +141,12 @@ export default {
     removeMemo() {
       this.$refs.moveable[this.selectedMemoIdx].destroy();
       this.memos.splice(this.selectedMemoIdx, 1);
+    },
+    createMemo() {
+      this.memos.push({ memoId: 6, content: '', className: 'moveable', zIndex: 1 });
+    },
+    modifyMemo() {
+      this.dialog = true;
     },
   },
   mounted() {
@@ -168,13 +183,13 @@ body {
 }
 .postit-content {
   position: absolute;
+  padding: 20px;
 }
 .moveable-container {
-  /* position: fixed; */
   position: absolute;
-  /* display: flex;
+  display: flex;
   justify-content: center;
-  align-items: center; */
+  align-items: center;
   width: 200px;
   height: 200px;
 }
@@ -195,6 +210,49 @@ body {
 .moveable-line,
 .moveable-rotation-line {
   display: block;
-  z-index: 999999;
+}
+/* The Modal (background) */
+.modal {
+  position: fixed; /* Stay in place */
+  z-index: 3001; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 30px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+textarea {
+  border: 2px solid;
+  border-radius: 5px;
+  width: 100%;
+  min-height: 10vh;
 }
 </style>
