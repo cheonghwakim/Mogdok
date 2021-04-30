@@ -1,5 +1,5 @@
 <template lang="">
-   <div class="desk">
+   <div v-dragscroll="true" class="desk">
       <div class="info">
          <h2 class="userName kyoboHand">안양불빠따</h2>
          <h3 class="cate kyoboHand">#취업준비생</h3>
@@ -11,6 +11,7 @@
    </div>
 </template>
 <script>
+import { dragscroll } from 'vue-dragscroll';
 import SvgDesk from '@/components/svg/SvgDesk';
 
 export default {
@@ -19,6 +20,9 @@ export default {
    props: {},
    data() {
       return {};
+   },
+   directives: {
+      dragscroll,
    },
    computed: {},
    watch: {},
@@ -40,11 +44,9 @@ export default {
 
    display: flex;
    flex-direction: column;
-   align-items: center;
-   justify-content: center;
 
-   overflow-x: auto;
-   overflow-y: hidden;
+   overflow: hidden;
+   overflow-x: auto; // hidden으로 해도, npm에서 드래그 제공
 
    .info {
       position: fixed;
@@ -52,10 +54,14 @@ export default {
       left: 50%;
       transform: translateX(-50%);
 
-      border: 1px dashed red;
+      background-color: white;
+      border-radius: 20px;
+      border: 2px solid black;
+
+      z-index: 11;
 
       width: 320px;
-      height: 100px;
+      height: 50px;
 
       text-align: center;
 
@@ -66,6 +72,8 @@ export default {
    }
 
    .desk-wrapper {
+      cursor: grab; // 드래그 영역에선 grap으로 표시
+
       position: relative;
       border: 1px solid red;
 
