@@ -2,18 +2,18 @@
    <div class="header floating">
       <div class="section">
          <h2>자유 열람 1실</h2>
-         <num-person class="NumOfPerson" :current="this.roomCurrent" :limit="this.roomLimit"></num-person>
+         <div-num-person class="NumOfPerson" :current="this.roomCurrent" :limit="this.roomLimit"></div-num-person>
       </div>
-      <close class="btnClose"></close>
+      <btn-close class="btnClose"></btn-close>
    </div>
 </template>
 <script>
-import NumPerson from '@/components/ui/NumPerson';
-import Close from '@/components/ui/Close';
+import DivNumPerson from '@/components/ui/DivNumPerson';
+import BtnClose from '@/components/ui/BtnClose';
 
 export default {
    name: 'Header',
-   components: { NumPerson, Close },
+   components: { DivNumPerson, BtnClose },
    props: {},
    data() {
       return {

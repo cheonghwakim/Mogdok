@@ -28,7 +28,7 @@ export default {
 
 .room {
    margin-top: $HeaderHeight;
-   /* padding-bottom: $footerHeight; */
+   margin-bottom: 60px;
 
    width: 100%;
    height: calc(100% - #{$HeaderHeight});
