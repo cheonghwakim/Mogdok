@@ -12,8 +12,6 @@ public interface AuthService {
 
     final String REDIS_CHANGE_PASSWORD_PREFIX="CPW";
 
-    void signUpSocialUser(SignupReqDto member);
-
     Optional<User> loginSocialUser(String id) throws NotFoundException;
 
     User findByUserId(String id);
@@ -25,4 +23,6 @@ public interface AuthService {
 	Optional<User> findByKakaoId(String kakaoId);
 
 	User findByEmail(String email);
+
+	void signUpSocialUser(User user);
 }

@@ -12,7 +12,7 @@ import com.web.mongdok.entity.User;
 @Repository
 public interface KaKaoUserRepository extends CrudRepository<User, Long> {
 
-	User findByUserId(String id);
+	User findById(String id);
 	
 	List<User> findAll();
 

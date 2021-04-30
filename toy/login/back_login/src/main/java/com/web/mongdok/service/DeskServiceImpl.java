@@ -16,10 +16,10 @@ public class DeskServiceImpl implements DeskService {
     private DeskRepository deskRepository;
     
 	@Override
-	public void setDesk(String userId) {
+	public void setDesk(String userId, String promise) {
 		Desk desk = new Desk();
 		desk.setUserId(userId);
-		desk.setPromise("임시");
+		desk.setPromise(promise);
 		
 		System.out.println("desk: " + desk);
 		deskRepository.save(desk);

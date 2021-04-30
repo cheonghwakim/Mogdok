@@ -2,6 +2,8 @@ package com.web.mongdok.service;
 
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,17 +27,8 @@ public class AuthServiceImpl implements AuthService {
     private RedisUtil redisUtil;
     
 	@Override
-	public void signUpSocialUser(SignupReqDto user) {
-		System.out.println("asdfasdfadsf");
-        User newUser = new User();
-        newUser.setCategory("");
-        newUser.setEmail(user.getEmail());
-        newUser.setNickname("");
-        newUser.setUserId(user.getUserId());
-        newUser.setKakaoId(user.getKakaoId());
-        
-        System.out.println(newUser);
-        userRepository.save(newUser);
+	public void signUpSocialUser(User user) {
+        userRepository.save(user);
 	}
 
 	@Override
@@ -48,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public User findByUserId(String id) {
-        User user = userRepository.findByUserId(id);
+        User user = userRepository.findById(id);
         
         return user;
 	}

@@ -9,9 +9,13 @@ import lombok.NoArgsConstructor;
 @Data
 public class SignupReqDto {
 	
-	private String userId;
-	
 	private String email;
 	
-	private String kakaoId;	
+	private String kakaoId;
+	
+	private String nickname;
+	
+	private String category;
+	
+	private String promise;
 }
