@@ -31,25 +31,37 @@ export default {
    computed: {},
    // watch: {},
    //lifecycle area
+   created: function() {
+      window.addEventListener('scroll', this.scrollListener);
+   },
+   beforeDestroy: function() {
+      window.removeEventListener('scroll', this.scrollListener);
+   },
+   mounted() {
+      // 최초 로드 시 2초 이후 자동으로 버로우
+      setTimeout(() => {
+         this.hideFooter();
+      }, 2000);
+   },
    methods: {
       showFooter: function() {
          var footer = document.querySelector('.footer.floating');
-         console.log('마우스가 위에');
+         console.log('마우스 진입');
 
          if (footer.classList.contains('borrow')) {
             footer.classList.remove('borrow');
          }
-         footer.classList.add('jumping');
       },
 
       hideFooter: function() {
          var footer = document.querySelector('.footer.floating');
          console.log('마우스가 범위 밖으로');
 
-         if (footer.classList.contains('jumping')) {
-            footer.classList.remove('jumping');
-         }
          footer.classList.add('borrow');
+      },
+
+      scrollListener: function() {
+         console.log('스크롤중');
       },
    },
 };
@@ -62,9 +74,8 @@ export default {
    left: 50%;
    transform: translate(-50%, 20%);
 
-   /* animation: burrowing-reverse 2s 1s ease forwards; */
-   /* background-color: rgb(173, 199, 254); */
-   /* height: $footerHeight; */
+   // 애니메이션
+   transition: transform 1s ease;
 
    width: 50vw;
    max-width: 600px;
@@ -75,6 +86,7 @@ export default {
       position: absolute;
       top: -10%;
       left: 50%;
+
       transform: translateX(-50%);
 
       width: 15vw;
@@ -164,10 +176,6 @@ export default {
 }
 
 .borrow {
-   animation: burrowing 2s 1s ease forwards;
-}
-
-.jumping {
-   animation: burrowing-reverse 2s 1s ease forwards;
+   transform: translate(-50%, 75%);
 }
 </style>
