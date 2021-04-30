@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -53,6 +54,11 @@ public class Seat implements Serializable {
      * 해당 좌석의 사용자 상태
      */
     private StudyType studyType;
+
+    /***
+     * 착석 시간
+     */
+    private LocalDateTime allocateTime;
 
     /***
      * 공부 시간 기록 리스트
