@@ -13,7 +13,7 @@ public class Desk {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long deskId;
+	private Long id;
 
 	private String userId; // 일대일 맵핑
 	

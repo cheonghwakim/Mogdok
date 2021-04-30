@@ -115,34 +115,6 @@ public class KakaoAPI {
 
         return userInfo;
     }
-    
-    // 로그 아웃
-    public String Logout(String accessToken) {
-    	
-        String reqURL = "https://kapi.kakao.com/v1/user/logout"; // 사용자 정보 가져오기
-		String result = "";
-		
-        try {
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-
-            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            String line = "";
-
-            while ((line = br.readLine()) != null) {
-                result += line;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
 
     // 토큰 정보 보기 (-401: 토큰 값이 잘못되었거나 만료되어 유효하지 않은 경우로 토큰 갱신 필요)
 	public String auth(String accessToken) {

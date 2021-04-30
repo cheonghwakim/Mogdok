@@ -20,13 +20,9 @@ public interface AuthService {
     
     List<User> findAll();
 
-	User findByEmail(String email);
-	
-	String sendVerificationMail(User user);
-
-	String verifyEmail(String key);
-
 	String VerificationUser(String key);
 
 	Optional<User> findByKakaoId(String kakaoId);
+
+	User findByEmail(String email);
 }

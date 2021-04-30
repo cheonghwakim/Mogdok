@@ -18,7 +18,7 @@ import lombok.Data;
 public class User extends BaseTimeEntity {
 	
 	@Id
-	private String userId;
+	private String id;
 	
 	private String nickname;
 	

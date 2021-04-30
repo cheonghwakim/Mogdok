@@ -31,7 +31,7 @@ public class RedisController {
 	private String ip;
 	
 	@Autowired
-	KaKaoLoginController kloginController;
+	KakaoLoginController kloginController;
 	
     @Autowired
     private AuthService authService;  
@@ -70,37 +70,5 @@ public class RedisController {
         }
         
         return new ResponseEntity<>("unknown", HttpStatus.OK); // 이러면 다시 로그인 해야 함
-    }
-	
-	// redis 인증 예제 (smtp)
-	@PostMapping("/verify")
-    public ResponseEntity<?> verify(@RequestParam String email) {
-        try {
-            User user = authService.findByEmail(email);
-            if(authService.sendVerificationMail(user).equals("success"))
-            	return new ResponseEntity<>("success", HttpStatus.OK);
-        
-        } catch (Exception e) {
-        	e.printStackTrace();
-            return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
-        }
-        
-        return new ResponseEntity<>("unknown", HttpStatus.OK);
-    }
-
-    @GetMapping("/verify/{key}")
-    public ResponseEntity<?> getVerify(@PathVariable String key) {
-    	
-        try {
-
-            if(authService.verifyEmail(key).equals("success"))
-            	return new ResponseEntity<>("인증 완료", HttpStatus.OK);
-            else
-            	return new ResponseEntity<>("null", HttpStatus.OK);
-            
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
-        }
     }
 }

@@ -1,11 +1,7 @@
 package com.web.mongdok.controller;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,18 +18,16 @@ import com.web.mongdok.dto.SignupReqDto;
 import com.web.mongdok.entity.User;
 import com.web.mongdok.service.AuthService;
 import com.web.mongdok.service.DeskService;
-//import com.web.mongdok.service.DeskService;
 import com.web.mongdok.service.KakaoAPI;
-import com.web.mongdok.utils.CookieUtil;
 import com.web.mongdok.utils.JwtUtil;
 import com.web.mongdok.utils.RedisUtil;
 
-import javassist.NotFoundException;
+import io.swagger.annotations.ApiOperation;
 
  
 @CrossOrigin
 @RestController
-public class KaKaoLoginController {
+public class KakaoLoginController {
 	
     @Autowired
     private KakaoAPI kakaoAPI;
@@ -45,17 +39,15 @@ public class KaKaoLoginController {
     private DeskService deskService;
     
 //    @Autowired
-//    private JwtUtil jwtUtil;
-    
-     @Autowired
-    private CookieUtil cookieUtil;   
+//    private JwtUtil jwtUtil; 
      
     @Autowired
     private RedisUtil redisUtil;
 
     @GetMapping("/klogin") // 로그인 토큰 발급 -> redis, 쿠키에 저장
     @ResponseBody
-    public ResponseEntity<?> klogin(@RequestParam String authorizeCode, HttpServletResponse res) {
+    @ApiOperation(value = "로그인 / kakaoAPI에서 accessToken, refreshToken 발급")
+    public ResponseEntity<?> klogin(@RequestParam String authorizeCode) {
     	
     	try {
 	    	Map<String, String> kakaoAccessToken = kakaoAPI.getAccessToken(authorizeCode);
@@ -81,11 +73,9 @@ public class KaKaoLoginController {
 	        
 	        User curUser = authService.findByKakaoId(userInfo.get("id")).get();
             
-	        Cookie accessCookie = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, accessToken);
-	        Cookie refreshCookie = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, refreshToken);
+	        // localStorage -> 
+	        // jwt는 서버에도 저장 X, 세션에도 저장 X
             redisUtil.setDataExpire(refreshToken, curUser.getEmail(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND); // redis에 refresh 토큰 저장
-            res.addCookie(accessCookie);
-            res.addCookie(refreshCookie);
             
 	        return new ResponseEntity<>(userInfo, HttpStatus.OK);
     	
@@ -96,8 +86,18 @@ public class KaKaoLoginController {
     }
     
     // 실제 회원 가입 (카카오 로그인 버튼 누르고 -> 회원가입 버튼 누르면 // 회원가입, 내책상 초기화)
+    @PostMapping("/signup")
+    @ApiOperation("회원 가입할 때 정보 저장")
+    public ResponseEntity<?> signUp(@RequestBody String kakaoId) {
+		
+    	
+    	
+    	return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+    
     
     @PostMapping("/login")
+    @ApiOperation("로그인")
     public ResponseEntity<?> login(@RequestBody SignupReqDto form) {
 		
     	try {
@@ -112,26 +112,18 @@ public class KaKaoLoginController {
     	return new ResponseEntity<>(form, HttpStatus.OK);
     }
 
-    // 로그 아웃
-    @GetMapping("/logout")
-    public ResponseEntity<?> logout(@RequestParam String accessToken) {
-		
-    	System.out.println(kakaoAPI.Logout(accessToken));
-    	
-		return new ResponseEntity<>("success", HttpStatus.OK);
-    }
-    
-    // 카카오 토큰 정보보기 [지금 있는 refresh token값이 유효한지 판단 위함] (액세스 토큰의 유효성 검증하거나 정보 확인하는 API)
+    // 얘도 필요가 없을 것 같음
     @GetMapping("/auth")
+    @ApiOperation("토큰 정보 보기 (액세스 토큰의 유효성 검증하거나 정보 확인하는 API)")
     public ResponseEntity<?> auth(@RequestParam String accessToken) {
 		
     	System.out.println("토큰 정보보기: " + kakaoAPI.auth(accessToken));
     	
 		return new ResponseEntity<>("success", HttpStatus.OK);
     }
-    
-    // 토큰 갱신하기
+
     @GetMapping("/fresh")
+    @ApiOperation("토큰 갱신하기")
     public ResponseEntity<?> fresh(@RequestParam String refreshToken) {
 		
     	System.out.println("토큰 갱신하기: " + kakaoAPI.freshToken(refreshToken));
@@ -139,8 +131,8 @@ public class KaKaoLoginController {
 		return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
-    // 연결 끊기 (탈퇴)
     @GetMapping("/unlink")
+    @ApiOperation("카카오 연결 끊기(탈퇴)")
     public ResponseEntity<?> exit(@RequestParam String accessToken) {
 		
     	System.out.println("토큰 갱신하기: " + kakaoAPI.unlink(accessToken));

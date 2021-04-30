@@ -22,6 +22,9 @@ public class RedisConfig {
   @Value("${spring.redis.host}")
   public String host;
   
+//  @Value("${spring.redis.password}")
+//  public String password;
+  
   @Autowired
   public ObjectMapper objectMapper;
   
@@ -39,6 +42,8 @@ public class RedisConfig {
     RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
     redisStandaloneConfiguration.setHostName(host);
     redisStandaloneConfiguration.setPort(port);
+//    redisStandaloneConfiguration.setPassword(password);
+    
     LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration);
     return connectionFactory;
   }
