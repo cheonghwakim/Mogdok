@@ -6,15 +6,19 @@
       <button @click="editComplete">편집완료</button>
     </div>
     <Moveable
-      ref="moveable"
+      v-for="({ memoId, content }, index) in memos"
+      :key="'memo' + memoId"
       class="moveable"
       v-bind="moveable"
       @drag="handleDrag"
       @rotate="handleRotate"
-      @resize="handleResize"
+      @scale="handleScale"
+      :className="moveableClassName"
     >
       <div class="postit">
-        안녕세요
+        <span class="postit-content">
+          {{ content + index }}
+        </span>
         <svg
           width="100%"
           height="100%"
@@ -42,6 +46,8 @@
 <script>
 import Moveable from 'vue-moveable';
 
+// const MIN_SIZE = 100;
+
 export default {
   name: 'app',
   components: {
@@ -51,18 +57,28 @@ export default {
     moveable: {
       draggable: true,
       throttleDrag: 0,
-      resizable: true,
-      throttleResize: 1,
-      keepRatio: false,
-      scalable: false,
+      // resizable: true,
+      // throttleResize: 1,
+      keepRatio: true,
+      scalable: true,
       throttleScale: 0,
       rotatable: true,
       throttleRotate: 0,
-      pinchable: false, // ["draggable", "resizable", "scalable", "rotatable"]
+      pinchable: true, // ["draggable", "resizable", "scalable", "rotatable"]
       origin: false,
+      zoom: 1,
+      className: 'movedisable',
     },
-    memos: [{}],
+    memos: [
+      { memoId: 1, content: '하위' },
+      { memoId: 2, content: '하위2' },
+      { memoId: 3, content: '하위3' },
+      { memoId: 4, content: '하위4' },
+      { memoId: 5, content: '하위5' },
+      { memoId: 6, content: '하위6' },
+    ],
     editable: false,
+    moveableClassName: 'movedisable',
   }),
   methods: {
     handleDrag({ target, transform }) {
@@ -76,25 +92,20 @@ export default {
       target.style.transform = transform;
     },
     edit() {
-      this.$refs.moveable.className = 'moveable';
+      this.moveableClassName = 'moveable';
       this.editable = true;
     },
     editComplete() {
-      this.$refs.moveable.className = 'movedisable';
+      this.moveableClassName = 'movedisable';
       this.editable = false;
     },
-    handleResize({ target, width, height, delta }) {
-      if (!this.editable) return;
-      console.log('onResize', width, height);
-      delta[0] && (target.style.width = `${width}px`);
-      delta[1] && (target.style.height = `${height}px`);
+    handleScale({ target, transform, scale }) {
+      if (scale[0] < 1 || scale[1] < 1) return;
+      console.log('onScale scale', scale);
+      target.style.transform = transform;
     },
   },
-  mounted() {
-    // console.log('%cApp.vue line:64 this.$refs.moveable', 'color: #007acc;', this.$refs.moveable);
-    this.$refs.moveable.className = 'movedisable';
-    this.$refs.moveable.keepRatio = true;
-  },
+  mounted() {},
 };
 </script>
 <style>
@@ -110,9 +121,15 @@ body {
   height: 100%;
 }
 .postit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
   /* background-color: red; */
+}
+.postit-content {
+  position: absolute;
 }
 .moveable {
   display: flex;
