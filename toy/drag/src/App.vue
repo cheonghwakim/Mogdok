@@ -1,13 +1,17 @@
 <template>
   <div id="app">
-    <h1>드래그 테스트</h1>
+    <h1>포스트잇 테스트</h1>
+    <h3>
+      작성 가능한 메모(<span :style="memos.length >= 10 ? 'color:red' : ''">{{ memos.length }}</span
+      >/10)
+    </h3>
     <editable style="display:none"></editable>
     <div>
       <button @click="edit">편집하기</button>
       <button @click="editComplete">편집완료</button>
       <button @click="createMemo">메모 생성</button>
       <button v-show="clickedMemo" @click="removeMemo">이 메모 삭제하기</button>
-      <button v-show="clickedMemo" @click="modifyMemo">내용 작성하기</button>
+      <button v-show="clickedMemo" @click="writeMemo">내용 작성하기</button>
     </div>
     <Moveable
       ref="moveable"
@@ -59,7 +63,7 @@
 <script>
 import Moveable from 'vue-moveable';
 
-// const MIN_SIZE = 100;
+const MEMO_MAX_SIZE = 10;
 
 export default {
   name: 'app',
@@ -143,9 +147,10 @@ export default {
       this.memos.splice(this.selectedMemoIdx, 1);
     },
     createMemo() {
+      if (this.memos.length >= MEMO_MAX_SIZE) return;
       this.memos.push({ memoId: 6, content: '', className: 'moveable', zIndex: 1 });
     },
-    modifyMemo() {
+    writeMemo() {
       this.dialog = true;
     },
   },
