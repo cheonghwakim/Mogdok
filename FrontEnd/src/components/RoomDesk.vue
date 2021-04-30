@@ -2,25 +2,23 @@
    <div class="RoomDesk">
       <!-- 헤더 : 회원 닉네임이 들어감 -->
       <div class="header">
-         <h3>안양불빠따</h3>
+         <h3>{{ desk.userName }}</h3>
       </div>
 
       <!-- 본문 : 화면과 책상이 기록되는 공간 -->
       <div class="content">
          <!-- 자리의 상태에 따라 캠, 휴식, 빈 공간이 표시 -->
-         <div class="cam">
-            사용자 화면
-         </div>
+         <div class="cam">사용자 화면</div>
          <div class="resting">
             <svg-sleeping class="character"></svg-sleeping>
          </div>
-         <img src="@/assets/img/desk.svg" />
+         <img src="@/assets/img/desk.svg" @click="clickDesk" />
       </div>
 
       <!-- 푸터 : 하단에 시간이 기록되는 공간 -->
       <div class="footer">
          <p class="mark">🕳</p>
-         <p class="timer">00:00:00</p>
+         <p class="timer">{{ desk.userTimer }}</p>
       </div>
    </div>
 </template>
@@ -28,7 +26,14 @@
 import SvgSleeping from '@/components/svg/SvgSleeping.vue';
 export default {
    components: { SvgSleeping },
-   props: {},
+   props: {
+      desk: Object,
+   },
+   methods: {
+      clickDesk: function() {
+         alert(`${this.desk.userName} 클릭되었습니다.`);
+      },
+   },
 };
 </script>
 <style scoped lang="scss">
@@ -92,6 +97,8 @@ $deskWidth: 20vw;
       }
 
       img {
+         cursor: pointer;
+
          position: absolute;
          bottom: 0;
          left: 50%;

@@ -45,24 +45,35 @@
 export default {
    props: {
       label: String,
+      // size: String,
+   },
+
+   computed: {
+      // sizes(){
+      //    return{
+      //       'btnCmdDiv--sm' : this.size === 'sm',
+      //       'btnCmdDiv--md' : this.size === 'md',
+      //    }
+      // }
    },
 };
 </script>
 <style scoped lang="scss">
-.title {
-   position: absolute;
-   top: 35%;
-   left: 50%;
-   transform: translateX(-50%);
-
-   width: 100%;
-
-   font-size: 2vmin;
-   font-weight: 600;
-   text-align: center;
-}
-
 .btnCmdDiv {
+   position: relative;
+
+   .title {
+      position: absolute;
+      top: 35%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: 100%;
+
+      font-size: 2vmin;
+      font-weight: 600;
+      text-align: center;
+   }
    cursor: pointer;
 
    #btnCmd-mid {

@@ -1,26 +1,77 @@
 <template lang="">
    <div class="room">
+      <div class="profile-wrapper">
+         <div-profile class="profile"></div-profile>
+      </div>
       <div class="deskList">
-         <div class="deskItem" v-for="key in 12" :key="key">
-            <room-desk></room-desk>
+         <div class="deskItem" v-for="(desk, idx) in deskList" :key="idx">
+            <room-desk :desk="desk"></room-desk>
          </div>
       </div>
    </div>
 </template>
 <script>
 import RoomDesk from '@/components/RoomDesk';
+import DivProfile from '@/components/ui/DivProfile';
 
 export default {
    name: 'Room',
-   components: { RoomDesk },
+   components: { RoomDesk, DivProfile },
    props: {},
    data() {
-      return {};
+      return {
+         deskList: [],
+      };
    },
    computed: {},
    watch: {},
    //lifecycle area
-   methods: {},
+   created() {
+      this.sampleData(); // Sample Data 시작하자마 삽입
+   },
+   methods: {
+      // Sample Data 삽입
+      sampleData: function() {
+         this.deskList = [
+            {
+               deskNumber: 1,
+               userName: '안양불빠따',
+               userTimer: '04:23:11',
+               userStatus: 'study',
+            },
+            {
+               deskNumber: 2,
+               userName: '박영철',
+               userTimer: '00:13:11',
+               userStatus: 'rest',
+            },
+            {
+               deskNumber: 3,
+               userName: '몽실히',
+               userTimer: '14:23:11',
+               userStatus: 'study',
+            },
+            {
+               deskNumber: 4,
+               userName: '',
+               userTimer: '',
+               userStatus: 'empty',
+            },
+            {
+               deskNumber: 5,
+               userName: '',
+               userTimer: '',
+               userStatus: 'empty',
+            },
+            {
+               deskNumber: 6,
+               userName: '성실히',
+               userTimer: '00:01:11',
+               userStatus: 'study',
+            },
+         ];
+      },
+   },
 };
 </script>
 <style scoped lang="scss">
@@ -35,6 +86,27 @@ export default {
    /* background-color: rgb(255, 253, 190); */
 
    overflow-y: auto;
+
+   .profile-wrapper {
+      position: fixed;
+
+      top: 50%;
+      right: 0px;
+
+      transform: translateY(-50%);
+
+      border: 1px dashed red;
+      z-index: 10;
+
+      width: 40vw;
+      min-width: 300px;
+      height: auto;
+
+      .profile {
+         width: 100%;
+         /* heigth:  */
+      }
+   }
 
    .deskList {
       display: flex;
