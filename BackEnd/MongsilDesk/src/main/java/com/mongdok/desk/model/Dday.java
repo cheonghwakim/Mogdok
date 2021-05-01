@@ -25,12 +25,15 @@ public class Dday {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long ddayId;
-	
-	private long deskId;
-	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+		
 	private Date finishDate;
 	
 	private String title;
+	
+	private String transform;
+	
+	private int color;	
+
+	private long deskId;
 
 }

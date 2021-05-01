@@ -1,6 +1,8 @@
 package com.mongdok.desk.controller;
 
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +43,8 @@ public class MemoController {
 		return memoService.createMemo(memoRequest);
 	}
 	@PutMapping
-	@ApiOperation(value = "메모 수정")
-	public ResponseEntity<? extends BasicResponse> updateMemo(MemoUpdateRequest memoRequest){
+	@ApiOperation(value = "메모 생성&수정")
+	public ResponseEntity<? extends BasicResponse> updateMemo(List<MemoUpdateRequest> memoRequest){
 		return memoService.updateMemo(memoRequest);
 	}
 

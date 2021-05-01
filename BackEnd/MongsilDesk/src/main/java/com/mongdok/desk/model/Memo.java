@@ -25,5 +25,9 @@ public class Memo {
 		
 	private String content;
 	
+	private String transform;
+	
+	private int color;
+	
 	private long deskId;
 }

@@ -1,6 +1,8 @@
 package com.mongdok.desk.service;
 
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
 import com.mongdok.desk.common.response.BasicResponse;
@@ -10,5 +12,5 @@ public interface DdayService {
 
 	public ResponseEntity<? extends BasicResponse> deleteDday(long ddayId);
 
-	public ResponseEntity<? extends BasicResponse> createDday(DdayRequest ddayRequest);
+	public ResponseEntity<? extends BasicResponse> createDday(List<DdayRequest> ddayRequest);
 }

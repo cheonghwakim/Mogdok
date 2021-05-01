@@ -1,6 +1,8 @@
 package com.mongdok.desk.service;
 
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
 import com.mongdok.desk.common.response.BasicResponse;
@@ -13,6 +15,6 @@ public interface MemoService {
 
 	public ResponseEntity<? extends BasicResponse> createMemo(MemoCreateRequest memoRequest);
 
-	public ResponseEntity<? extends BasicResponse> updateMemo(MemoUpdateRequest memoRequest);
+	public ResponseEntity<? extends BasicResponse> updateMemo(List<MemoUpdateRequest> memoRequest);
 
 }
