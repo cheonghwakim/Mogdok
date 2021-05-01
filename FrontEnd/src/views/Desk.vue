@@ -36,7 +36,7 @@ export default {
 /* $desk-width: 1280px; */
 
 .desk {
-   margin-top: $HeaderHeight;
+   /* margin-top: $HeaderHeight; */
    margin-bottom: 60px;
 
    width: 100%;
@@ -50,7 +50,7 @@ export default {
 
    .info {
       position: fixed;
-      top: $HeaderHeight;
+      top: 1vw;
       left: 50%;
       transform: translateX(-50%);
 
