@@ -13,10 +13,18 @@
         이 메모 삭제하기
       </button>
       <button v-show="editable && selectedMemoIdx >= 0" @click="writeMemo">내용 작성하기</button>
+      <button
+        v-for="({ colorName }, index) in colors"
+        :key="'color' + index"
+        v-show="editable && selectedMemoIdx >= 0"
+        @click="changeColor(index)"
+      >
+        {{ colorName }}색으로 변경하기
+      </button>
     </div>
     <Moveable
       ref="moveable"
-      v-for="({ memoId, content, zIndex, moveable, transform }, index) in memos"
+      v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memos"
       :key="'memo' + memoId"
       class="moveable-container"
       v-bind="moveable"
@@ -43,10 +51,12 @@
             fill="black"
           />
           <path
+            :style="{ fill: colors[color].front }"
             d="M16.3839 21.3334C19.3439 20.6534 21.6039 19.8734 23.9039 19.6534C31.6539 18.9434 39.4039 18.3434 47.1739 17.8734C55.6739 17.3634 64.1839 17.0734 72.6939 16.6334C80.4739 16.2334 88.2439 15.7734 96.0139 15.3434C110.504 14.5534 124.984 13.6334 139.484 13.0334C159.744 12.1934 180.004 11.4534 200.264 10.9834C208.404 10.7934 216.554 11.5734 224.704 11.7134C238.854 11.9434 253.004 12.2234 267.154 12.1034C287.834 11.9234 308.514 11.4534 329.194 11.0134C332.594 10.9434 335.984 10.3734 340.164 9.94336C340.164 15.0234 340.504 19.6934 340.094 24.3134C339.094 35.7334 339.424 47.0934 340.094 58.5234C341.204 77.6834 341.814 96.8734 342.694 116.053C342.984 122.383 343.834 128.713 343.784 135.043C343.634 151.333 344.834 167.603 343.494 183.923C342.754 192.893 343.734 201.993 343.864 211.043C343.944 216.823 343.884 222.613 343.884 228.743C342.594 229.083 341.454 229.613 340.294 229.643C323.634 230.123 306.954 230.183 290.374 232.353C283.384 233.263 276.294 233.473 269.234 233.813C263.614 234.083 262.144 235.813 263.194 241.293C264.074 245.923 264.664 250.613 265.634 255.223C267.624 264.603 269.804 273.943 271.864 283.303C273.374 290.183 274.814 297.073 276.314 304.083C275.324 304.593 274.744 305.123 274.094 305.193C258.274 307.063 242.434 308.803 226.624 310.733C217.054 311.903 207.514 311.853 197.894 311.453C187.604 311.033 177.254 310.833 166.974 311.413C156.684 311.993 146.464 313.893 136.184 314.803C123.204 315.963 110.264 317.583 97.1539 317.113C89.7839 316.853 82.3739 317.693 74.9739 318.023C67.7739 318.343 60.5739 318.763 53.3639 318.923C46.1439 319.083 38.9139 318.953 31.2639 318.953C28.6039 315.003 28.1839 309.913 27.4139 304.953C25.2539 290.943 24.9639 276.803 24.4139 262.663C24.0839 254.153 23.0139 245.683 22.2339 237.193C21.1439 225.293 20.0139 213.393 18.9139 201.493C17.4139 185.273 16.1339 169.033 14.3639 152.853C12.9139 139.653 13.6039 126.493 13.8239 113.293C14.0239 101.163 13.4339 89.0234 13.3939 76.8934C13.3839 74.4634 14.3839 72.0434 14.7039 69.5934C15.3439 64.5834 16.2139 59.5734 16.3239 54.5434C16.5539 43.6934 16.3839 32.8234 16.3839 21.3334Z"
             fill="#FAFFDC"
           />
           <path
+            :style="{ fill: colors[color].back }"
             d="M285.934 296.973C281.704 279.223 275.894 262.253 273.414 243.753C294.404 242.793 314.804 241.853 335.764 240.883C330.864 246.943 326.164 252.823 321.384 258.633C317.144 263.793 312.874 268.943 308.484 273.973C305.174 277.783 301.734 281.493 298.204 285.093C294.424 288.933 290.464 292.593 285.934 296.973Z"
             fill="#DCE0C6"
           />
@@ -109,6 +119,15 @@ export default {
       selectedMemoIdx: -1,
       dialog: false,
       zIndexCount: 1,
+      createMemoKeyIndex: 0,
+      removedList: [],
+      colors: [
+        { colorName: '오렌지', front: 'rgb(255, 228, 225)', back: 'rgb(255, 160, 122)' },
+        { colorName: '그린', front: 'rgb(240, 255, 240)', back: 'rgb(152, 251, 152)' },
+        { colorName: '스카이블루', front: 'rgb(240, 255, 255)', back: 'rgb(224, 255, 255)' },
+        { colorName: '레몬', front: 'rgb(245, 245, 220)', back: 'rgb(238, 232, 170)' },
+        { colorName: '토마토', front: 'rgb(255, 69, 0)', back: 'rgb(255, 0, 0)' },
+      ],
     };
   },
   methods: {
@@ -150,12 +169,14 @@ export default {
     },
     edit() {
       this.editable = true; // 편집을 가능 상태로 변경
+      this.removedList = []; // 삭제했던 리스트 초기화
       this.selectedMemoIdx = -1; // 클릭된 메모 없음 상태로 변경
       // 모든 메모지를 이동가능한 상태로 업데이트
       for (let i = 0; i < this.memos.length; i++) this.setMemoState(i, true);
     },
     editComplete() {
       this.editable = false; // 편집 불가능 상태로 변경
+      this.removedList = []; // 삭제했던 리스트 초기화
       this.selectedMemoIdx = -1; // 클릭된 메모 없음 상태로 변경
       // 모든 메모지를 움직일 수 없는 상태로 업데이트
       for (let i = 0; i < this.memos.length; i++) this.setMemoState(i, false);
@@ -181,7 +202,7 @@ export default {
       this.memos[this.selectedMemoIdx].zIndex = 3000 + this.zIndexCount;
     },
     removeMemo() {
-      this.memos.splice(this.selectedMemoIdx, 1);
+      this.removedList.push(this.memos.splice(this.selectedMemoIdx, 1).memoId);
     },
     createMemo() {
       if (this.memos.length >= MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
@@ -190,14 +211,22 @@ export default {
         content: '',
         zIndex: 1,
         moveable: { ...this.MoveableState },
+        color: 0,
       });
     },
     writeMemo() {
       this.dialog = true;
     },
     saveMemo() {
-      console.log('%cApp.vue line:204 this.memos', 'color: #007acc;', this.memos);
       console.log('%cApp.vue line:216 object', 'color: #007acc;', JSON.stringify(this.memos));
+      const result = this.memos.map((e) => {
+        if (e.memoId.substring(0, 3) === 'tmp') {
+          e.memoId = undefined;
+          return e;
+        } else return e;
+      });
+      // 임시. 서버와 연동하면 result를 사용하면 됨
+      console.log('%cApp.vue line:206 result', 'color: #007acc;', result);
       localStorage.setItem('memos', JSON.stringify(this.memos));
       // axios.post('http://k4a401.p.ssafy.io:2000/desk/memo', this.memos)
       // .then(res => {
@@ -206,6 +235,9 @@ export default {
       // .catch(err => {
       //   console.error(err);
       // })
+    },
+    changeColor(index) {
+      this.memos[this.selectedMemoIdx].color = index;
     },
   },
   created() {
