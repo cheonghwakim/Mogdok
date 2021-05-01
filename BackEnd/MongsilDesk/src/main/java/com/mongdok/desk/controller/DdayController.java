@@ -1,6 +1,8 @@
 package com.mongdok.desk.controller;
 
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +37,8 @@ public class DdayController {
 	}
 	
 	@PostMapping
-	@ApiOperation(value = "디데이 생성")
-	public ResponseEntity<? extends BasicResponse> createDday(DdayRequest ddayRequest){
+	@ApiOperation(value = "디데이 생성&수정")
+	public ResponseEntity<? extends BasicResponse> createDday(List<DdayRequest> ddayRequest){
 		return ddayService.createDday(ddayRequest);
 	}
 	

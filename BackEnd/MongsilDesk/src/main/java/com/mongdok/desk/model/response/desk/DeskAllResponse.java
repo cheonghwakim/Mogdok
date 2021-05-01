@@ -2,8 +2,8 @@ package com.mongdok.desk.model.response.desk;
 
 import java.util.List;
 
+import com.mongdok.desk.model.response.board.BoardOnlyIdResponse;
 import com.mongdok.desk.model.response.dday.DdayResponse;
-import com.mongdok.desk.model.response.guestbook.GuestBookOnlyIdResponse;
 import com.mongdok.desk.model.response.memo.MemoResponse;
 
 import lombok.Data;
@@ -18,5 +18,5 @@ public class DeskAllResponse {
 	
 	private List<DdayResponse> ddayList;
 	
-	private List<GuestBookOnlyIdResponse> guestbookList;
+	private List<BoardOnlyIdResponse> guestbookList;
 }

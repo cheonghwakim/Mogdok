@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service;
 import com.mongdok.desk.common.response.BasicResponse;
 import com.mongdok.desk.common.response.CommonResponse;
 import com.mongdok.desk.common.response.ErrorResponse;
-import com.mongdok.desk.dao.GuestbookDao;
+import com.mongdok.desk.dao.BoardDao;
 import com.mongdok.desk.dao.UserDao;
 import com.mongdok.desk.exception.ErrorCode;
-import com.mongdok.desk.model.Guestbook;
-import com.mongdok.desk.model.request.guestbook.GuestBookUpdateRequest;
-import com.mongdok.desk.model.request.guestbook.GuestbookCreateRequest;
-import com.mongdok.desk.model.response.guestbook.GuestBookResponse;
-import com.mongdok.desk.service.GuestBookService;
+import com.mongdok.desk.model.Board;
+import com.mongdok.desk.model.request.board.BoardCreateRequest;
+import com.mongdok.desk.model.request.board.BoardUpdateRequest;
+import com.mongdok.desk.model.response.board.BoardResponse;
+import com.mongdok.desk.service.BoardService;
 
 @Service
-public class GuestBookServiceImpl implements GuestBookService {
+public class BoardServiceImpl implements BoardService {
 	@Autowired
-	GuestbookDao guestBookDao;
+	BoardDao guestBookDao;
 	@Autowired
 	private UserDao userDao;
 
@@ -33,63 +33,63 @@ public class GuestBookServiceImpl implements GuestBookService {
 	//방명록 id로 방명록 정보 불러오기
 	@Override
 	public ResponseEntity<? extends BasicResponse> getGuestBookById(long boardId) {
-		GuestBookResponse response = new GuestBookResponse();
+		BoardResponse response = new BoardResponse();
 
 		try {
-			Optional<Guestbook> optional = guestBookDao.findByBoardId(boardId);
+			Optional<Board> optional = guestBookDao.findByBoardId(boardId);
 			if (optional.isPresent()) {
-				Guestbook guestbook = optional.get();
+				Board guestbook = optional.get();
 
 				response.setBoardId(guestbook.getBoardId());
 				response.setContent(guestbook.getContent());
 				response.setWriteDate(guestbook.getWriteDate());
-				response.setNickName(userDao.findNickNameByUserId(guestbook.getUserId()));//userid를 nickname으로 바꿔보내기
+				response.setNickname(userDao.findNickNameByUserId(guestbook.getUserId()));//userid를 nickname으로 바꿔보내기
 			} else {
 				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 boardId"));
 			}
 		} catch (Exception e) {
 			logger.error("방명록 불러오기 실패 : {}", e);
 			return ResponseEntity.ok()
-					.body(new ErrorResponse(ErrorCode.FAIL_GET_GUESTBOOK));
+					.body(new ErrorResponse(ErrorCode.FAIL_GET_BOARD));
 		}
 
-		return ResponseEntity.ok().body(new CommonResponse<GuestBookResponse>(response));
+		return ResponseEntity.ok().body(new CommonResponse<BoardResponse>(response));
 	}
 
 	// 방명록 작성
 	@Override
-	public ResponseEntity<? extends BasicResponse> createGuestBook(GuestbookCreateRequest request) {
-		GuestBookResponse response = new GuestBookResponse();
+	public ResponseEntity<? extends BasicResponse> createGuestBook(BoardCreateRequest request) {
+		BoardResponse response = new BoardResponse();
 
 		try {
-			Guestbook guestbook = new Guestbook();
+			Board guestbook = new Board();
 			guestbook.setContent(request.getContent());
 			guestbook.setDeskId(request.getDeskId());
-			guestbook.setUserId(userDao.findUserIdByNickname(request.getNickName()));//nickname을 userid 찾아옴
+			guestbook.setUserId(userDao.findUserIdByNickname(request.getNickname()));//nickname을 userid 찾아옴
 			guestBookDao.save(guestbook);
 			
 			response.setBoardId(guestbook.getBoardId());
 			response.setContent(guestbook.getContent());
 			response.setWriteDate(guestbook.getWriteDate());
-			response.setNickName(request.getNickName());
+			response.setNickname(request.getNickname());
 
 		} catch (Exception e) {
 			logger.error("방명록 작성 실패 : {}", e);
 			return ResponseEntity.ok()
-					.body(new ErrorResponse(ErrorCode.FAIL_GET_GUESTBOOK));
+					.body(new ErrorResponse(ErrorCode.FAIL_GET_BOARD));
 		}
-		return ResponseEntity.ok().body(new CommonResponse<GuestBookResponse>(response));
+		return ResponseEntity.ok().body(new CommonResponse<BoardResponse>(response));
 	}
 
 	//방명록 업데이트
 	@Override
-	public ResponseEntity<? extends BasicResponse> updateGuestBook(GuestBookUpdateRequest request) {
-		GuestBookResponse response = new GuestBookResponse();
+	public ResponseEntity<? extends BasicResponse> updateGuestBook(BoardUpdateRequest request) {
+		BoardResponse response = new BoardResponse();
 
 		try {
-			Optional<Guestbook> optional = guestBookDao.findByBoardId(request.getBoardId());
+			Optional<Board> optional = guestBookDao.findByBoardId(request.getBoardId());
 			if (optional.isPresent()) {
-				Guestbook guestbook = optional.get();
+				Board guestbook = optional.get();
 				
 				guestbook.setContent(request.getContent());//내용 수정
 				guestBookDao.save(guestbook);
@@ -97,7 +97,7 @@ public class GuestBookServiceImpl implements GuestBookService {
 				response.setBoardId(guestbook.getBoardId());
 				response.setContent(guestbook.getContent());
 				response.setWriteDate(guestbook.getWriteDate());
-				response.setNickName(userDao.findNickNameByUserId(guestbook.getUserId()));
+				response.setNickname(userDao.findNickNameByUserId(guestbook.getUserId()));
 			}
 			else {
 				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 boardId"));
@@ -105,9 +105,9 @@ public class GuestBookServiceImpl implements GuestBookService {
 		} catch (Exception e) {
 			logger.error("방명록 업데이트 실패 : {}", e);
 			return ResponseEntity.ok()
-					.body(new ErrorResponse(ErrorCode.FAIL_UPDATE_GUESTBOOK));
+					.body(new ErrorResponse(ErrorCode.FAIL_UPDATE_BOARD));
 		}
-		return ResponseEntity.ok().body(new CommonResponse<GuestBookResponse>(response));
+		return ResponseEntity.ok().body(new CommonResponse<BoardResponse>(response));
 	}
 
 	//방명록 삭제
@@ -118,7 +118,7 @@ public class GuestBookServiceImpl implements GuestBookService {
 		} catch (Exception e) {
 			logger.error("방명록 삭제 실패 : {}", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ErrorResponse(ErrorCode.FAIL_DELETE_GUESTBOOK));
+					.body(new ErrorResponse(ErrorCode.FAIL_DELETE_BOARD));
 		}
 		return ResponseEntity.ok().body(new CommonResponse<String>("방명록 삭제 완료"));
 	}
