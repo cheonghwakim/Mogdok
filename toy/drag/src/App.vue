@@ -268,7 +268,7 @@ body {
 /* The Modal (background) */
 .modal {
   position: fixed; /* Stay in place */
-  z-index: 3001; /* Sit on top */
+  z-index: 10000; /* Sit on top */
   padding-top: 100px; /* Location of the box */
   left: 0;
   top: 0;
