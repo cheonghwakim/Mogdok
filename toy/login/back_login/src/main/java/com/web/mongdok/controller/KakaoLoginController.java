@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.mongdok.dto.RedisUserDto;
 import com.web.mongdok.dto.SignupDto;
 import com.web.mongdok.entity.User;
@@ -107,8 +111,8 @@ public class KakaoLoginController {
     	BeanUtils.copyProperties(user, newUser);
     	newUser.setId(uuid);
 
-//		authService.signUpSocialUser(newUser); // 회원 가입
-//        deskService.setDesk(uuid, user.getPromise()); // 내 책상 초기화
+		authService.signUpSocialUser(newUser); // 회원 가입
+        deskService.setDesk(uuid, user.getPromise()); // 내 책상 초기화
 
         redisUtil.setData(user.getKakaoId(), "O"); // 새로운 유저인지 아닌지 판단 위함
     	
@@ -125,7 +129,28 @@ public class KakaoLoginController {
     	return new ResponseEntity<>("success", HttpStatus.OK);
     }
     
-    
+    @GetMapping("/auth")
+    @ApiOperation("레디스에서 인증")
+    public ResponseEntity<?> auth(@RequestParam String refreshToken) {
+    	
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	
+    	String userInfo = redisUtil.getData(refreshToken);
+    	if(userInfo == null)
+    		return new ResponseEntity<>("fail", HttpStatus.OK);
+    	
+    	System.out.println(userInfo);
+    	RedisUserDto user = new RedisUserDto();
+    	try {
+			user = objectMapper.readValue(userInfo, RedisUserDto.class);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    	return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     @PostMapping("/login")
     @ApiOperation("로그인")
     public ResponseEntity<?> login(@RequestBody SignupDto form) {
