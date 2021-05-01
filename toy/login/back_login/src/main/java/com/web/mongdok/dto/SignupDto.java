@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SignupReqDto {
+public class SignupDto {
+	
+	private String refreshToken;
 	
 	private String email;
 	

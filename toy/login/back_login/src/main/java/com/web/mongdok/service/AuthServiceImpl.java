@@ -1,20 +1,15 @@
 package com.web.mongdok.service;
 
-import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.web.mongdok.dto.SignupReqDto;
 import com.web.mongdok.entity.User;
 import com.web.mongdok.repository.KaKaoUserRepository;
 import com.web.mongdok.utils.RedisUtil;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -29,14 +24,6 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public void signUpSocialUser(User user) {
         userRepository.save(user);
-	}
-
-	@Override
-	public Optional<User> loginSocialUser(String id) throws NotFoundException {
-        Optional<User> kakaoUser = userRepository.findByKakaoId(id);
-        if(!kakaoUser.isPresent()) throw new NotFoundException("멤버가 조회되지 않음");
-        
-        return kakaoUser;
 	}
 
 	@Override
@@ -67,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public Optional<User> findByKakaoId(String kakaoId) {
+	public User findByKakaoId(String kakaoId) {
 		return userRepository.findByKakaoId(kakaoId);
 	}
 
