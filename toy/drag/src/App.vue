@@ -1,30 +1,31 @@
 <template>
-  <div id="app">
+  <div id="app" style="border:1px solid red">
     <h1>포스트잇 테스트</h1>
     <h3>
       작성 가능한 메모(<span :style="memos.length >= 10 ? 'color:red' : ''">{{ memos.length }}</span
       >/10)
     </h3>
-    <editable style="display:none"></editable>
     <div>
-      <button @click="edit">편집하기</button>
-      <button @click="editComplete">편집완료</button>
-      <button @click="createMemo">메모 생성</button>
-      <button v-show="clickedMemo" @click="removeMemo">이 메모 삭제하기</button>
-      <button v-show="clickedMemo" @click="writeMemo">내용 작성하기</button>
+      <button v-show="!editable" @click="edit">편집하기</button>
+      <button v-show="editable" @click="editComplete">편집완료(저장)</button>
+      <button v-show="editable" @click="createMemo">메모 생성</button>
+      <button v-show="editable && selectedMemoIdx >= 0" @click="removeMemo">
+        이 메모 삭제하기
+      </button>
+      <button v-show="editable && selectedMemoIdx >= 0" @click="writeMemo">내용 작성하기</button>
     </div>
     <Moveable
       ref="moveable"
-      v-for="({ memoId, content, className, zIndex }, index) in memos"
+      v-for="({ memoId, content, zIndex, moveable, transform }, index) in memos"
       :key="'memo' + memoId"
       class="moveable-container"
       v-bind="moveable"
       @drag="handleDrag"
+      @renderEnd="handleRenderEnd(index, ...arguments)"
       @rotate="handleRotate"
       @scale="handleScale"
-      @mousedown.native="onClick(index)"
-      :className="className"
-      :style="{ zIndex }"
+      @mousedown.native="onSelectMemo(index)"
+      :style="{ zIndex, transform }"
     >
       <span class="postit">
         <span class="postit-content">
@@ -61,6 +62,7 @@
   </div>
 </template>
 <script>
+// import axios from 'axios';
 import Moveable from 'vue-moveable';
 
 const MEMO_MAX_SIZE = 10;
@@ -70,99 +72,144 @@ export default {
   components: {
     Moveable,
   },
-  data: () => ({
-    moveable: {
-      draggable: true,
-      throttleDrag: 0,
-      // resizable: true,
-      // throttleResize: 1,
-      keepRatio: true,
-      scalable: true,
-      throttleScale: 0,
-      rotatable: true,
-      throttleRotate: 0,
-      pinchable: true, // ["draggable", "resizable", "scalable", "rotatable"]
-      origin: false,
-      zoom: 1,
-      className: 'movedisable',
-    },
-    memos: [
-      { memoId: 1, content: '하위', className: 'movedisable', zIndex: 1 },
-      { memoId: 2, content: '하위2', className: 'movedisable', zIndex: 1 },
-      { memoId: 3, content: '하위3', className: 'movedisable', zIndex: 1 },
-      { memoId: 4, content: '하위4', className: 'movedisable', zIndex: 1 },
-      { memoId: 5, content: '하위5', className: 'movedisable', zIndex: 1 },
-      { memoId: 6, content: '하위6', className: 'movedisable', zIndex: 1 },
-    ],
-    editable: false,
-    clickedMemo: false,
-    selectedMemoIdx: -1,
-    dialog: false,
-  }),
+  data() {
+    return {
+      MovedisableState: {
+        draggable: false,
+        scalable: false,
+        rotatable: false,
+        resizable: false,
+        pinchable: false,
+        throttleDrag: 0,
+        keepRatio: true,
+        throttleScale: 0,
+        throttleRotate: 0,
+        origin: false,
+        zoom: 1,
+        className: 'movedisable',
+      },
+      MoveableState: {
+        draggable: true,
+        scalable: true,
+        rotatable: true,
+        resizable: false,
+        pinchable: true,
+        throttleDrag: 0,
+        keepRatio: true,
+        throttleScale: 0,
+        throttleRotate: 0,
+        origin: false,
+        zoom: 1,
+        className: 'moveable',
+      },
+      memos: [],
+      hasInit: false,
+      editable: false,
+      clickedMemo: false,
+      selectedMemoIdx: -1,
+      dialog: false,
+      zIndexCount: 1,
+    };
+  },
   methods: {
+    getMemos() {
+      var tmp = JSON.parse(localStorage.getItem('memos'));
+      return tmp;
+      // return axios
+      //   .get('http://k4a401.p.ssafy.io:2000/desk/all', { params: { nickname: 'ssafy' } })
+      //   .then((res) => {
+      //     console.log(res);
+      //     return res.data.data.memoList;
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //     return undefined;
+      //   });
+    },
+    initMemos() {
+      // const memos = this.getMemos();
+      this.hasInit = false;
+      this.memos = JSON.parse(localStorage.getItem('memos')) || [];
+      for (let i = 0; i < this.memos.length; i++) {
+        // moveable 초기 세팅
+        // 생성하고 난 후 기존에 있던 메모의 위치로 이동해야 하므로 MoveableState 사용
+        this.memos[i].moveable = { ...this.MovedisableState };
+      }
+    },
     handleDrag({ target, transform }) {
-      if (!this.editable) return;
-      console.log('onDrag left, top', transform);
       target.style.transform = transform;
     },
-    handleRotate({ target, dist, transform }) {
-      if (!this.editable) return;
-      console.log('onRotate', dist);
+    handleRenderEnd(index, event) {
+      this.memos[index].transform = event.target.style.transform;
+    },
+    handleRotate({ target, transform }) {
+      target.style.transform = transform;
+    },
+    handleScale({ target, transform }) {
       target.style.transform = transform;
     },
     edit() {
-      this.editable = true;
-      this.clickedMemo = false;
-      for (let i = 0; i < this.memos.length; i++) {
-        this.memos[i].className = 'moveable';
-      }
+      this.editable = true; // 편집을 가능 상태로 변경
+      this.selectedMemoIdx = -1; // 클릭된 메모 없음 상태로 변경
+      // 모든 메모지를 이동가능한 상태로 업데이트
+      for (let i = 0; i < this.memos.length; i++) this.setMemoState(i, true);
     },
     editComplete() {
-      this.editable = false;
-      this.clickedMemo = false;
-      for (let i = 0; i < this.memos.length; i++) {
-        this.memos[i].className = 'movedisable';
-      }
+      this.editable = false; // 편집 불가능 상태로 변경
+      this.selectedMemoIdx = -1; // 클릭된 메모 없음 상태로 변경
+      // 모든 메모지를 움직일 수 없는 상태로 업데이트
+      for (let i = 0; i < this.memos.length; i++) this.setMemoState(i, false);
+      this.saveMemo(); // 메모 저장
     },
-    handleScale({ target, transform, scale }) {
-      console.log('onScale scale', scale);
-      target.style.transform = transform;
+    setMemoState(index, state) {
+      // 메모지 상태 업데이트
+      this.memos[index].moveable.className = state ? 'moveable' : 'movedisable';
+      this.memos[index].moveable.draggable = state;
+      this.memos[index].moveable.scalable = state;
+      this.memos[index].moveable.rotatable = state;
     },
-    onClick(index) {
-      if (!this.editable) return;
-      this.clickedMemo = true;
-      this.selectedMemoIdx = index;
-      for (let i = 0; i < this.memos.length; i++) {
-        if (i === index) {
-          this.memos[i].className = 'clicked';
-          this.memos[i].zIndex = 3001;
-        } else {
-          this.memos[i].className = 'moveable';
-          this.memos[i].zIndex = 1;
-        }
+    onSelectMemo(index) {
+      // Todo : zindex 관리 필요
+      if (this.selectedMemoIdx >= 0 && this.selectedMemoIdx < this.memos.length) {
+        this.memos[this.selectedMemoIdx].moveable.className = 'moveable'; // 이전에 클릭한 메모의 선택이 풀린 UI로 변경
+        this.memos[this.selectedMemoIdx].zIndex = this.zIndexCount++;
       }
+      this.selectedMemoIdx = index; // 클릭된 메모의 index 업데이트
+      this.memos[this.selectedMemoIdx].moveable.className = 'clicked'; // 클릭된 UI 적용
+      this.memos[this.selectedMemoIdx].zIndex = 3000 + this.zIndexCount;
     },
     removeMemo() {
-      this.$refs.moveable[this.selectedMemoIdx].destroy();
       this.memos.splice(this.selectedMemoIdx, 1);
     },
     createMemo() {
-      if (this.memos.length >= MEMO_MAX_SIZE) return;
-      this.memos.push({ memoId: 6, content: '', className: 'moveable', zIndex: 1 });
+      if (this.memos.length >= MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
+      this.memos.push({
+        memoId: 'tmp' + this.createMemoKeyIndex++,
+        content: '',
+        zIndex: 1,
+        moveable: { ...this.MoveableState },
+      });
     },
     writeMemo() {
       this.dialog = true;
     },
+    saveMemo() {
+      console.log('%cApp.vue line:204 this.memos', 'color: #007acc;', this.memos);
+      console.log('%cApp.vue line:216 object', 'color: #007acc;', JSON.stringify(this.memos));
+      localStorage.setItem('memos', JSON.stringify(this.memos));
+      // axios.post('http://k4a401.p.ssafy.io:2000/desk/memo', this.memos)
+      // .then(res => {
+      //   console.log(res)
+      // })
+      // .catch(err => {
+      //   console.error(err);
+      // })
+    },
   },
-  mounted() {
-    // this.$refs.moveable[0].useCSS(Editable);
-    console.log(
-      '%cApp.vue line:134 this.$refs.moveable',
-      'color: #007acc;',
-      this.$refs.moveable[0]
-    );
-    // this.$refs.moveable[0].ables = [Editable];
+  created() {
+    this.initMemos(); // memo 초기화
   },
+  mounted() {},
 };
 </script>
 <style>
