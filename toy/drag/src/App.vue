@@ -171,11 +171,13 @@ export default {
     onSelectMemo(index) {
       // Todo : zindex 관리 필요
       if (this.selectedMemoIdx >= 0 && this.selectedMemoIdx < this.memos.length) {
-        this.memos[this.selectedMemoIdx].moveable.className = 'moveable'; // 이전에 클릭한 메모의 선택이 풀린 UI로 변경
+        this.memos[this.selectedMemoIdx].moveable.className = this.editable
+          ? 'moveable'
+          : 'movedisable'; // 이전에 클릭한 메모의 선택이 풀린 UI로 변경
         this.memos[this.selectedMemoIdx].zIndex = this.zIndexCount++;
       }
       this.selectedMemoIdx = index; // 클릭된 메모의 index 업데이트
-      this.memos[this.selectedMemoIdx].moveable.className = 'clicked'; // 클릭된 UI 적용
+      this.memos[this.selectedMemoIdx].moveable.className = this.editable ? 'clicked' : 'moveable'; // 클릭된 UI 적용
       this.memos[this.selectedMemoIdx].zIndex = 3000 + this.zIndexCount;
     },
     removeMemo() {
