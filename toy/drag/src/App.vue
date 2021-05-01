@@ -97,6 +97,9 @@ export default {
         origin: false,
         zoom: 1,
         className: 'movedisable',
+        // dragArea: true,
+        snappable: true,
+        bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
       },
       MoveableState: {
         draggable: true,
@@ -111,6 +114,9 @@ export default {
         origin: false,
         zoom: 1,
         className: 'moveable',
+        // dragArea: true,
+        snappable: true,
+        bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
       },
       memos: [],
       hasInit: false,
@@ -226,6 +232,7 @@ export default {
         } else return e;
       });
       // 임시. 서버와 연동하면 result를 사용하면 됨
+      // 모든 메모, 디데이, 삭제된 메모, 삭제된 디데이 모두 보내야 함
       console.log('%cApp.vue line:206 result', 'color: #007acc;', result);
       localStorage.setItem('memos', JSON.stringify(this.memos));
       // axios.post('http://k4a401.p.ssafy.io:2000/desk/memo', this.memos)
