@@ -32,6 +32,8 @@ export default {
    methods: {
       clickDesk: function() {
          alert(`${this.desk.userName} 클릭되었습니다.`);
+         this.$store.commit('SET_DESK', this.desk);
+         this.desk = '';
       },
    },
 };

@@ -53,7 +53,6 @@ const routes = [
       path: '/desk',
       name: 'Desk',
       components: {
-         header: Header,
          default: Desk,
          footer: Footer,
       },

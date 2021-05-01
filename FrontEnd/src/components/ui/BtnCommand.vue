@@ -1,5 +1,5 @@
 <template lang="">
-   <div class="btnCmdDiv">
+   <div class="btnCmdDiv" @click="onClick">
       <div class="title">{{ label }}</div>
       <svg width="100%" height="100%" viewBox="0 0 495 225" fill="none" xmlns="http://www.w3.org/2000/svg">
          <!-- 테두리 -->
@@ -46,6 +46,12 @@ export default {
    props: {
       label: String,
       // size: String,
+   },
+
+   methods: {
+      onClick: function() {
+         this.$emit('onClick');
+      },
    },
 
    computed: {

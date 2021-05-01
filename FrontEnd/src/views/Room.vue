@@ -1,8 +1,10 @@
 <template lang="">
    <div class="room">
-      <div class="profile-wrapper">
-         <div-profile class="profile"></div-profile>
-      </div>
+      <transition name="slide-up">
+         <div v-show="isOpenProfile" class="profile-wrapper">
+            <div-profile :clickedDesk="$store.state.desk" class="profile"></div-profile>
+         </div>
+      </transition>
       <div class="deskList">
          <div class="deskItem" v-for="(desk, idx) in deskList" :key="idx">
             <room-desk :desk="desk"></room-desk>
@@ -13,6 +15,7 @@
 <script>
 import RoomDesk from '@/components/RoomDesk';
 import DivProfile from '@/components/ui/DivProfile';
+import { mapState } from 'vuex';
 
 export default {
    name: 'Room',
@@ -23,7 +26,9 @@ export default {
          deskList: [],
       };
    },
-   computed: {},
+   computed: {
+      ...mapState(['isOpenProfile']),
+   },
    watch: {},
    //lifecycle area
    created() {
@@ -95,17 +100,13 @@ export default {
 
       transform: translateY(-50%);
 
-      border: 1px dashed red;
+      /* border: 1px dashed red; */
       z-index: 10;
 
-      width: 40vw;
+      width: 40vmax;
       min-width: 300px;
+      max-width: 500px;
       height: auto;
-
-      .profile {
-         width: 100%;
-         /* heigth:  */
-      }
    }
 
    .deskList {
@@ -121,5 +122,15 @@ export default {
          margin: 10px; // 책상 사이 간격 조정
       }
    }
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+   transition: all 1s ease;
+}
+.slide-up-enter,
+.slide-up-leave-to {
+   /* transform: translateX(-50%) translateY(200px); */
+   opacity: 0;
 }
 </style>

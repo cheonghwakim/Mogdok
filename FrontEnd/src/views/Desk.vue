@@ -46,7 +46,7 @@ export default {
    flex-direction: column;
 
    overflow: hidden;
-   overflow-x: auto; // hidden으로 해도, npm에서 드래그 제공
+   /* overflow-x: auto; // hidden으로 해도, npm에서 드래그 제공 */
 
    .info {
       position: fixed;
