@@ -67,21 +67,25 @@ public class JwtUtil {
         return expiration.before(new Date());
     }
 
-    // Access/Refresh Token 생성
-    public String generateToken(User user) {
-        return doGenerateToken(user, TOKEN_VALIDATION_SECOND);
-    }
+//    // Access/Refresh Token 생성
+//    public String generateToken(User user) {
+//        return doGenerateToken(user, TOKEN_VALIDATION_SECOND);
+//    }
 
-    public String generateRefreshToken(User user) {
-        return doGenerateToken(user, REFRESH_TOKEN_VALIDATION_SECOND);
+//    public String generateUserToken(User user) {
+//        return doGenerateToken(user, REFRESH_TOKEN_VALIDATION_SECOND);
+//    }
+    
+    public String generateRefreshToken(String refreshToken) {
+    	return doGenerateToken(refreshToken, REFRESH_TOKEN_VALIDATION_SECOND);
     }
-
-    // : 토큰을 생성, 페이로드에 담길 값은 email (임시)
-    public String doGenerateToken(User user, long expireTime) {
+    
+    // : 토큰을 생성, 페이로드에 담길 값은 refreshToken (임시)
+    public String doGenerateToken(String refreshToken, long expireTime) {
     	SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256 ;
     	
         Claims claims = Jwts.claims();
-        claims.put("email", user.getEmail());
+        claims.put("refreshToken", refreshToken);
 
         String jwt = null;
         try {

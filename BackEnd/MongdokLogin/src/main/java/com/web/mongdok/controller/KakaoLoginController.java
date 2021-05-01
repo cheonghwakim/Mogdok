@@ -79,7 +79,9 @@ public class KakaoLoginController {
 	        		RedisUserDto redisUser = new RedisUserDto();
 	            	BeanUtils.copyProperties(user, redisUser);
 	            	
-	            	redisUtil.setObjectExpire(refreshToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
+	            	String jwtRefreshToken = jwtUtil.generateRefreshToken(refreshToken);
+	            	redisUtil.setData(userInfo.get("id"), "O");
+	            	redisUtil.setObjectExpire(jwtRefreshToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
 	        	}
 	        
 	        } // else redis에 있고 db에 있음
@@ -123,19 +125,20 @@ public class KakaoLoginController {
     	
     	System.out.println(redisUser);
     	System.out.println("refreshToken: " + user.getRefreshToken());
+    	String jwtRefreshToken = jwtUtil.generateRefreshToken(user.getRefreshToken());
     	// 카카오 refreshToken의 유효기간은 30일
-    	redisUtil.setObjectExpire(user.getRefreshToken(), redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
+    	redisUtil.setObjectExpire(jwtRefreshToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
     	
     	return new ResponseEntity<>("success", HttpStatus.OK);
     }
     
     @GetMapping("/auth")
     @ApiOperation("레디스에서 인증하기")
-    public ResponseEntity<?> auth(@RequestParam String refreshToken) {
+    public ResponseEntity<?> auth(@RequestParam String jwtRefreshToken) {
     	
     	ObjectMapper objectMapper = new ObjectMapper();
     	
-    	String userInfo = redisUtil.getData(refreshToken);
+    	String userInfo = redisUtil.getData(jwtRefreshToken);
     	if(userInfo == null)
     		return new ResponseEntity<>("fail", HttpStatus.OK);
     	
