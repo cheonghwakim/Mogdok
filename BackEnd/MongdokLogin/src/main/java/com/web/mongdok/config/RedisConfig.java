@@ -24,8 +24,8 @@ public class RedisConfig {
   @Value("${spring.redis.host}")
   public String host;
   
-//  @Value("${spring.redis.password}")
-//  public String password;
+  @Value("${spring.redis.password}")
+  public String password;
   
   @Autowired
   public ObjectMapper objectMapper;
