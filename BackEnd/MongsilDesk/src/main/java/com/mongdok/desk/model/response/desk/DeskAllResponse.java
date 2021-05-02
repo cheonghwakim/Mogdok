@@ -18,5 +18,5 @@ public class DeskAllResponse {
 	
 	private List<DdayResponse> ddayList;
 	
-	private List<BoardOnlyIdResponse> guestbookList;
+	private List<BoardOnlyIdResponse> boardList;
 }

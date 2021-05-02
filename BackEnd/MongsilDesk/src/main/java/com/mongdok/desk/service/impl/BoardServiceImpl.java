@@ -39,12 +39,12 @@ public class BoardServiceImpl implements BoardService {
 		try {
 			Optional<Board> optional = guestBookDao.findByBoardId(boardId);
 			if (optional.isPresent()) {
-				Board guestbook = optional.get();
+				Board board = optional.get();
 
-				response.setBoardId(guestbook.getBoardId());
-				response.setContent(guestbook.getContent());
-				response.setWriteDate(guestbook.getWriteDate());
-				response.setNickname(userDao.findNickNameByUserId(guestbook.getUserId()));//userid를 nickname으로 바꿔보내기
+				response.setBoardId(board.getBoardId());
+				response.setContent(board.getContent());
+				response.setWriteDate(board.getWriteDate());
+				response.setNickname(userDao.findNickNameByUserId(board.getUserId()));//userid를 nickname으로 바꿔보내기
 			} else {
 				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 boardId"));
 			}
@@ -63,15 +63,15 @@ public class BoardServiceImpl implements BoardService {
 		BoardResponse response = new BoardResponse();
 
 		try {
-			Board guestbook = new Board();
-			guestbook.setContent(request.getContent());
-			guestbook.setDeskId(request.getDeskId());
-			guestbook.setUserId(userDao.findUserIdByNickname(request.getNickname()));//nickname을 userid 찾아옴
-			guestBookDao.save(guestbook);
+			Board board = new Board();
+			board.setContent(request.getContent());
+			board.setDeskId(request.getDeskId());
+			board.setUserId(userDao.findUserIdByNickname(request.getNickname()));//nickname을 userid 찾아옴
+			guestBookDao.save(board);
 			
-			response.setBoardId(guestbook.getBoardId());
-			response.setContent(guestbook.getContent());
-			response.setWriteDate(guestbook.getWriteDate());
+			response.setBoardId(board.getBoardId());
+			response.setContent(board.getContent());
+			response.setWriteDate(board.getWriteDate());
 			response.setNickname(request.getNickname());
 
 		} catch (Exception e) {
@@ -90,15 +90,15 @@ public class BoardServiceImpl implements BoardService {
 		try {
 			Optional<Board> optional = guestBookDao.findByBoardId(request.getBoardId());
 			if (optional.isPresent()) {
-				Board guestbook = optional.get();
+				Board board = optional.get();
 				
-				guestbook.setContent(request.getContent());//내용 수정
-				guestBookDao.save(guestbook);
+				board.setContent(request.getContent());//내용 수정
+				guestBookDao.save(board);
 				
-				response.setBoardId(guestbook.getBoardId());
-				response.setContent(guestbook.getContent());
-				response.setWriteDate(guestbook.getWriteDate());
-				response.setNickname(userDao.findNickNameByUserId(guestbook.getUserId()));
+				response.setBoardId(board.getBoardId());
+				response.setContent(board.getContent());
+				response.setWriteDate(board.getWriteDate());
+				response.setNickname(userDao.findNickNameByUserId(board.getUserId()));
 			}
 			else {
 				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 boardId"));

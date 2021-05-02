@@ -38,7 +38,7 @@ public class Desk {
 	private List<Dday> ddayList;
 	
 	@OneToMany(mappedBy = "deskId")
-	private List<Board> guestbookList;
+	private List<Board> boardList;
 	
 	
 }

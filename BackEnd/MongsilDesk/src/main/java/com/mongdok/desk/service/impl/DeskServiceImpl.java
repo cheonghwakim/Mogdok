@@ -110,16 +110,16 @@ public class DeskServiceImpl implements DeskService {
 					ddaylist.add(dday);
 				}
 
-				List<BoardOnlyIdResponse> guestbooklist = new ArrayList<BoardOnlyIdResponse>();
+				List<BoardOnlyIdResponse> boardList = new ArrayList<BoardOnlyIdResponse>();
 
-				for (Board origin : desk.getGuestbookList()) {
-					BoardOnlyIdResponse guestbook = new BoardOnlyIdResponse();
-					BeanUtils.copyProperties(origin, guestbook);
-					guestbooklist.add(guestbook);
+				for (Board origin : desk.getBoardList()) {
+					BoardOnlyIdResponse board = new BoardOnlyIdResponse();
+					BeanUtils.copyProperties(origin, board);
+					boardList.add(board);
 				}
 				response.setMemoList(memolist);
 				response.setDdayList(ddaylist);
-				response.setGuestbookList(guestbooklist);
+				response.setBoardList(boardList);
 
 			} else {
 				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 닉네임"));
