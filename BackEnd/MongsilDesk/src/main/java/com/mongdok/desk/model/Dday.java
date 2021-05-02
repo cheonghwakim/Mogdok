@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -25,14 +25,14 @@ public class Dday {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long ddayId;
-		
+	
 	private Date finishDate;
 	
 	private String title;
 	
 	private String transform;
 	
-	private int color;	
+	private Integer color;	
 
 	private long deskId;
 

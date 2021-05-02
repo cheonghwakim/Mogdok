@@ -1,6 +1,5 @@
 package com.mongdok.desk.controller;
 
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,6 @@ public class BoardController {
 	}
 	
 	@DeleteMapping
-	@Transactional
 	@ApiOperation(value = "방명록 삭제")
 	public ResponseEntity<? extends BasicResponse> deleteGuestBook(long boardId){
 		return guestBookService.deleteGuestBook(boardId);

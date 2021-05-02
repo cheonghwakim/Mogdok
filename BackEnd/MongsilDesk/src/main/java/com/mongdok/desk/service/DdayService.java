@@ -10,7 +10,7 @@ import com.mongdok.desk.model.request.dday.DdayRequest;
 
 public interface DdayService {
 
-	public ResponseEntity<? extends BasicResponse> deleteDday(long ddayId);
+	public ResponseEntity<? extends BasicResponse> deleteDday(List<Long> ddayIds);
 
-	public ResponseEntity<? extends BasicResponse> createDday(List<DdayRequest> ddayRequest);
+	public ResponseEntity<? extends BasicResponse> createDday(List<DdayRequest> ddayRequests);
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class DdayResponse {
+	
 	private long ddayId;
 
 	private String title;
@@ -17,5 +18,5 @@ public class DdayResponse {
 
 	private String transform;
 
-	private int color;
+	private Integer color;
 }
