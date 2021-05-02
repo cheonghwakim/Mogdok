@@ -24,3 +24,6 @@ pnpm-debug.log*
 
 # BackEnd
 application.properties
+BackEnd/MongsilDesk/mongdok.sh
+BackEnd/MongsilDesk/Dockerfile
+BackEnd/MongsilDesk/src/main/resources/keystore.p12
