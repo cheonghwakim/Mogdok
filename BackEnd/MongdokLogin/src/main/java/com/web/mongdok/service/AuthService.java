@@ -19,4 +19,6 @@ public interface AuthService {
 	User findByEmail(String email);
 
 	void signUpSocialUser(User user);
+
+	boolean findByNickname(String nickname);
 }
