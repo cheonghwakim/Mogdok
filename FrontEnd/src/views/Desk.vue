@@ -66,10 +66,10 @@ export default {
 
 .desk {
    /* margin-top: $HeaderHeight; */
-   margin-bottom: 60px;
+   /* margin-bottom: 60px; */
 
    width: 100%;
-   height: calc(100% - #{$HeaderHeight});
+   /* height: calc(100% - #{$HeaderHeight}); */
 
    display: flex;
    flex-direction: column;

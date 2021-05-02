@@ -10,6 +10,7 @@
             <room-desk :desk="desk"></room-desk>
          </div>
       </div>
+      <div class="bottom-shader"></div>
    </div>
 </template>
 <script>
@@ -84,7 +85,7 @@ export default {
 
 .room {
    margin-top: $HeaderHeight;
-   margin-bottom: 60px;
+   margin-bottom: 56px;
 
    width: 100%;
    height: calc(100% - #{$HeaderHeight});
@@ -121,6 +122,17 @@ export default {
 
          margin: 10px; // 책상 사이 간격 조정
       }
+   }
+
+   .bottom-shader {
+      position: fixed;
+      bottom: 0;
+      width: 100vw;
+      height: 100px;
+
+      z-index: 10;
+
+      background-image: linear-gradient(0deg, rgb(255, 255, 255), rgba(255, 255, 255) 40%, rgba(255, 255, 255, 0));
    }
 }
 
