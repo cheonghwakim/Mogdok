@@ -1,8 +1,8 @@
 <template lang="">
    <div class="room">
-      <transition name="slide-up">
+      <transition name="slide-left">
          <div v-show="isOpenProfile" class="profile-wrapper">
-            <div-profile :clickedDesk="$store.state.desk" class="profile"></div-profile>
+            <div-profile :clickedDesk="$store.state.desk"></div-profile>
          </div>
       </transition>
       <div class="deskList">
@@ -96,15 +96,15 @@ export default {
    .profile-wrapper {
       position: fixed;
 
-      top: 50%;
+      top: 10vh;
       right: 0px;
 
-      transform: translateY(-50%);
+      /* transform 으로 위치 변경시 애니메이션 오류 */
 
       /* border: 1px dashed red; */
       z-index: 10;
 
-      width: 40vmax;
+      width: 45vmax;
       min-width: 300px;
       max-width: 500px;
       height: auto;
@@ -136,13 +136,14 @@ export default {
    }
 }
 
-.slide-up-enter-active,
-.slide-up-leave-active {
+.slide-left-enter-active,
+.slide-left-leave-active {
    transition: all 1s ease;
+   /* animation-fill-mode: forwards; */
 }
-.slide-up-enter,
-.slide-up-leave-to {
-   /* transform: translateX(-50%) translateY(200px); */
-   opacity: 0;
+.slide-left-enter,
+.slide-left-leave-to {
+   /* opacity: 0; */
+   transform: translate(200px, -1000px) rotate(20deg);
 }
 </style>

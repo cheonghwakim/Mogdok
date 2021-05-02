@@ -43,10 +43,10 @@ export default {
    watch: {},
    //lifecycle area
    created: function() {
-      // 2.5초 뒤 몽실이 안내 화면이 사라짐
+      // n초 뒤 몽실이 안내 화면이 사라짐
       setTimeout(() => {
          this.isFirst = false;
-      }, 2500);
+      }, 3000);
    },
    methods: {
       exitDesk: function() {
