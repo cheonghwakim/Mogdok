@@ -1,5 +1,6 @@
 package com.mongdok.desk.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class User {
 	
 	@Id
+	@Column(name = "id")
 	private String userId;
 	
 	private String nickname;

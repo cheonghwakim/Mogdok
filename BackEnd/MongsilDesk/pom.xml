@@ -47,12 +47,18 @@
 			<artifactId>springfox-swagger2</artifactId>
 			<version>2.9.2</version>
 		</dependency>
+		<!-- Swagger UI -->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.6.1</version>
+			<version>2.9.2</version>
 		</dependency>
-				<dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180813</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
@@ -74,34 +80,34 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			 <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.26.0</version>
-                <configuration>
-                    <images>
-                        <image>
-                            <name>mongdok_desk</name>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.26.0</version>
+				<configuration>
+					<images>
+						<image>
+							<name>mongdok_desk</name>
 
-                            <build>
-                                <dockerFileDir>${basedir}</dockerFileDir> <!-- 기본 경로가  src/main/docker 까지 잡혀있음 basedir 환경 변수를 쓰면 프로젝트의 기본 디렉토리를 쓰게됨-->
-                                <filter>@</filter>
-                            </build>
-                        </image>
-                    </images>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>docker-build</id>
-                        <phase>package</phase> <!-- 패키징 한다음에 끼어들어가라 -->
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+							<build>
+								<dockerFileDir>${basedir}</dockerFileDir> <!-- 기본 경로가 src/main/docker 까지 잡혀있음 basedir 환경 변수를 쓰면 프로젝트의 기본 디렉토리를 쓰게됨 -->
+								<filter>@</filter>
+							</build>
+						</image>
+					</images>
+				</configuration>
+				<executions>
+					<execution>
+						<id>docker-build</id>
+						<phase>package</phase> <!-- 패키징 한다음에 끼어들어가라 -->
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
-		
+
 	</build>
 
 </project>

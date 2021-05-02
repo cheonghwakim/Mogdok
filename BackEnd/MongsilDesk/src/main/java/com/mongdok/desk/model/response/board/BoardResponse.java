@@ -1,4 +1,4 @@
-package com.mongdok.desk.model.response.guestbook;
+package com.mongdok.desk.model.response.board;
 
 import java.util.Date;
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 @Data
-public class GuestBookResponse {
+public class BoardResponse {
 	private long boardId;
 	
 	private String content;
@@ -14,5 +14,5 @@ public class GuestBookResponse {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Date writeDate;
 	
-	private String nickName;
+	private String nickname;
 }

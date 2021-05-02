@@ -58,4 +58,9 @@ public class AuthServiceImpl implements AuthService {
 		return userRepository.findByKakaoId(kakaoId);
 	}
 
+	@Override
+	public boolean findByNickname(String nickname) {
+		return userRepository.findByNickname(nickname);
+	}
+
 }

@@ -1,5 +1,5 @@
 <template lang="">
-   <div class="btnCmdDiv">
+   <div class="btnCmdDiv" @click="onClick">
       <div class="title">{{ label }}</div>
       <svg width="100%" height="100%" viewBox="0 0 495 225" fill="none" xmlns="http://www.w3.org/2000/svg">
          <!-- 테두리 -->
@@ -45,24 +45,41 @@
 export default {
    props: {
       label: String,
+      // size: String,
+   },
+
+   methods: {
+      onClick: function() {
+         this.$emit('onClick');
+      },
+   },
+
+   computed: {
+      // sizes(){
+      //    return{
+      //       'btnCmdDiv--sm' : this.size === 'sm',
+      //       'btnCmdDiv--md' : this.size === 'md',
+      //    }
+      // }
    },
 };
 </script>
 <style scoped lang="scss">
-.title {
-   position: absolute;
-   top: 35%;
-   left: 50%;
-   transform: translateX(-50%);
-
-   width: 100%;
-
-   font-size: 2vmin;
-   font-weight: 600;
-   text-align: center;
-}
-
 .btnCmdDiv {
+   position: relative;
+
+   .title {
+      position: absolute;
+      top: 35%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: 100%;
+
+      font-size: 2vmin;
+      font-weight: 600;
+      text-align: center;
+   }
    cursor: pointer;
 
    #btnCmd-mid {

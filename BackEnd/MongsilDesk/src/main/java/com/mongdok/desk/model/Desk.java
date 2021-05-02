@@ -2,6 +2,7 @@ package com.mongdok.desk.model;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Desk {
 	
 	@Id
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long deskId;
 	
@@ -36,7 +38,7 @@ public class Desk {
 	private List<Dday> ddayList;
 	
 	@OneToMany(mappedBy = "deskId")
-	private List<Guestbook> guestbookList;
+	private List<Board> boardList;
 	
 	
 }

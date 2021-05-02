@@ -21,6 +21,7 @@ import Footer from '@/components/common/RoomFooter.vue';
 import Login from '@/views/Login.vue';
 import Enterance from '@/views/Enterance.vue';
 import Room from '@/views/Room.vue';
+import Desk from '@/views/Desk.vue';
 
 // ==============================
 // 여러개 태울 때, routes 변수 생성
@@ -45,6 +46,14 @@ const routes = [
       components: {
          header: Header,
          default: Room,
+         footer: Footer,
+      },
+   },
+   {
+      path: '/desk',
+      name: 'Desk',
+      components: {
+         default: Desk,
          footer: Footer,
       },
    },
