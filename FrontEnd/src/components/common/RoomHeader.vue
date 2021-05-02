@@ -4,7 +4,7 @@
          <h2>자유 열람 1실</h2>
          <div-num-person class="NumOfPerson" :current="this.roomCurrent" :limit="this.roomLimit"></div-num-person>
       </div>
-      <btn-close class="btnClose"></btn-close>
+      <btn-close class="btnClose" @onClick="exitRoom"></btn-close>
    </div>
 </template>
 <script>
@@ -24,7 +24,15 @@ export default {
    computed: {},
    watch: {},
    //lifecycle area
-   methods: {},
+   methods: {
+      exitRoom: function() {
+         let isExit = confirm(`방을 나가시겠습니까?`);
+
+         if (isExit) {
+            this.$router.push('/');
+         }
+      },
+   },
 };
 </script>
 <style scoped lang="scss">

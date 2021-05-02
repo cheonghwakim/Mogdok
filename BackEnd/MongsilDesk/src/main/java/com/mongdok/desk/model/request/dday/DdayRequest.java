@@ -8,8 +8,16 @@ import lombok.Data;
 
 @Data
 public class DdayRequest {
-	private long deskId;	
+	private long ddayId;
+	
+	private long deskId;
+	
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date finishDate;
+	
 	private String title;
+	
+	private String transform;
+	
+	private Integer color;
 }

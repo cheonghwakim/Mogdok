@@ -1,7 +1,9 @@
 package com.mongdok.desk.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.Optional;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,72 +18,55 @@ import com.mongdok.desk.common.response.ErrorResponse;
 import com.mongdok.desk.dao.MemoDao;
 import com.mongdok.desk.exception.ErrorCode;
 import com.mongdok.desk.model.Memo;
-import com.mongdok.desk.model.request.memo.MemoCreateRequest;
 import com.mongdok.desk.model.request.memo.MemoUpdateRequest;
 import com.mongdok.desk.model.response.memo.MemoResponse;
 import com.mongdok.desk.service.MemoService;
+
 @Service
-public class MemoServiceImpl implements MemoService{
+public class MemoServiceImpl implements MemoService {
 	@Autowired
 	private MemoDao memodao;
-	
+
 	public static final Logger logger = LoggerFactory.getLogger(DdayServiceImpl.class);
-	
-	//메모 삭제
+
+	// 메모 삭제
 	@Override
-	public ResponseEntity<? extends BasicResponse> deleteMemo(long memoId) {
-		
+	@Transactional
+	public ResponseEntity<? extends BasicResponse> deleteMemo(List<Long> memoIds) {
+
 		try {
-			memodao.deleteByMemoId(memoId);
+			for (long memoId : memoIds) {
+				memodao.deleteByMemoId(memoId);
+			}
 		} catch (Exception e) {
 			logger.error("memo삭제 실패 : {}", e);
-			return ResponseEntity.ok()
-					.body(new ErrorResponse(ErrorCode.FAIL_DELETE_MEMO));
+			return ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_DELETE_MEMO));
 		}
 		return ResponseEntity.ok().body(new CommonResponse<String>("memo 삭제완료"));
 	}
-	
-	//메모 생성
+
+
+
+	// 메모 생성 및 수정
 	@Override
-	public ResponseEntity<? extends BasicResponse> createMemo(MemoCreateRequest memoRequest) {
-		MemoResponse response =new MemoResponse();
+	@Transactional
+	public ResponseEntity<? extends BasicResponse> updateMemo(List<MemoUpdateRequest> memoRequest) {
+		List<MemoResponse> memoResponse = new ArrayList<MemoResponse>();
+
 		try {
-			Memo memo=new Memo();
-			memo.setDeskId(memoRequest.getDeskId());
-			memo.setContent(memoRequest.getContent());
-			Memo save=memodao.save(memo);//엔티티-> dto 필드 값 복사
-			
-			BeanUtils.copyProperties(save,response);
-		} catch (Exception e) {
-			logger.error("memo생성 실패 : {}", e);
-			return ResponseEntity.ok()
-					.body(new ErrorResponse(ErrorCode.FAIL_CREATE_MEMO));
-		}
-		return ResponseEntity.ok().body(new CommonResponse<MemoResponse>(response));
-	}
-	
-	//메모 수정
-	@Override
-	public ResponseEntity<? extends BasicResponse> updateMemo(MemoUpdateRequest memoRequest) {
-		MemoResponse response =new MemoResponse();
-		
-		try {
-			Optional<Memo> optional = memodao.findByMemoId(memoRequest.getMemoId());
-			if(optional.isPresent()) {
-				Memo memo=optional.get();
-				memo.setContent(memoRequest.getContent());//내용수정
-				Memo save=memodao.save(memo);
-				
-				BeanUtils.copyProperties(save,response);//엔티티-> dto 필드 값 복사
-			}
-			else {
-				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 id"));
+			for (MemoUpdateRequest request : memoRequest) {
+				Memo memo = new Memo();
+				BeanUtils.copyProperties(request, memo);
+				Memo save = memodao.save(memo);
+
+				MemoResponse response = new MemoResponse();
+				BeanUtils.copyProperties(save, response);// 엔티티-> dto 필드 값 복사
+				memoResponse.add(response);
 			}
 		} catch (Exception e) {
 			logger.error("memo수정 실패 : {}", e);
-			return ResponseEntity.ok()
-					.body(new ErrorResponse(ErrorCode.FAIL_UPDATE_MEMO));
+			return ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_UPDATE_MEMO));
 		}
-		return ResponseEntity.ok().body(new CommonResponse<MemoResponse>(response));
+		return ResponseEntity.ok().body(new CommonResponse<List<MemoResponse>>(memoResponse));
 	}
 }

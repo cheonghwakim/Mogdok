@@ -1,14 +1,13 @@
 package com.mongdok.desk.controller;
 
 
-import javax.transaction.Transactional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,17 +26,16 @@ public class DdayController {
 	@Autowired
 	DdayService ddayService;
 	
-	@DeleteMapping("/{ddayId}")
-	@Transactional
+	@PostMapping("/delete")
 	@ApiOperation(value = "디데이 삭제")
-	public ResponseEntity<? extends BasicResponse> deleteDday(@PathVariable long ddayId){
-		return ddayService.deleteDday(ddayId);
+	public ResponseEntity<? extends BasicResponse> deleteDday(@RequestBody List<Long> ddayIds){
+		return ddayService.deleteDday(ddayIds);
 	}
 	
-	@PostMapping
-	@ApiOperation(value = "디데이 생성")
-	public ResponseEntity<? extends BasicResponse> createDday(DdayRequest ddayRequest){
-		return ddayService.createDday(ddayRequest);
+	@PostMapping("/update")
+	@ApiOperation(value = "디데이 생성&수정")
+	public ResponseEntity<? extends BasicResponse> createDday(@RequestBody List<DdayRequest> ddayRequests){
+		return ddayService.createDday(ddayRequests);
 	}
 	
 }

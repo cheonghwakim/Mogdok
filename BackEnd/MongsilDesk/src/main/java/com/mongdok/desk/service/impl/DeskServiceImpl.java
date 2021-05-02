@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,13 +20,13 @@ import com.mongdok.desk.dao.UserDao;
 import com.mongdok.desk.exception.ErrorCode;
 import com.mongdok.desk.model.Dday;
 import com.mongdok.desk.model.Desk;
-import com.mongdok.desk.model.Guestbook;
+import com.mongdok.desk.model.Board;
 import com.mongdok.desk.model.Memo;
 import com.mongdok.desk.model.request.desk.DeskRequest;
+import com.mongdok.desk.model.response.board.BoardOnlyIdResponse;
 import com.mongdok.desk.model.response.dday.DdayResponse;
 import com.mongdok.desk.model.response.desk.DeskAllResponse;
 import com.mongdok.desk.model.response.desk.DeskResponse;
-import com.mongdok.desk.model.response.guestbook.GuestBookOnlyIdResponse;
 import com.mongdok.desk.model.response.memo.MemoResponse;
 import com.mongdok.desk.service.DeskService;
 
@@ -109,16 +110,16 @@ public class DeskServiceImpl implements DeskService {
 					ddaylist.add(dday);
 				}
 
-				List<GuestBookOnlyIdResponse> guestbooklist = new ArrayList<GuestBookOnlyIdResponse>();
+				List<BoardOnlyIdResponse> boardList = new ArrayList<BoardOnlyIdResponse>();
 
-				for (Guestbook origin : desk.getGuestbookList()) {
-					GuestBookOnlyIdResponse guestbook = new GuestBookOnlyIdResponse();
-					BeanUtils.copyProperties(origin, guestbook);
-					guestbooklist.add(guestbook);
+				for (Board origin : desk.getBoardList()) {
+					BoardOnlyIdResponse board = new BoardOnlyIdResponse();
+					BeanUtils.copyProperties(origin, board);
+					boardList.add(board);
 				}
 				response.setMemoList(memolist);
 				response.setDdayList(ddaylist);
-				response.setGuestbookList(guestbooklist);
+				response.setBoardList(boardList);
 
 			} else {
 				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 닉네임"));

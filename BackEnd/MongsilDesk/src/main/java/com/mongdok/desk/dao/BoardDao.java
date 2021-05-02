@@ -5,12 +5,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.mongdok.desk.model.Guestbook;
+import com.mongdok.desk.model.Board;
 
 @Repository
-public interface GuestbookDao extends JpaRepository<Guestbook, String> {
+public interface BoardDao extends JpaRepository<Board, String> {
 
-	Optional<Guestbook> findByBoardId(long boardId);
+	Optional<Board> findByBoardId(long boardId);
 
 	void deleteByBoardId(long boardId);
 
