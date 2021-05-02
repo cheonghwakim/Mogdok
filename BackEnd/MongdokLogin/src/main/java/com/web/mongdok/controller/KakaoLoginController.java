@@ -103,6 +103,15 @@ public class KakaoLoginController {
     	}
     }
     
+    @PostMapping("/nickname")
+    @ApiOperation("닉네임 중복 처리")
+    public ResponseEntity<?> nickname(@RequestBody String nickname) {
+
+    	if(authService.findByNickname(nickname))
+    		return new ResponseEntity<>("overlap", HttpStatus.OK);
+    	return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+    
     // 실제 회원 가입 (카카오 로그인 버튼 누르고 -> 회원가입 버튼 누르면 // 회원가입, 내책상 초기화) (isNew가 O일 때만)
     @PostMapping("/signup")
     @ApiOperation("회원 가입할 때 정보 저장")
@@ -116,6 +125,9 @@ public class KakaoLoginController {
 		authService.signUpSocialUser(newUser); // 회원 가입
         deskService.setDesk(uuid, user.getPromise()); // 내 책상 초기화
 
+        // 닉네임 중복 처리
+        
+        
         redisUtil.setData(user.getKakaoId(), "O"); // 새로운 유저인지 아닌지 판단 위함
     	
     	// redis에 정보 저장
