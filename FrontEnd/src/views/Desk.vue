@@ -1,6 +1,12 @@
 <template lang="">
    <div v-dragscroll="true" class="desk">
-      <div class="info">
+      <transition name="fade">
+         <div v-show="isFirst" class="caution covering">
+            <img src="@/assets/img/discover.gif" alt="" />
+            <p class="desc kyoboHand">드래그를 하면 책상을 <span>탐닉</span>할 수 있어요!</p>
+         </div>
+      </transition>
+      <div class="info borrow">
          <div class="info-content">
             <btn-close class="btnClose" @onClick="exitDesk"></btn-close>
             <p class="userName kyoboHand">안양불빠따</p>
@@ -8,6 +14,7 @@
          </div>
          <div-banner></div-banner>
       </div>
+      <div class="desk-shader"></div>
       <div class="desk-wrapper">
          <div class="desk-draw-area"></div>
          <svg-desk></svg-desk>
@@ -25,7 +32,9 @@ export default {
    components: { SvgDesk, DivBanner, BtnClose },
    props: {},
    data() {
-      return {};
+      return {
+         isFirst: true,
+      };
    },
    directives: {
       dragscroll,
@@ -33,6 +42,12 @@ export default {
    computed: {},
    watch: {},
    //lifecycle area
+   created: function() {
+      // 2.5초 뒤 몽실이 안내 화면이 사라짐
+      setTimeout(() => {
+         this.isFirst = false;
+      }, 2500);
+   },
    methods: {
       exitDesk: function() {
          let isExit = confirm(`책상을 떠나시겠습니까?`);
@@ -62,11 +77,44 @@ export default {
    overflow: hidden;
    /* overflow-x: auto; // hidden으로 해도, npm에서 드래그 제공 */
 
+   // 몽실이가 안내하는 화면
+   .caution {
+      width: 300px;
+      height: 200px;
+
+      background-color: rgb(255, 255, 255);
+      box-shadow: 0px 9px 20px 0px #56565629;
+      border-radius: 20px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      img {
+         width: 40%;
+      }
+
+      .desc {
+         color: rgb(43, 43, 43);
+         font-size: 12pt;
+
+         span {
+            font-family: inherit;
+            color: rgb(247, 85, 85);
+            font-weight: bold;
+         }
+      }
+   }
+
+   /* 상단에 표시되는 책상의 이름 안내 요소 */
    .info {
       position: fixed;
       top: 1vmax;
       left: 50%;
-      transform: translate(-50%, -5vmax);
+      transform: translate(-50%, -2vmax);
+
+      transition: transform 1s ease;
 
       z-index: 11;
 
@@ -100,11 +148,20 @@ export default {
       }
    }
 
+   /* .desk-shader {
+      position: fixed;
+      bottom: 50px;
+      width: 100vw;
+      height: 50px;
+      background-color: red;
+      background-image: linear-gradient(270deg, var(--white), var(--white) 40%, rgba(var(--white-rgb), 0));
+   } */
+
    .desk-wrapper {
       cursor: grab; // 드래그 영역에선 grap으로 표시
 
       position: relative;
-      border: 1px solid red;
+      /* border: 1px solid red; */
 
       width: 1280px;
       height: auto;
@@ -121,8 +178,17 @@ export default {
 
          width: 1000px;
          height: 600px;
-         border: 1px solid blue;
+         /* border: 1px solid blue; */
       }
    }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+   transition: all 1s ease;
+}
+.fade-enter,
+.fade-leave-to {
+   opacity: 0;
 }
 </style>
