@@ -170,7 +170,7 @@ export default {
          align-items: center;
 
          .btnCommand {
-            width: 48%;
+            width: 100%;
          }
 
          .btnClose {
@@ -178,9 +178,5 @@ export default {
          }
       }
    }
-}
-
-.ms-hand {
-   /* fill: red; */
 }
 </style>

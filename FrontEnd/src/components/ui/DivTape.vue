@@ -15,7 +15,7 @@
 <script>
 export default {};
 </script>
-<style scoped lang="scss">
+<style scoped>
 .divTape {
    position: absolute;
    top: 0;

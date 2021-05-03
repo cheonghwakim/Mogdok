@@ -1,7 +1,7 @@
 <template lang="">
    <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating">
-      <div class="postit-wrapper">
-         <div-post-it :type="'study'" :timer="'10:30:20'"></div-post-it>
+      <div class="timer-wrapper">
+         <div-timer-paper :type="'study'" :timer="'10:30:20'"></div-timer-paper>
       </div>
       <div class="content">
          <btn-my-desk class="btnMyDesk-wrapper"></btn-my-desk>
@@ -14,14 +14,14 @@
    </div>
 </template>
 <script>
-import DivPostIt from '@/components/ui/DivPostIt';
+import DivTimerPaper from '@/components/ui/DivTimerPaper';
 import BtnCommand from '@/components/ui/BtnCommand';
 import BtnMyDesk from '@/components/ui/BtnMyDesk';
 import BtnLeaveDesk from '@/components/ui/BtnLeaveDesk';
 
 export default {
    name: 'Footer',
-   components: { DivPostIt, BtnCommand, BtnMyDesk, BtnLeaveDesk },
+   components: { DivTimerPaper, BtnCommand, BtnMyDesk, BtnLeaveDesk },
    props: {},
    data() {
       return {
@@ -82,16 +82,12 @@ export default {
 
    height: auto;
 
-   .postit-wrapper {
+   .timer-wrapper {
       position: absolute;
       top: -10%;
       left: 50%;
 
       transform: translateX(-50%);
-
-      width: 15vw;
-      min-width: 100px;
-      max-width: 160px;
    }
 
    .content {
@@ -103,29 +99,17 @@ export default {
       .btnMyDesk-wrapper {
          position: absolute;
          left: 10%;
-         width: 7vw;
-
-         min-width: 50px;
-         max-width: 70px;
       }
 
       .btnCommand-wrapper {
          position: absolute;
          left: 50%;
          transform: translateX(-50%);
-
-         width: 15vw;
-         min-width: 100px;
-         max-width: 150px;
       }
 
       .btnLeaveDesk-wrapper {
          position: absolute;
          right: 10%;
-         width: 10vw;
-
-         min-width: 50px;
-         max-width: 100px;
       }
    }
 
