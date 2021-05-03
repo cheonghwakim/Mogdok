@@ -30,4 +30,14 @@ function createLoginInstance() {
   return instance;
 }
 
-export { createDeskInstance, createLoginInstance, createRoomInstance };
+function createOpenViduInstance() {
+  const instance = axios.create({
+    baseURL: process.env.VUE_APP_OPENVIDU_SERVER_URL,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return instance;
+}
+
+export { createDeskInstance, createLoginInstance, createRoomInstance, createOpenViduInstance };
