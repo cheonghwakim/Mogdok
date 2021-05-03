@@ -113,7 +113,7 @@ public class KakaoLoginController {
     
     // 실제 회원 가입 (카카오 로그인 버튼 누르고 -> 회원가입 버튼 누르면 // 회원가입, 내책상 초기화) (isNew가 O일 때만)
     @PostMapping("/signup")
-    @ApiOperation("회원 가입할 때 정보 저장 or 마이페이지에서 정보 수정")
+    @ApiOperation("회원 가입할 때 정보 저장")
     public ResponseEntity<?> signUp(@RequestBody @ApiParam(value = "회원 가입 form에서 얻은 객체") SignupDto user) {
 		
     	String uuid = UUID.randomUUID().toString();
@@ -123,9 +123,6 @@ public class KakaoLoginController {
 
 		authService.signUpSocialUser(newUser); // 회원 가입
         deskService.setDesk(uuid, user.getPromise()); // 내 책상 초기화
-
-        // 닉네임 중복 처리
-        
         
         redisUtil.setData(user.getKakaoId(), "O"); // 새로운 유저인지 아닌지 판단 위함
     	
@@ -141,6 +138,17 @@ public class KakaoLoginController {
     	redisUtil.setObjectExpire(jwtRefreshToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
     	
     	return new ResponseEntity<>(jwtRefreshToken, HttpStatus.OK);
+    }
+    
+ // 실제 회원 가입 (카카오 로그인 버튼 누르고 -> 회원가입 버튼 누르면 // 회원가입, 내책상 초기화) (isNew가 O일 때만)
+    @PostMapping("/mypage")
+    @ApiOperation("마이페이지에서 정보 수정")
+    public ResponseEntity<?> mypage(@RequestBody @ApiParam(value = "user 객체") User user) {
+		
+		if(authService.save(user) == null) // 회원 가입
+			return new ResponseEntity<>("fail", HttpStatus.OK);
+	
+    	return new ResponseEntity<>("success", HttpStatus.OK);
     }
     
     @GetMapping("/auth")

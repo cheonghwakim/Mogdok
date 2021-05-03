@@ -21,4 +21,6 @@ public interface AuthService {
 	void signUpSocialUser(User user);
 
 	boolean findByNickname(String nickname);
+
+	User save(User user);
 }
