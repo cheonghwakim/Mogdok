@@ -99,17 +99,11 @@ public class KakaoAPI {
 
 			JsonParser parser = new JsonParser();
             JsonElement element = parser.parse(result);
-            
-            JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
-
+           
             String id = element.getAsJsonObject().get("id").getAsString();
             String email = null;
             
-            if (kakao_account.getAsJsonObject().get("email") != null) {
-				email = kakao_account.getAsJsonObject().get("email").getAsString();
-			 }
 			userInfo.put("id", id);
-            userInfo.put("email", email);
             userInfo.put("refresh_token", refreshToken);
             userInfo.put("access_token", accessToken);
             
@@ -190,9 +184,7 @@ public class KakaoAPI {
 
             accessToken = element.getAsJsonObject().get("access_token").getAsString();
             newRefreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
-            
-//            System.out.println("access_token: " + access_Token);
-//            System.out.println("refresh_token: " + refresh_Token);
+
             br.close();
             bw.close();
         } catch (IOException e) {

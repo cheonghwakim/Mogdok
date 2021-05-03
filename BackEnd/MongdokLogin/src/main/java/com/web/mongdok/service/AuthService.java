@@ -20,7 +20,7 @@ public interface AuthService {
 
 	void signUpSocialUser(User user);
 
-	boolean findByNickname(String nickname);
+	boolean findByUserName(String nickname);
 
 	User save(User user);
 }

@@ -1,13 +1,13 @@
 package com.web.mongdok.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import lombok.Data;
 
@@ -20,7 +20,8 @@ public class User extends BaseTimeEntity {
 	@Id
 	private String id;
 	
-	private String nickname;
+	@Column(name = "nickname")
+	private String userName;
 	
 	private String email;
 	
@@ -29,4 +30,7 @@ public class User extends BaseTimeEntity {
 	private String kakaoId;
 	
 	private String googleId;
+	
+//	@OneToOne(mappedBy = "desk")
+//	private Desk desk;
 }

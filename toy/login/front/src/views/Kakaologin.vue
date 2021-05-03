@@ -83,7 +83,7 @@ export default {
       this.getToken();
     },
     login() {
-      axios.post("http://localhost:2000/login", this.form).then((res) => {
+      axios.post("https://localhost:2000/login", this.form).then((res) => {
         if (res.data != null) {
           document.cookie = `accessToken=${res.data}`;
           axios.defaults.headers.common["x-access-token"] = res.data;
@@ -96,39 +96,36 @@ export default {
     getToken() {
       console.log(this.codes);
       axios
-        .get("http://localhost:2000/klogin?authorizeCode=" + this.codes)
+        .get("https://localhost:2000/klogin?authorizeCode=" + this.codes)
         .then((res) => {
+          console.log(res);
           this.form.email = res.data.email;
           this.form.access_token = res.data.access_token;
           this.form.id = res.data.id;
           this.form.refresh_token = res.data.refresh_token;
           // console.log(this.form.email);
 
-          if (this.form.email == undefined) {
-            alert("올바르지 못한 접근입니다.");
-            this.$router.push("/");
-          } else {
-            this.login();
-          }
+
+          this.login();
         });
     },
     logout() {
       axios
-        .get("http://localhost:2000/logout?accessToken=" + this.form.access_token)
+        .get("https://localhost:2000/logout?accessToken=" + this.form.access_token)
         .then((res) => {
           console.log(res);
         });
     },
     auth() {
       axios
-        .get("http://localhost:2000/auth?accessToken=" + this.form.access_token)
+        .get("https://localhost:2000/auth?accessToken=" + this.form.access_token)
         .then((res) => {
           console.log(res);
         });
     },
     refresh() {
       axios
-        .get("http://localhost:2000/refresh?refreshToken=" + this.form.refresh_token)
+        .get("https://localhost:2000/refresh?refreshToken=" + this.form.refresh_token)
         .then((res) => {
           console.log(res);
         });

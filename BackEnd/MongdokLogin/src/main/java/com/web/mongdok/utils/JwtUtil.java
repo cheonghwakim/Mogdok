@@ -4,10 +4,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.web.mongdok.entity.User;
+import com.web.mongdok.dto.KakaoUserDto;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -19,6 +20,9 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
+    @Autowired
+    private RedisUtil redisUtil;
+    
     public final static long TOKEN_VALIDATION_SECOND = 1000 * 60 * 60 * 12; // access token 유효기간: 12시간
     public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 24 * 30; // refresh token 유효기간: 30일
 
@@ -35,12 +39,6 @@ public class JwtUtil {
 
     // 토큰이 유효한 토큰인지 검사한 후, 토큰에 담긴 Payload 값을 가져온다.
     public Claims extractAllClaims(String token) throws ExpiredJwtException {
-//        return Jwts.parserBuilder()
-//                .setSigningKey(getSigningKey(SECRET_KEY))
-//                .build()
-//                .parseClaimsJws(token)
-//                .getBody();
-    	
         Jws<Claims> claims = null;
         try {
             claims = Jwts.parser()
@@ -51,7 +49,7 @@ public class JwtUtil {
             throw new RuntimeException();
         }
 
-        System.out.println("claims : {}" + claims);
+//        System.out.println("claims : {}" + claims);
         // Claims는 Map의 구현체이다.
         return claims.getBody();
     }
@@ -66,27 +64,14 @@ public class JwtUtil {
         final Date expiration = extractAllClaims(token).getExpiration();
         return expiration.before(new Date());
     }
-
-//    // Access/Refresh Token 생성
-//    public String generateToken(User user) {
-//        return doGenerateToken(user, TOKEN_VALIDATION_SECOND);
-//    }
-
-//    public String generateUserToken(User user) {
-//        return doGenerateToken(user, REFRESH_TOKEN_VALIDATION_SECOND);
-//    }
-    
-    public String generateRefreshToken(String refreshToken) {
-    	return doGenerateToken(refreshToken, REFRESH_TOKEN_VALIDATION_SECOND);
-    }
     
     // : 토큰을 생성, 페이로드에 담길 값은 refreshToken (임시)
-    public String doGenerateToken(String refreshToken, long expireTime) {
+    public String doGenerateToken(KakaoUserDto kakaoUser, long expireTime) {
     	SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256 ;
     	
         Claims claims = Jwts.claims();
-        claims.put("refreshToken", refreshToken);
-
+        claims.put("kakaoId", kakaoUser.getKakaoId());
+        claims.put("accessToken", kakaoUser.getAccessToken());
         String jwt = null;
         try {
         	
@@ -102,24 +87,17 @@ public class JwtUtil {
         }
         return jwt;
     }
-
-    public Boolean validateToken(String token, User user) {
-        final String username = getEmail(token);
-
-        return (username.equals(user.getEmail()) && !isTokenExpired(token));
-    }
     
     // 전달받은 토큰이 제대로 생성된 것이니 확인하고 문제가 있다면 RuntimeException을 발생
-    public String checkValid(String jwt) {
-    	// 예외 발생하지 않으면 OK
-    	try {
-    		Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJwt(jwt);
-    		return "OK";
-    	} catch(Exception e) {
-    		e.printStackTrace();
-    		return "NO";
-    	}
+    public boolean checkValid(String jwt) {
+    	
+//    	System.out.println("jwt: " + jwt);
+    	
+    	String kakaoId = (String) extractAllClaims(jwt).get("kakaoId");
+//    	System.out.println("kakaoId: " + kakaoId);
+    	if(kakaoId != null)
+    		return true;
+    	return false;
     }
-
 
 }

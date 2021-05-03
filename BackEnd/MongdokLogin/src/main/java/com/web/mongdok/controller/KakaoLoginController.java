@@ -1,8 +1,9 @@
 package com.web.mongdok.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.mongdok.dto.KakaoUserDto;
 import com.web.mongdok.dto.RedisUserDto;
 import com.web.mongdok.dto.SignupDto;
 import com.web.mongdok.entity.User;
@@ -55,7 +57,7 @@ public class KakaoLoginController {
 
     @GetMapping("/klogin") // 로그인 토큰 발급 -> redis, 쿠키에 저장
     @ResponseBody
-    @ApiOperation(value = "로그인 / kakaoAPI에서 accessToken, refreshToken 발급")
+    @ApiOperation(value = "로그인 / kakaoAPI에서 accessToken, refreshToken 발급 // 성공 시 jwtRefreshToken, 실패 시 fail")
     public ResponseEntity<?> klogin(@RequestParam @ApiParam(value = "프론트에서 전달받은 authCode") String authorizeCode) {
     	
     	try {
@@ -63,38 +65,17 @@ public class KakaoLoginController {
 	    	String accessToken = kakaoAccessToken.get("accessToken");
 	    	String refreshToken = kakaoAccessToken.get("refreshToken");
 	        Map<String, String> userInfo = kakaoAPI.getUserInfo(accessToken, refreshToken);
-	        
-	        String isNew = "X";
-	        // 만약 유저가 없다면 회원 가입 (소셜 로그인 할 때마다 DB에 접근하는 건 너무 레이턴시가 큼) -> redis로 판단 // 레디스에 없고 db에 있는 경우는 db에서 find 해줘야 함
-	        User user = authService.findByKakaoId(userInfo.get("id"));
-	        if(redisUtil.getData(userInfo.get("id")) == null) { 
-	        	
-	        	if(user == null)// 뉴비
-	        		isNew = "O"; 
-	        	
-	        	else { // redis에 없고 db에 있음 -> redis에 정보 저장
 
-	        		RedisUserDto redisUser = new RedisUserDto();
-	            	BeanUtils.copyProperties(user, redisUser);
-	            	
-	            	String jwtRefreshToken = jwtUtil.generateRefreshToken(refreshToken);
-	            	redisUtil.setData(userInfo.get("id"), "O");
-	            	redisUtil.setObjectExpire(jwtRefreshToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
-	        	}
+	        String jwtRefreshToken;
 	        
-	        } // else redis에 있고 db에 있음
+	        KakaoUserDto kakaoUser = new KakaoUserDto();
+	        kakaoUser.setAccessToken(accessToken);
+	        kakaoUser.setRefreshToken(refreshToken);
+	        kakaoUser.setKakaoId(userInfo.get("id"));
+	        // 여기서 담겨줘야 되는 것들 생각해보기 (지금: accessToken, refreshToken, kakaoId)
+	        jwtRefreshToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
 
-	        
-            System.out.println("refreshToken:" + refreshToken);
-            System.out.println("kakaoId: " + userInfo.get("id"));
-            
-            Map<String, String> result = new HashMap<>();
-            result.put("isNew", isNew);
-            result.put("refreshToken", refreshToken);
-            result.put("accessToken", refreshToken);
-            result.put("kakaoId", userInfo.get("id"));
-//            result.put("email", userInfo.get("email"));
-	        return new ResponseEntity<>(result, HttpStatus.OK);
+	        return new ResponseEntity<>(jwtRefreshToken, HttpStatus.OK);
     	
     	} catch (Exception e) {
     		e.printStackTrace();
@@ -102,47 +83,76 @@ public class KakaoLoginController {
     	}
     }
     
+    @GetMapping("/login")
+    @ApiOperation("로그인 요청 (객체가 있다면 정보 return (user), 없다면 null)")
+    public ResponseEntity<?> login(HttpServletRequest request) {
+    	String jwtToken = request.getHeader("auth-token");
+    	
+    	
+    	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
+    	System.out.println("kakaoId: " + kakaoId);
+    	
+    	User user = null;
+//    	if(redisUtil.getData(kakaoId) != null) {
+    		user = authService.findByKakaoId(kakaoId);
+//    	}
+    		
+		if(user != null && redisUtil.getData(kakaoId) == null) {
+			redisUtil.setData(kakaoId, jwtToken);
+//			userinfo.setPromise(user.getDesk().getPromise());
+		}
+		
+    	return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+    
     @PostMapping("/nickname")
-    @ApiOperation("닉네임 중복 처리")
+    @ApiOperation("닉네임 중복 처리 (실패 overlap 성공 success)")
     public ResponseEntity<?> nickname(@RequestBody @ApiParam(value = "유저의 닉네임") String nickname) {
 
-    	if(authService.findByNickname(nickname))
+    	if(authService.findByUserName(nickname))
     		return new ResponseEntity<>("overlap", HttpStatus.OK);
     	return new ResponseEntity<>("success", HttpStatus.OK);
     }
     
-    // 실제 회원 가입 (카카오 로그인 버튼 누르고 -> 회원가입 버튼 누르면 // 회원가입, 내책상 초기화) (isNew가 O일 때만)
     @PostMapping("/signup")
-    @ApiOperation("회원 가입할 때 정보 저장")
-    public ResponseEntity<?> signUp(@RequestBody @ApiParam(value = "회원 가입 form에서 얻은 객체") SignupDto user) {
-		
-    	String uuid = UUID.randomUUID().toString();
-    	User newUser = new User();
-    	BeanUtils.copyProperties(user, newUser);
-    	newUser.setId(uuid);
+    @ApiOperation("회원 가입할 때 정보 저장// user 반환")
+    public ResponseEntity<?> signUp(HttpServletRequest request, @RequestBody @ApiParam(value = "회원 가입 form에서 얻은 객체") SignupDto user) {
+    	String jwtToken = request.getHeader("auth-token");
+    	
+    	System.out.println(jwtToken);
 
-		authService.signUpSocialUser(newUser); // 회원 가입
-        deskService.setDesk(uuid, user.getPromise()); // 내 책상 초기화
+    	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
+    	User newUser = new User();
+    	
+    	System.out.println(authService.findByKakaoId(kakaoId));
+    	if(authService.findByKakaoId(kakaoId) == null) {
+	    	String uuid = UUID.randomUUID().toString();
+	    	
+	    	BeanUtils.copyProperties(user, newUser);
+	    	newUser.setId(uuid);
+	    	newUser.setKakaoId(kakaoId);
+
+	    	System.out.println(newUser);
+	    	
+			authService.signUpSocialUser(newUser); // 회원 가입
+	        deskService.setDesk(uuid, user.getPromise()); // 내 책상 초기화
         
-        redisUtil.setData(user.getKakaoId(), "O"); // 새로운 유저인지 아닌지 판단 위함
-    	
-    	// redis에 정보 저장
+    	}    	
+//    	// redis에 정보 저장
     	RedisUserDto redisUser = new RedisUserDto();
-    	BeanUtils.copyProperties(user, redisUser);
-    	redisUser.setId(uuid);
-    	
+    	BeanUtils.copyProperties(newUser, redisUser);
+    	redisUser.setPromise(user.getPromise());
+    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
+    	redisUser.setRefreshToken((String) jwtUtil.extractAllClaims(jwtToken).get("refreshToken"));
+
     	System.out.println(redisUser);
-    	System.out.println("refreshToken: " + user.getRefreshToken());
-    	String jwtRefreshToken = jwtUtil.generateRefreshToken(user.getRefreshToken());
-    	// 카카오 refreshToken의 유효기간은 30일
-    	redisUtil.setObjectExpire(jwtRefreshToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
-    	
-    	return new ResponseEntity<>(jwtRefreshToken, HttpStatus.OK);
+    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
+    	return new ResponseEntity<>(user, HttpStatus.OK);
     }
     
  // 실제 회원 가입 (카카오 로그인 버튼 누르고 -> 회원가입 버튼 누르면 // 회원가입, 내책상 초기화) (isNew가 O일 때만)
     @PostMapping("/mypage")
-    @ApiOperation("마이페이지에서 정보 수정")
+    @ApiOperation("마이페이지에서 정보 수정 // 성공: success, 실패: fail")
     public ResponseEntity<?> mypage(@RequestBody @ApiParam(value = "user 객체") User user) {
 		
 		if(authService.save(user) == null) // 회원 가입
@@ -173,26 +183,12 @@ public class KakaoLoginController {
     	return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    @ApiOperation("로그인")
-    public ResponseEntity<?> login(@RequestBody @ApiParam(value = "?? 일단 필요 없을 듯..?") SignupDto form) {
-		
-    	try {
-    		if(form == null)
-    			return new ResponseEntity<>("null", HttpStatus.ACCEPTED);
-    		
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
-    	}
-    	
-    	return new ResponseEntity<>(form, HttpStatus.OK);
-    }
-
     @GetMapping("/unlink")
-    @ApiOperation("카카오 연결 끊기(탈퇴)")
-    public ResponseEntity<?> exit(@RequestParam @ApiParam(value = "유저의 accessToken") String accessToken) {
-		
+    @ApiOperation("카카오 연결 끊기(탈퇴) // 성공 시 success")
+    public ResponseEntity<?> exit(HttpServletRequest request) {
+    	String jwtToken = request.getHeader("auth-token");
+    	
+    	String accessToken = (String) jwtUtil.extractAllClaims(jwtToken).get("accessToken");
     	System.out.println("토큰 갱신하기: " + kakaoAPI.unlink(accessToken));
     	// db에서 삭제
     	

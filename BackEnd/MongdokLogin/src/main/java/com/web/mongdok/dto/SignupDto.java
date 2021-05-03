@@ -4,18 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// 회원가입 양식
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SignupDto {
 	
-	private String refreshToken;
-	
-	private String email;
-	
-	private String kakaoId;
-	
-	private String nickname;
+	private String userName;
 	
 	private String category;
 	
