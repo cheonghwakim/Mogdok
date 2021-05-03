@@ -231,6 +231,23 @@ public class KakaoLoginController {
 		return new ResponseEntity<>(true, HttpStatus.OK);
     }
     
+    // 어드민 키로 삭제
+    @GetMapping("/unlink")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
+                dataType = "string", paramType = "header", defaultValue = "")
+    })
+    @ApiOperation("카카오 연결 끊기(탈퇴) // 성공 시 success")
+    public boolean unlinkByAdmin(HttpServletRequest request) {
+    	String jwtToken = request.getHeader("auth-token");
+    	
+    	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
+    	
+    	if(kakaoAPI.unlinkByAdmin(kakaoId))
+    		return true;
+    	return false;
+    }
+    
 //    @GetMapping("/auth")
 //    @ApiOperation("레디스에서 인증하기")
 //    public ResponseEntity<?> auth(@RequestParam @ApiParam(value = "유저가 가진 refreshToken") String jwtRefreshToken) {
@@ -278,21 +295,4 @@ public class KakaoLoginController {
 //    		return new ResponseEntity<>("fail", HttpStatus.OK);
 //    	}
 //    }
-    
-    // 어드민 키로 삭제
-    @GetMapping("/unlink")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
-                dataType = "string", paramType = "header", defaultValue = "")
-    })
-    @ApiOperation("카카오 연결 끊기(탈퇴) // 성공 시 success")
-    public boolean unlinkByAdmin(HttpServletRequest request) {
-    	String jwtToken = request.getHeader("auth-token");
-    	
-    	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
-    	
-    	if(kakaoAPI.unlinkByAdmin(kakaoId))
-    		return true;
-    	return false;
-    }
 }
