@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public boolean findByUserName(String nickname) {
+	public User findByUserName(String nickname) {
 		return userRepository.findByUserName(nickname);
 	}
 

@@ -1,8 +1,10 @@
 package com.web.mongdok.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -25,7 +27,8 @@ public class User extends BaseTimeEntity {
 //	@GeneratedValue(generator = "uuid")  
 //	@GenericGenerator(name = "uuid", strategy = "uuid2")  
 	@ApiModelProperty(value = "유저 아이디", required = true, example = "d56c6ba4-ad2e-4aeb-b27b-de9ad65d5bb2")
-	private String id;
+	@Column(name = "id")
+	private String userId;
 	
 	@Column(name = "nickname")
 	@ApiModelProperty(value = "유저 닉네임", required = true, example = "안양불바다")

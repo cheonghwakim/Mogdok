@@ -25,7 +25,7 @@ public class RedisUserDto implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String id;
+	private String userId;
 	
 	private String email;
 	
@@ -41,7 +41,5 @@ public class RedisUserDto implements Serializable {
 	
 	private String accessToken;
 	
-	@OneToOne
-	@JoinColumn(name = "deskId")
 	private Desk desk;
 }

@@ -101,12 +101,15 @@ public class KakaoLoginController {
     	ObjectMapper objectMapper = new ObjectMapper();
     	
     	RedisUserDto redisUser = null;
-    	if(redisUtil.getData(jwtToken) != null) { // redis에서 null인데 user는 null이 아니라면
+    	if(redisUtil.getData(jwtToken) == null) { // redis에서 null
     		User user = authService.findByKakaoId(kakaoId);
-    		if(user != null) {
-//    	    	// redis에 정보 저장 (jwt)
+    		System.out.println(user);
+    		if(user != null) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
+//    	    	
     	    	redisUser = new RedisUserDto();
     	    	BeanUtils.copyProperties(user, redisUser);
+    	    	
+//    	    	BeanUtils.copyProperties(user.getDesk(), redisUser.getDesk());
     	    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
     	    	redisUser.setRefreshToken((String) jwtUtil.extractAllClaims(jwtToken).get("refreshToken"));
 
@@ -116,7 +119,7 @@ public class KakaoLoginController {
     	} else { // redis에 정보 있다면
     		String userInfo = redisUtil.getData(jwtToken);
 
-    		try {
+    		try { // redis에서 user 꺼내서 return
 				redisUser = objectMapper.readValue(userInfo, RedisUserDto.class);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -125,22 +128,15 @@ public class KakaoLoginController {
     	}
     		
     	System.out.println("user: " + redisUser);
-		if(redisUser != null && redisUtil.getData(kakaoId) == null) {
-			redisUtil.setData(kakaoId, jwtToken);
-		}
-		
+
     	return new ResponseEntity<>(redisUser, HttpStatus.OK);
     }
     
     @GetMapping("/nickname")
     @ApiOperation(value = "닉네임 중복 처리 // 실패 false 성공 true (boolean)")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
-                dataType = "string", paramType = "header", defaultValue = "")
-    })
-    public ResponseEntity<?> nickname(@RequestBody @ApiParam(value = "유저의 닉네임") String nickname) {
+    public ResponseEntity<?> nickname(@RequestParam @ApiParam(value = "유저의 닉네임") String nickname) {
 
-    	if(authService.findByUserName(nickname))
+    	if(authService.findByUserName(nickname) == null)
     		return new ResponseEntity<>(false, HttpStatus.OK);
     	return new ResponseEntity<>(true, HttpStatus.OK);
     }
@@ -164,7 +160,7 @@ public class KakaoLoginController {
 	    	String uuid = UUID.randomUUID().toString();
 	    	
 	    	BeanUtils.copyProperties(user, newUser);
-	    	newUser.setId(uuid);
+	    	newUser.setUserId(uuid);
 	    	newUser.setKakaoId(kakaoId);
 
 	    	System.out.println(newUser);
@@ -193,23 +189,26 @@ public class KakaoLoginController {
     public ResponseEntity<?> mypage(HttpServletRequest request, @RequestBody @ApiParam(value = "user") SignupDto user) {
     	String jwtToken = request.getHeader("auth-token");
     	
-    	System.out.println(jwtToken);
+    	System.out.println("jwtToken: " + jwtToken);
 
     	ObjectMapper objectMapper = new ObjectMapper();
+    	String userInfo = redisUtil.getData(jwtToken);
+    	System.out.println(userInfo);
+    	
     	RedisUserDto redisUser = null;
 		try {
-			redisUser = objectMapper.readValue(jwtToken, RedisUserDto.class);
+			redisUser = objectMapper.readValue(userInfo, RedisUserDto.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
 
+//		System.out.println(redisUser);
     	User changeUser = new User();
     	BeanUtils.copyProperties(redisUser, changeUser);
     	changeUser.setUserName(user.getUserName());
     	changeUser.setCategory(user.getCategory());
-    	changeUser.getDesk().setPromise(user.getPromise());
- //    	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
     	
+    	System.out.println("changeUser: " + changeUser);
     	redisUtil.deleteData(jwtToken);
     	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
 		if(authService.save(changeUser) == null) // 저장
@@ -218,7 +217,7 @@ public class KakaoLoginController {
     	return new ResponseEntity<>(true, HttpStatus.OK);
     }
     
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
                 dataType = "string", paramType = "header", defaultValue = "")
