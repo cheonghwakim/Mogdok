@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+
+// redis에 저장할 객체
 @Getter
 @Setter
 @ToString
@@ -25,9 +27,13 @@ public class RedisUserDto implements Serializable {
 	
 	private String kakaoId;
 	
-	private String nickname;
+	private String userName;
 	
 	private String category;
 	
 	private String promise;
+	
+	private String refreshToken;
+	
+	private String accessToken;
 }
