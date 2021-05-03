@@ -1,8 +1,8 @@
 <template lang="">
    <div class="room">
       <transition name="slide-left">
-         <div v-show="isOpenProfile" class="profile-wrapper">
-            <div-profile :clickedDesk="$store.state.desk"></div-profile>
+         <div v-show="$store.state.desk.isOpenProfile" class="profile-wrapper">
+            <div-profile :clickedDesk="$store.state.desk.desk"></div-profile>
          </div>
       </transition>
       <div class="deskList">
@@ -16,7 +16,7 @@
 <script>
 import RoomDesk from '@/components/RoomDesk';
 import DivProfile from '@/components/ui/DivProfile';
-import { mapState } from 'vuex';
+// import { mapState } from 'vuex';
 
 export default {
    name: 'Room',
@@ -28,7 +28,7 @@ export default {
       };
    },
    computed: {
-      ...mapState(['isOpenProfile']),
+      // ...mapState(['isOpenProfile']),
    },
    watch: {},
    //lifecycle area
