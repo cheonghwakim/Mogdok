@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.mongdok.dto.RedisUserDto;
 import com.web.mongdok.dto.SignupDto;
@@ -31,6 +28,7 @@ import com.web.mongdok.utils.JwtUtil;
 import com.web.mongdok.utils.RedisUtil;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
  
 @CrossOrigin
@@ -58,7 +56,7 @@ public class KakaoLoginController {
     @GetMapping("/klogin") // 로그인 토큰 발급 -> redis, 쿠키에 저장
     @ResponseBody
     @ApiOperation(value = "로그인 / kakaoAPI에서 accessToken, refreshToken 발급")
-    public ResponseEntity<?> klogin(@RequestParam String authorizeCode) {
+    public ResponseEntity<?> klogin(@RequestParam @ApiParam(value = "프론트에서 전달받은 authCode") String authorizeCode) {
     	
     	try {
 	    	Map<String, String> kakaoAccessToken = kakaoAPI.getAccessToken(authorizeCode);
@@ -93,6 +91,7 @@ public class KakaoLoginController {
             Map<String, String> result = new HashMap<>();
             result.put("isNew", isNew);
             result.put("refreshToken", refreshToken);
+            result.put("accessToken", refreshToken);
             result.put("kakaoId", userInfo.get("id"));
             result.put("email", userInfo.get("email"));
 	        return new ResponseEntity<>(result, HttpStatus.OK);
@@ -105,7 +104,7 @@ public class KakaoLoginController {
     
     @PostMapping("/nickname")
     @ApiOperation("닉네임 중복 처리")
-    public ResponseEntity<?> nickname(@RequestBody String nickname) {
+    public ResponseEntity<?> nickname(@RequestBody @ApiParam(value = "유저의 닉네임") String nickname) {
 
     	if(authService.findByNickname(nickname))
     		return new ResponseEntity<>("overlap", HttpStatus.OK);
@@ -114,8 +113,8 @@ public class KakaoLoginController {
     
     // 실제 회원 가입 (카카오 로그인 버튼 누르고 -> 회원가입 버튼 누르면 // 회원가입, 내책상 초기화) (isNew가 O일 때만)
     @PostMapping("/signup")
-    @ApiOperation("회원 가입할 때 정보 저장")
-    public ResponseEntity<?> signUp(@RequestBody SignupDto user) {
+    @ApiOperation("회원 가입할 때 정보 저장 or 마이페이지에서 정보 수정")
+    public ResponseEntity<?> signUp(@RequestBody @ApiParam(value = "회원 가입 form에서 얻은 객체") SignupDto user) {
 		
     	String uuid = UUID.randomUUID().toString();
     	User newUser = new User();
@@ -146,7 +145,7 @@ public class KakaoLoginController {
     
     @GetMapping("/auth")
     @ApiOperation("레디스에서 인증하기")
-    public ResponseEntity<?> auth(@RequestParam String jwtRefreshToken) {
+    public ResponseEntity<?> auth(@RequestParam @ApiParam(value = "유저가 가진 refreshToken") String jwtRefreshToken) {
     	
     	ObjectMapper objectMapper = new ObjectMapper();
     	
@@ -168,7 +167,7 @@ public class KakaoLoginController {
 
     @PostMapping("/login")
     @ApiOperation("로그인")
-    public ResponseEntity<?> login(@RequestBody SignupDto form) {
+    public ResponseEntity<?> login(@RequestBody @ApiParam(value = "?? 일단 필요 없을 듯..?") SignupDto form) {
 		
     	try {
     		if(form == null)
@@ -184,7 +183,7 @@ public class KakaoLoginController {
 
     @GetMapping("/unlink")
     @ApiOperation("카카오 연결 끊기(탈퇴)")
-    public ResponseEntity<?> exit(@RequestParam String accessToken) {
+    public ResponseEntity<?> exit(@RequestParam @ApiParam(value = "유저의 accessToken") String accessToken) {
 		
     	System.out.println("토큰 갱신하기: " + kakaoAPI.unlink(accessToken));
     	// db에서 삭제
