@@ -83,7 +83,7 @@ export default {
       this.getToken();
     },
     login() {
-      axios.post("http://localhost:8080/login", this.form).then((res) => {
+      axios.post("http://localhost:2000/login", this.form).then((res) => {
         if (res.data != null) {
           document.cookie = `accessToken=${res.data}`;
           axios.defaults.headers.common["x-access-token"] = res.data;
@@ -96,7 +96,7 @@ export default {
     getToken() {
       console.log(this.codes);
       axios
-        .get("http://localhost:8080/klogin?authorizeCode=" + this.codes)
+        .get("http://localhost:2000/klogin?authorizeCode=" + this.codes)
         .then((res) => {
           this.form.email = res.data.email;
           this.form.access_token = res.data.access_token;
@@ -114,21 +114,21 @@ export default {
     },
     logout() {
       axios
-        .get("http://localhost:8080/logout?accessToken=" + this.form.access_token)
+        .get("http://localhost:2000/logout?accessToken=" + this.form.access_token)
         .then((res) => {
           console.log(res);
         });
     },
     auth() {
       axios
-        .get("http://localhost:8080/auth?accessToken=" + this.form.access_token)
+        .get("http://localhost:2000/auth?accessToken=" + this.form.access_token)
         .then((res) => {
           console.log(res);
         });
     },
     refresh() {
       axios
-        .get("http://localhost:8080/refresh?refreshToken=" + this.form.refresh_token)
+        .get("http://localhost:2000/refresh?refreshToken=" + this.form.refresh_token)
         .then((res) => {
           console.log(res);
         });

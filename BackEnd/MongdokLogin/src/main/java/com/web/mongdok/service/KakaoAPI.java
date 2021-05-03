@@ -36,7 +36,7 @@ public class KakaoAPI {
             sb.append("grant_type=authorization_code");
 //            sb.append("&client_id=APPKEY");
             sb.append("&client_id=4da2e6372fc055ada48d1942fd63ddcf");
-            sb.append("&redirect_uri=http://localhost:3000/kakaologin");
+            sb.append("&redirect_uri=http://localhost:8080/join");
             sb.append("&code=" + authorize_code);
             
             bw.write(sb.toString());
