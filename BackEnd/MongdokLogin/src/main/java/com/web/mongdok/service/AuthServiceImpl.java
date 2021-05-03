@@ -10,6 +10,7 @@ import com.web.mongdok.repository.KaKaoUserRepository;
 import com.web.mongdok.utils.RedisUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -28,9 +29,9 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public User findByUserId(String id) {
-        User user = userRepository.findById(id);
+        Optional<User> user = userRepository.findById(id);
         
-        return user;
+        return user.get();
 	}
 
 	@Override

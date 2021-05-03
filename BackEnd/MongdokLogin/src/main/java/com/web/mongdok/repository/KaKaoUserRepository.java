@@ -1,6 +1,8 @@
 package com.web.mongdok.repository;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,13 +10,13 @@ import com.web.mongdok.entity.User;
 
 
 @Repository
-public interface KaKaoUserRepository extends CrudRepository<User, Long> {
+public interface KaKaoUserRepository extends CrudRepository<User, String> {
 
-	User findById(String id);
+	Optional<User> findById(String id);
 	
 	List<User> findAll();
 
-	User findByKakaoId(String id);
+	User findByKakaoId(String kakaoId);
 
 	User findByEmail(String email);
 

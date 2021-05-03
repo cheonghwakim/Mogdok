@@ -3,6 +3,7 @@ package com.web.mongdok.utils;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -99,5 +100,10 @@ public class JwtUtil {
     		return true;
     	return false;
     }
+
+	public String extractKakaoId(String jwtToken) {
+		String kakaoId = (String) extractAllClaims(jwtToken).get("kakaoId");
+		return kakaoId;
+	}
 
 }
