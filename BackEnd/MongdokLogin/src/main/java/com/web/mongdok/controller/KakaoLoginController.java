@@ -93,7 +93,7 @@ public class KakaoLoginController {
             result.put("refreshToken", refreshToken);
             result.put("accessToken", refreshToken);
             result.put("kakaoId", userInfo.get("id"));
-            result.put("email", userInfo.get("email"));
+//            result.put("email", userInfo.get("email"));
 	        return new ResponseEntity<>(result, HttpStatus.OK);
     	
     	} catch (Exception e) {

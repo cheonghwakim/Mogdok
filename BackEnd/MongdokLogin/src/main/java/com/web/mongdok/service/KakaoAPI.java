@@ -14,16 +14,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class KakaoAPI {
-
+	
+	@Value("${spring.kakao.redirect}")
+	private String redirect;
+	
     public Map<String, String> getAccessToken(String authorize_code) {
         String accessToken = "";
         String refreshToken = "";
         String reqURL = "https://kauth.kakao.com/oauth/token"; // 토큰 받기
-
+        
         try {
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -36,7 +40,8 @@ public class KakaoAPI {
             sb.append("grant_type=authorization_code");
 //            sb.append("&client_id=APPKEY");
             sb.append("&client_id=4da2e6372fc055ada48d1942fd63ddcf");
-            sb.append("&redirect_uri=http://localhost:8080/join");
+//            sb.append("&redirect_uri=http://localhost:8080/join");
+            sb.append("&redirect_uri=" + redirect);
             sb.append("&code=" + authorize_code);
             
             bw.write(sb.toString());
