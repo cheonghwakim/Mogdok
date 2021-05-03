@@ -1,4 +1,5 @@
 import axios from 'axios';
+import setInterceptors from './common/interceptors';
 
 function createDeskInstance() {
   const instance = axios.create({
@@ -7,7 +8,7 @@ function createDeskInstance() {
       'Content-Type': 'application/json',
     },
   });
-  return instance;
+  return setInterceptors(instance);
 }
 
 function createRoomInstance() {
@@ -17,7 +18,7 @@ function createRoomInstance() {
       'Content-Type': 'application/json',
     },
   });
-  return instance;
+  return setInterceptors(instance);
 }
 
 function createLoginInstance() {
@@ -27,7 +28,7 @@ function createLoginInstance() {
       'Content-Type': 'application/json',
     },
   });
-  return instance;
+  return setInterceptors(instance);
 }
 
 export { createDeskInstance, createLoginInstance, createRoomInstance };
