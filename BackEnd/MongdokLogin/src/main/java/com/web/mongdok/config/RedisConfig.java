@@ -1,6 +1,5 @@
 package com.web.mongdok.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +26,8 @@ public class RedisConfig {
   @Value("${spring.redis.password}")
   public String password;
   
-  @Autowired
-  public ObjectMapper objectMapper;
+//  @Autowired
+//  public ObjectMapper objectMapper;
   
   @Bean
   public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
@@ -47,7 +46,7 @@ public class RedisConfig {
     RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
     redisStandaloneConfiguration.setHostName(host);
     redisStandaloneConfiguration.setPort(port);
-//    redisStandaloneConfiguration.setPassword(password);
+    redisStandaloneConfiguration.setPassword(password);
     
     LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration);
     return connectionFactory;
