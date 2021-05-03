@@ -3,6 +3,7 @@ package com.web.mongdok.utils;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ public class JwtUtil {
     @Autowired
     private RedisUtil redisUtil;
     
-    public final static long TOKEN_VALIDATION_SECOND = 1000 * 60 * 60 * 12; // access token 유효기간: 12시간
+    public final static long TOKEN_VALIDATION_SECOND = 1000 * 60 * 60 * 48; // access token 유효기간: 12시간 (여기선 48시간)
     public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 24 * 30; // refresh token 유효기간: 30일
 
     final static public String ACCESS_TOKEN_NAME = "accessToken";
@@ -99,5 +100,10 @@ public class JwtUtil {
     		return true;
     	return false;
     }
+
+	public String extractKakaoId(String jwtToken) {
+		String kakaoId = (String) extractAllClaims(jwtToken).get("kakaoId");
+		return kakaoId;
+	}
 
 }

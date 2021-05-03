@@ -20,7 +20,9 @@ public interface AuthService {
 
 	void signUpSocialUser(User user);
 
-	boolean findByUserName(String nickname);
+	User findByUserName(String nickname);
 
 	User save(User user);
+
+	boolean deleteByKakaoId(String kakaoId);
 }
