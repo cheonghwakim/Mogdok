@@ -108,5 +108,18 @@ public class JwtUtil {
 
         return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
+    
+    // 전달받은 토큰이 제대로 생성된 것이니 확인하고 문제가 있다면 RuntimeException을 발생
+    public String checkValid(String jwt) {
+    	// 예외 발생하지 않으면 OK
+    	try {
+    		Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJwt(jwt);
+    		return "OK";
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    		return "NO";
+    	}
+    }
+
 
 }

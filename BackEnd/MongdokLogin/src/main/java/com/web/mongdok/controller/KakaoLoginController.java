@@ -140,7 +140,7 @@ public class KakaoLoginController {
     	// 카카오 refreshToken의 유효기간은 30일
     	redisUtil.setObjectExpire(jwtRefreshToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
     	
-    	return new ResponseEntity<>("success", HttpStatus.OK);
+    	return new ResponseEntity<>(jwtRefreshToken, HttpStatus.OK);
     }
     
     @GetMapping("/auth")
