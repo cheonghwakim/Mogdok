@@ -23,4 +23,6 @@ public interface AuthService {
 	boolean findByUserName(String nickname);
 
 	User save(User user);
+
+	boolean deleteByKakaoId(String kakaoId);
 }

@@ -3,18 +3,15 @@ package com.web.mongdok.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
 import lombok.Data;
 
 @Entity
@@ -28,7 +25,7 @@ public class User extends BaseTimeEntity {
 //	@GeneratedValue(generator = "uuid")  
 //	@GenericGenerator(name = "uuid", strategy = "uuid2")  
 	@ApiModelProperty(value = "유저 아이디", required = true, example = "d56c6ba4-ad2e-4aeb-b27b-de9ad65d5bb2")
-	private java.lang.String id;
+	private String id;
 	
 	@Column(name = "nickname")
 	@ApiModelProperty(value = "유저 닉네임", required = true, example = "안양불바다")
@@ -46,6 +43,6 @@ public class User extends BaseTimeEntity {
 	private String googleId;
 	
 	@OneToOne
-	@JoinColumn(name = "id")
+	@JoinColumn(name = "deskId")
 	private Desk desk;
 }

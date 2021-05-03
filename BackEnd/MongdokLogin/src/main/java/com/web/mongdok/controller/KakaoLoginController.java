@@ -59,7 +59,7 @@ public class KakaoLoginController {
 
     @GetMapping("/klogin") // 로그인 토큰 발급 -> redis, 쿠키에 저장
     @ResponseBody
-    @ApiOperation(value = "로그인", notes="kakaoAPI에서 accessToken, refreshToken 발급 -> 성공 시 jwtRefreshToken, 실패 시 fail")
+    @ApiOperation(value = "로그인", notes="성공 시 jwtRefreshToken, 실패 시 false (boolean)")
     public ResponseEntity<?> klogin(@RequestParam @ApiParam(value = "프론트에서 전달받은 authCode") String authorizeCode) {
     	
     	try {
@@ -72,17 +72,17 @@ public class KakaoLoginController {
 	        
 	        KakaoUserDto kakaoUser = new KakaoUserDto();
 	        kakaoUser.setAccessToken(accessToken);
-	        kakaoUser.setRefreshToken(refreshToken);
+//	        kakaoUser.setRefreshToken(refreshToken);
 	        kakaoUser.setKakaoId(userInfo.get("id"));
 	        // 여기서 담겨줘야 되는 것들 생각해보기 (지금: accessToken, refreshToken, kakaoId)
-	        jwtRefreshToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
+	        jwtRefreshToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.TOKEN_VALIDATION_SECOND);
 
 	        System.out.println("klogin jwt: " + jwtRefreshToken);
 	        return new ResponseEntity<>(jwtRefreshToken, HttpStatus.OK);
     	
     	} catch (Exception e) {
     		e.printStackTrace();
-    		return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
+    		return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
     	}
     }
     
@@ -98,23 +98,42 @@ public class KakaoLoginController {
     	String kakaoId = (String) jwtUtil.extractKakaoId(jwtToken);
     	System.out.println("kakaoId: " + kakaoId);
     	
-    	User user = null;
-//    	if(redisUtil.getData(kakaoId) != null) {
-    		user = authService.findByKakaoId(kakaoId);
-//    	}
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	
+    	RedisUserDto redisUser = null;
+    	if(redisUtil.getData(jwtToken) != null) { // redis에서 null인데 user는 null이 아니라면
+    		User user = authService.findByKakaoId(kakaoId);
+    		if(user != null) {
+//    	    	// redis에 정보 저장 (jwt)
+    	    	redisUser = new RedisUserDto();
+    	    	BeanUtils.copyProperties(user, redisUser);
+    	    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
+    	    	redisUser.setRefreshToken((String) jwtUtil.extractAllClaims(jwtToken).get("refreshToken"));
+
+    	    	System.out.println(redisUser);
+    	    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+    		}
+    	} else { // redis에 정보 있다면
+    		String userInfo = redisUtil.getData(jwtToken);
+
+    		try {
+				redisUser = objectMapper.readValue(userInfo, RedisUserDto.class);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+    	}
     		
-    	System.out.println("user: " + user);
-		if(user != null && redisUtil.getData(kakaoId) == null) {
+    	System.out.println("user: " + redisUser);
+		if(redisUser != null && redisUtil.getData(kakaoId) == null) {
 			redisUtil.setData(kakaoId, jwtToken);
-//			userinfo.setPromise(user.getDesk().getPromise());
 		}
 		
-    	return new ResponseEntity<>(user, HttpStatus.OK);
+    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
     }
     
-    @PostMapping("/nickname")
-    @ApiOperation(value = "닉네임 중복 처리 (실패 overlap 성공 success)")
-    @GetMapping("/login")
+    @GetMapping("/nickname")
+    @ApiOperation(value = "닉네임 중복 처리 // 실패 false 성공 true (boolean)")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
                 dataType = "string", paramType = "header", defaultValue = "")
@@ -122,8 +141,8 @@ public class KakaoLoginController {
     public ResponseEntity<?> nickname(@RequestBody @ApiParam(value = "유저의 닉네임") String nickname) {
 
     	if(authService.findByUserName(nickname))
-    		return new ResponseEntity<>("overlap", HttpStatus.OK);
-    	return new ResponseEntity<>("success", HttpStatus.OK);
+    		return new ResponseEntity<>(false, HttpStatus.OK);
+    	return new ResponseEntity<>(true, HttpStatus.OK);
     }
     
     @PostMapping("/signup")
@@ -152,17 +171,16 @@ public class KakaoLoginController {
 	    	
 			authService.signUpSocialUser(newUser); // 회원 가입
 	        deskService.setDesk(uuid, user.getPromise()); // 내 책상 초기화
-        
     	}    	
-//    	// redis에 정보 저장
+    	
+    	// redis에 정보 저장
     	RedisUserDto redisUser = new RedisUserDto();
     	BeanUtils.copyProperties(newUser, redisUser);
-    	redisUser.setPromise(user.getPromise());
     	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
     	redisUser.setRefreshToken((String) jwtUtil.extractAllClaims(jwtToken).get("refreshToken"));
 
     	System.out.println(redisUser);
-    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
+    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
     	return new ResponseEntity<>(authService.findByKakaoId(kakaoId), HttpStatus.OK);
     }
     
@@ -171,13 +189,46 @@ public class KakaoLoginController {
         @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
                 dataType = "string", paramType = "header", defaultValue = "")
     })
-    @ApiOperation("마이페이지에서 정보 수정 // 성공: success, 실패: fail")
-    public ResponseEntity<?> mypage(@RequestBody @ApiParam(value = "user 객체") User user) {
-		
-		if(authService.save(user) == null) // 회원 가입
-			return new ResponseEntity<>("fail", HttpStatus.OK);
+    @ApiOperation("마이페이지에서 정보 수정 // 성공: true, 실패: false (boolean)")
+    public ResponseEntity<?> mypage(HttpServletRequest request, @RequestBody @ApiParam(value = "user") SignupDto user) {
+    	String jwtToken = request.getHeader("auth-token");
+    	
+    	System.out.println(jwtToken);
+
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	RedisUserDto redisUser = null;
+		try {
+			redisUser = objectMapper.readValue(jwtToken, RedisUserDto.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+
+    	User changeUser = new User();
+    	BeanUtils.copyProperties(redisUser, changeUser);
+    	changeUser.setUserName(user.getUserName());
+    	changeUser.setCategory(user.getCategory());
+    	changeUser.getDesk().setPromise(user.getPromise());
+ //    	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
+    	
+    	redisUtil.deleteData(jwtToken);
+    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+		if(authService.save(changeUser) == null) // 저장
+			return new ResponseEntity<>(false, HttpStatus.OK);
 	
-    	return new ResponseEntity<>("success", HttpStatus.OK);
+    	return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+    
+    @PostMapping("/logout")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
+                dataType = "string", paramType = "header", defaultValue = "")
+    })
+    @ApiOperation("로그아웃 -> server: redis에서 유저 정보 삭제, client: jwtToken 정보 삭제")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+    	String jwtToken = request.getHeader("auth-token");
+    	
+    	redisUtil.deleteData(jwtToken);
+		return new ResponseEntity<>(true, HttpStatus.OK);
     }
     
 //    @GetMapping("/auth")
@@ -202,15 +253,46 @@ public class KakaoLoginController {
 //    	return new ResponseEntity<>(user, HttpStatus.OK);
 //    }
 
+//    @GetMapping("/unlink")
+//    @ApiOperation("카카오 연결 끊기(탈퇴) // 성공 시 success")
+//    public ResponseEntity<?> exit(HttpServletRequest request) {
+//    	String jwtToken = request.getHeader("auth-token");
+//    	
+//    	try {
+//	    	String accessToken = (String) jwtUtil.extractAllClaims(jwtToken).get("accessToken");
+//	    	String kakaoId = kakaoAPI.unlink(accessToken);
+//	    	System.out.println("탈퇴하기: " + kakaoId);
+//	    	if(kakaoId != null) {
+//	    		// 어드민키로 삭제
+//	    		
+//	    	}
+//	    	
+//	    	// db에서 삭제
+//	    	authService.deleteByKakaoId(kakaoId);
+//	    	
+//	    	return new ResponseEntity<>("success", HttpStatus.OK);
+//	    	
+//    	} catch (Exception e) {
+//    		
+//    		e.printStackTrace();
+//    		return new ResponseEntity<>("fail", HttpStatus.OK);
+//    	}
+//    }
+    
+    // 어드민 키로 삭제
     @GetMapping("/unlink")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
+                dataType = "string", paramType = "header", defaultValue = "")
+    })
     @ApiOperation("카카오 연결 끊기(탈퇴) // 성공 시 success")
-    public ResponseEntity<?> exit(HttpServletRequest request) {
+    public boolean unlinkByAdmin(HttpServletRequest request) {
     	String jwtToken = request.getHeader("auth-token");
     	
-    	String accessToken = (String) jwtUtil.extractAllClaims(jwtToken).get("accessToken");
-    	System.out.println("토큰 갱신하기: " + kakaoAPI.unlink(accessToken));
-    	// db에서 삭제
+    	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
     	
-		return new ResponseEntity<>("success", HttpStatus.OK);
+    	if(kakaoAPI.unlinkByAdmin(kakaoId))
+    		return true;
+    	return false;
     }
 }

@@ -69,4 +69,9 @@ public class AuthServiceImpl implements AuthService {
 		return userRepository.save(user);
 	}
 
+	@Override
+	public boolean deleteByKakaoId(String kakaoId) {
+		return userRepository.deleteByKakaoId(kakaoId);
+	}
+
 }
