@@ -2,9 +2,6 @@ package com.web.mongdok.dto;
 
 import java.io.Serializable;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.web.mongdok.entity.Desk;
 
@@ -35,11 +32,13 @@ public class RedisUserDto implements Serializable {
 	
 	private String category;
 	
-//	private String promise;
+	private Long deskId;
 	
-	private String refreshToken;
+	private String promise;
+	
+//	private String refreshToken;
 	
 	private String accessToken;
 	
-	private Desk desk;
+//	private Desk desk;
 }
