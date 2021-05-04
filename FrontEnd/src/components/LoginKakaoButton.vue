@@ -25,14 +25,7 @@ export default {
 .kakao {
   width: 200px;
   height: 50px;
-  //   background-color: yellow;
-
   text-align: center;
-  font-size: 20px;
-  line-height: 50px;
-  color: gray;
-  font-weight: 600;
-
   cursor: pointer;
 }
 </style>
