@@ -15,24 +15,27 @@ const actions = {
         await dispatch('SET_AUTH_TOKEN', res.data);
         localStorage.setItem('authToken', res.data);
       },
-      (error) => {
-        console.log('%cerror user.js line:19 ', 'color: red; display: block; width: 100%;', error);
-      }
+      () => {}
     );
   },
   async SET_AUTH_TOKEN({ commit }, authToken) {
     await commit('SET_AUTH_TOKEN', authToken);
   },
   async LOGIN({ commit }) {
+    let ret = 'error';
     await login(
-      (res) => {
+      async (res) => {
         if (res.data) {
           // 기존회원
-          commit('SET_USER_INFO', res.data);
+          await commit('SET_USER_INFO', res.data);
+          ret = 'ok';
+        } else {
+          ret = 'join';
         }
       },
       () => {}
     );
+    return ret;
   },
 };
 

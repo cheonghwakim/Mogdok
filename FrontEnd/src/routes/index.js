@@ -72,7 +72,6 @@ const routes = [
   {
     path: '/join',
     name: 'Join',
-    //  beforeEnter: requireAuth(),
     components: {
       default: Join,
     },

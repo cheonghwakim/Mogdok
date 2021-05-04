@@ -12,6 +12,7 @@ async function getAuthToken(params, success, fail) {
 
 // login 요청
 async function login(success, fail) {
+  console.log('%cuser.js line:15 login', 'color: #007acc;');
   await instance
     .get(`login`)
     .then(success)

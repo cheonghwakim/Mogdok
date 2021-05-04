@@ -9,6 +9,8 @@
   </div>
 </template>
 <script>
+import { checkUserNameDuplicated } from '../api/user';
+
 const expName = /^[가-힣a-zA-Z0-9]{2,10}$/;
 
 export default {
@@ -29,7 +31,10 @@ export default {
   },
   watch: {},
   //lifecycle area
-  created() {},
+  created() {
+    if (!this.$store.state.user.authToken && !localStorage.getItem('authToken'))
+      this.$router.push({ name: 'Login' });
+  },
   methods: {
     checkUserNameDuplicated() {
       checkUserNameDuplicated(

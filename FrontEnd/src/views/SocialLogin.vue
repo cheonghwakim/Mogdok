@@ -17,7 +17,11 @@ export default {
   //lifecycle area
   async created() {
     await this.GET_AUTH_TOKEN(this.$route.query.code);
-    this.LOGIN();
+    const status = await this.LOGIN();
+    let movePath = 'Login';
+    if (status === 'ok') movePath = 'Enterance';
+    else if (status === 'join') movePath = 'Join';
+    this.$router.push({ name: movePath });
   },
   methods: {
     ...mapActions(['GET_AUTH_TOKEN', 'LOGIN']),
