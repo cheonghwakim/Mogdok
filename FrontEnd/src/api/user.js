@@ -2,12 +2,27 @@ import { createLoginInstance } from './index.js';
 
 const instance = createLoginInstance();
 
-// 예시
-function example(data, success, fail) {
-  instance
-    .get(`example`, { params: data })
+// auth-token 요청
+async function getAuthToken(params, success, fail) {
+  await instance
+    .get(`klogin`, { params })
     .then(success)
     .catch(fail);
 }
 
-export { example };
+// login 요청
+async function login(success, fail) {
+  await instance
+    .get(`login`)
+    .then(success)
+    .catch(fail);
+}
+
+function checkUserNameDuplicated(params, success, fail) {
+  instance
+    .post(`nickname`, { nickname: params })
+    .then(success)
+    .catch(fail);
+}
+
+export { getAuthToken, login, checkUserNameDuplicated };
