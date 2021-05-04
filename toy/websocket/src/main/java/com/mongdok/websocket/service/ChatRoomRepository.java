@@ -1,48 +1,71 @@
 package com.mongdok.websocket.service;
 
-import com.mongdok.websocket.model.ChatRoom;
+import com.mongdok.websocket.model.StudyRoom;
+import com.mongdok.websocket.pubsub.RedisSubscriber;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * author: pinest94
  * since: 2021-05-04
  */
 
+@RequiredArgsConstructor
 @Repository
 public class ChatRoomRepository {
 
-    private Map<String, ChatRoom> chatRoomMap;
+    // 공부방(topic)에 발행되는 메시지를 처리할 Listener
+    private final RedisMessageListenerContainer redisMessageListenerContainer;
+
+    // 구독처리 서비스
+    private final RedisSubscriber redisSubscriber;
+
+    // Redis
+    private static final String STUDY_ROOMS = "STUDY_ROOM";
+    private final RedisTemplate<String, Object> redisTemplate;
+    private HashOperations<String, String, StudyRoom> opsHashOperations;
+
+    // 공부방의 메시지를 발행하기 위한 redis topic 정보
+    // 서버별로 채팅방에 매치되는 topic정보를 통해 Map에 넣어 sessionId로 찾을 수 있도록 한다.
+    private Map<String, ChannelTopic> topicMap;
 
     @PostConstruct
     private void init() {
-        chatRoomMap = new LinkedHashMap<>();
+        opsHashOperations = redisTemplate.opsForHash();
+        topicMap = new HashMap<>();
     }
 
-    public List<ChatRoom> findAllRoom() {
-        return new ArrayList<>(chatRoomMap.values());
+    public List<StudyRoom> findAllRoom() {
+        return opsHashOperations.values(STUDY_ROOMS);
     }
 
-    public ChatRoom findRoomById(String sessionId) {
-        return chatRoomMap.get(sessionId);
+    public StudyRoom findRoomById(String sessionId) {
+        return opsHashOperations.get(STUDY_ROOMS, sessionId);
     }
 
-    public ChatRoom createRoom(String sessionId, String name) {
-        ChatRoom chatRoom = ChatRoom.create(sessionId, name);
-        chatRoomMap.put(sessionId, chatRoom);
-        return chatRoom;
+    public StudyRoom createRoom(String sessionId, String name) {
+        StudyRoom studyRoom = StudyRoom.create(sessionId, name);
+        opsHashOperations.put(STUDY_ROOMS, studyRoom.getSessionId(), studyRoom);
+        return studyRoom;
     }
 
-//    public <T> void sendMessage(WebSocketSession session, T message) {
-//        try {
-//            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
-//        } catch (IOException e) {
-//            log.error(e.getMessage(), e);
-//        }
-//    }
+    public void enterStudyRoom(String sessionId) {
+        ChannelTopic topic = topicMap.get(sessionId);
+        if(topic == null) {
+            topic = new ChannelTopic(sessionId);
+            redisMessageListenerContainer.addMessageListener(redisSubscriber, topic);
+            topicMap.put(sessionId, topic);
+        }
+    }
+
+    public ChannelTopic getTopic(String sessionId) {
+        return topicMap.get(sessionId);
+    }
 }

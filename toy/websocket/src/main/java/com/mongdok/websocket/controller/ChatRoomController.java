@@ -1,6 +1,6 @@
 package com.mongdok.websocket.controller;
 
-import com.mongdok.websocket.model.ChatRoom;
+import com.mongdok.websocket.model.StudyRoom;
 import com.mongdok.websocket.service.ChatRoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,21 +26,21 @@ public class ChatRoomController {
     // 모든 채팅방 목록 반환
     @GetMapping("")
     public ResponseEntity<?> getRoomList() {
-        List<ChatRoom> chatRoomList = chatRoomRepository.findAllRoom();
+        List<StudyRoom> chatRoomList = chatRoomRepository.findAllRoom();
         return new ResponseEntity<>(chatRoomList, HttpStatus.OK);
     }
 
     // 채팅방 생성
     @PostMapping("")
     public ResponseEntity<?> createRoom(@RequestBody Map<String, String> resource) {
-        ChatRoom chatRoom = chatRoomRepository.createRoom(resource.get("sessionId"), resource.get("name"));
+        StudyRoom chatRoom = chatRoomRepository.createRoom(resource.get("sessionId"), resource.get("name"));
         return new ResponseEntity<>(chatRoom, HttpStatus.OK);
     }
 
     // 특정 채팅방 조회
     @GetMapping("/{sessionId}")
     public ResponseEntity<?> roomInfo(@PathVariable String sessionId) {
-        ChatRoom chatRoom = chatRoomRepository.findRoomById(sessionId);
+        StudyRoom chatRoom = chatRoomRepository.findRoomById(sessionId);
         return new ResponseEntity<>(chatRoom, HttpStatus.OK);
     }
 }

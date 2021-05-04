@@ -1,6 +1,8 @@
 package com.mongdok.websocket.controller;
 
-import com.mongdok.websocket.model.ChatMessage;
+import com.mongdok.websocket.model.RoomMessage;
+import com.mongdok.websocket.pubsub.RedisPublisher;
+import com.mongdok.websocket.service.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,22 +21,23 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Slf4j
 public class ChatController {
 
-    private final SimpMessageSendingOperations messagingTemplate;
+    private final RedisPublisher redisPublisher;
+    private final ChatRoomRepository roomRepository;
 
     /***
      * 메시지 발행요청처리
-     * @param chatMessage
+     * @param roomMessage
      */
-    @MessageMapping("/chat/message")
-    public void message(ChatMessage chatMessage) {
-        log.info("type : {}", chatMessage.getType());
-        log.info("sender : {}", chatMessage.getSender());
-        log.info("sessionId : {}", chatMessage.getSender());
-        log.info("message : {}", chatMessage.getMessage());
+    @MessageMapping("/room/message")
+    public void message(RoomMessage roomMessage) {
+        log.info("type : {}", roomMessage.getType());
+        log.info("sender : {}", roomMessage.getSender());
+        log.info("sessionId : {}", roomMessage.getSender());
+        log.info("message : {}", roomMessage.getMessage());
 
-        if(ChatMessage.MessageType.JOIN.equals(chatMessage.getType())) {
-            chatMessage.setMessage(chatMessage.getSender() + "님이 입장하셨습니다.");
+        if(RoomMessage.MessageType.ENTER.equals(roomMessage.getType())) {
+            roomMessage.setMessage(roomMessage.getSender() + "님이 입장하셨습니다.");
         }
-        messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getSessionId(), chatMessage);
+        redisPublisher.publish(roomRepository.getTopic(roomMessage.getSessionId()), roomMessage);
     }
 }
