@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <div class="room">
     <transition name="slide-left">
       <div v-show="$store.state.desk.isOpenProfile" class="profile-wrapper">
@@ -10,6 +10,10 @@
         <room-desk :desk="desk"></room-desk>
       </div>
     </div>
+    <div v-if="publisher">
+      <ov-video :stream-manager="publisher"></ov-video>
+    </div>
+    <!-- <user-video :stream-manager="publisher"></user-video> -->
     <div class="bottom-shader"></div>
   </div>
 </template>
@@ -17,32 +21,41 @@
 import { OpenVidu } from 'openvidu-browser';
 import RoomDesk from '@/components/RoomDesk';
 import DivProfile from '@/components/ui/DivProfile';
-import { createSession, createToken } from '../api/openvidu';
-// import { mapState } from 'vuex';
-
-const USER_MAX_NUMBER = 16;
+// import UserVideo from '@/components/common/UserVideo';
+import OvVideo from '@/components/common/OvVideo';
+import { mapState } from 'vuex';
 
 export default {
   name: 'Room',
-  components: { RoomDesk, DivProfile },
+  components: {
+    RoomDesk,
+    DivProfile,
+    OvVideo, //UserVideo,
+  },
   props: {},
   data() {
     return {
       deskList: [],
-      videoSourceList: [],
-      subscribers: new Array(USER_MAX_NUMBER),
-      sessionId: 'SessionA',
     };
   },
   computed: {
-    // ...mapState(['isOpenProfile']),
+    ...mapState({
+      roomInfo: (state) => state.room.roomInfo,
+      userInfo: (state) => state.user.userInfo,
+      videoSourceList: (state) => state.user.videoSourceList,
+      videoSourceIdx: (state) => state.user.videoSourceIdx,
+      OV: (state) => state.openvidu.OV,
+      session: (state) => state.openvidu.session,
+      publisher: (state) => state.openvidu.publisher,
+      subscribers: (state) => state.openvidu.subscribers,
+    }),
   },
-  watch: {
-    // Enterance로부터 [최대정원, 세션id, ]전달받기
-  },
+  watch: {},
   //lifecycle area
   created() {
     this.sampleData(); // Sample Data 시작하자마 삽입
+    this.joinSession();
+    this.$store.dispatch('CAMERA_ON');
   },
   methods: {
     // Sample Data 삽입
@@ -88,77 +101,23 @@ export default {
     },
     // 세선 참여
     joinSession() {
-      // --- Get an OpenVidu object ---
-      if (!this.OV) this.OV = new OpenVidu();
+      // --- 오픈바이두 객체 생성 ---
+      if (!this.OV) this.$store.commit('CREATE_OPENVIDU', new OpenVidu());
       // 사용 가능한 비디오 소스 확인
-      this.OV.getDevices().then((res) => {
-        this.videoSourceList = res.filter((e) => {
-          return e.kind === 'videoinput' && e.label;
-        });
-      });
-      // --- Init a session ---
-      this.session = this.OV.initSession();
-      // --- Specify the actions when events take place in the session ---
-      // On every new Stream received...
-      this.session.on('streamCreated', ({ stream }) => {
-        const subscriber = this.session.subscribe(stream);
-        this.subscribers.push(subscriber);
-      });
-      // On every Stream destroyed...
-      this.session.on('streamDestroyed', ({ stream }) => {
-        const index = this.subscribers.indexOf(stream.streamManager, 0);
-        if (index >= 0) {
-          this.subscribers.splice(index, 1);
-        }
-      });
-      // 메시지 시그널
-      // this.session.on('signal:message', (signalEvent) => {
-      //   this.receivedMessages.push(signalEvent);
-      // });
-      // --- Connect to the session with a valid user token ---
-      this.getToken(this.sessionId).then((token) => {
-        this.session
-          .connect(token, `aaaaaa##${this.myUserName}`)
-          .then(() => {
-            // 세션에 성공적으로 입장
-            console('세션에 참가했습니다');
-          })
-          .catch((error) => {
-            console.log('There was an error connecting to the session:', error.code, error.message);
-          });
-      });
+      this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
+      // 최대 이용 인원 수 설정
+      this.$store.commit('SET_SUBSCRIBERS', this.roomInfo.roomLimit);
+      // --- 세션 초기화 ---
+      this.$store.commit('SET_SESSION', this.OV.initSession());
+      // 세션에 이벤트 지정
+      this.$store.dispatch('INIT_OV_SESSION_EVENT');
+      // 세션에 유저 연결
+      this.$store.dispatch('CONNECT_USER_TO_SESSION', this.userInfo);
       window.addEventListener('beforeunload', this.leaveSession);
     },
-    getToken(sid) {
-      return this.createSession(sid).then((sessionId) => this.createToken(sessionId));
-    },
-    createSession(sessionId) {
-      return new Promise((resolve, reject) => {
-        createSession(
-          { sessionId },
-          (res) => res.data,
-          (data) => resolve(data.id),
-          (error) => {
-            if (error.response.status === 409) {
-              resolve(sessionId);
-            } else {
-              // 에러처리
-              alert('createSession ERROR');
-              reject(error.response);
-            }
-          }
-        );
-      });
-    },
-    createToken(sessionId) {
-      return new Promise((resolve, reject) => {
-        createToken(
-          { sessionId },
-          (res) => res.data,
-          (data) => resolve(data.token),
-          (error) => reject(error.response)
-        );
-      });
+    leaveSession() {
+      // 현재 접속 중인 세션을 나간다. (disconnect)
+      window.removeEventListener('beforeunload', this.leaveSession);
     },
   },
 };
