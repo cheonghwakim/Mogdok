@@ -11,7 +11,7 @@ export default {
 const Template = (args, { argTypes }) => ({
    props: Object.keys(argTypes),
    components: { DivTimerPaper },
-   template: '<div-timer-paper :type="type" :timer="timer"></div-timer-paper>',
+   template: '<div-timer-paper :type="type" :timer="timer" />',
 });
 
 export const Study = Template.bind({});
