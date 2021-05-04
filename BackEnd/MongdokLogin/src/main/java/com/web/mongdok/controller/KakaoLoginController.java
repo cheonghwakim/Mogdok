@@ -104,14 +104,15 @@ public class KakaoLoginController {
     	
     	RedisUserDto redisUser = null;
     	if(redisUtil.getData(jwtToken) == null) { // redis에서 null
-    		User user = authService.findByKakaoId(kakaoId);
-    		if(user != null) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
+    		Optional<User> user = authService.findByKakaoId(kakaoId);
+    		if(user.isPresent()) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
     			
-    			Desk desk = deskService.findByUser(user); 
+    			System.out.println("asfsd");
+    			Desk desk = deskService.findByUserId(user.get().getUserId()); 
     	    	redisUser = new RedisUserDto();
     	    	redisUser.setDeskId(desk.getDeskId());
     	    	redisUser.setPromise(desk.getPromise());
-    	    	BeanUtils.copyProperties(user, redisUser);  
+    	    	BeanUtils.copyProperties(user.get(), redisUser);  
     	    	
     	    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
 
@@ -158,11 +159,11 @@ public class KakaoLoginController {
     	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
     	User newUser = new User();
     	
-    	User findUser = authService.findByKakaoId(kakaoId);
-    	Desk desk = deskService.findByUser(findUser);   
-    	System.out.println("desk: " + desk); 	    
     	
-    	if(findUser == null) {
+    	Optional<User> findUser = authService.findByKakaoId(kakaoId);
+    	Desk desk = null;   
+    	RedisUserDto redisUser = new RedisUserDto();
+    	if(!findUser.isPresent()) {
 	    	String uuid = UUID.randomUUID().toString();
 
 	    	BeanUtils.copyProperties(user, newUser);
@@ -171,21 +172,24 @@ public class KakaoLoginController {
 	    	
 	    	System.out.println("newUser : " + newUser);
 	    	
-	    	desk = deskService.setDesk(newUser, user.getPromise()); // 내 책상 초기화
+	    	
 			authService.signUpSocialUser(newUser); // 회원 가입
-	        
+			desk = deskService.setDesk(newUser.getUserId(), user.getPromise()); // 내 책상 초기화
+			
+			System.out.println("newUser: " + newUser);
+			System.out.println(desk);
+	        // redis에 정보 저장
+	    	BeanUtils.copyProperties(newUser, redisUser);
+	    	redisUser.setDeskId(desk.getDeskId());
+	    	redisUser.setPromise(desk.getPromise());
+	    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
+	
+	    	System.out.println(redisUser);
+	    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+	    	
+	    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
     	}    	
-    	
-    	// redis에 정보 저장
-    	RedisUserDto redisUser = new RedisUserDto();
-    	BeanUtils.copyProperties(desk.getUser(), redisUser);
-    	redisUser.setDeskId(desk.getDeskId());
-    	redisUser.setPromise(desk.getPromise());
-    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
-
-    	System.out.println(redisUser);
-    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
-    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
+    	return new ResponseEntity<>(null, HttpStatus.OK);
     }
     
     @PostMapping("/mypage")

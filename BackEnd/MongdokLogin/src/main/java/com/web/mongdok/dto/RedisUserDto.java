@@ -3,7 +3,6 @@ package com.web.mongdok.dto;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.web.mongdok.entity.Desk;
 
 import lombok.Getter;
 import lombok.Setter;
