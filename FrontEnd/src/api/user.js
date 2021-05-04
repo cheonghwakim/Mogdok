@@ -1,4 +1,4 @@
-import { createLoginInstance } from './index.js';
+import { createLoginInstance } from "./index.js";
 
 const instance = createLoginInstance();
 
@@ -18,9 +18,9 @@ async function login(success, fail) {
     .catch(fail);
 }
 
-function checkUserNameDuplicated(params, success, fail) {
+function checkUserNameDuplicated(nickname, success, fail) {
   instance
-    .post(`nickname`, { nickname: params })
+    .get(`nickname`, { params: {nickname} })
     .then(success)
     .catch(fail);
 }
