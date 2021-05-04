@@ -1,6 +1,7 @@
 package com.web.mongdok.controller;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.mongdok.dto.KakaoUserDto;
 import com.web.mongdok.dto.RedisUserDto;
 import com.web.mongdok.dto.SignupDto;
+import com.web.mongdok.entity.Desk;
 import com.web.mongdok.entity.User;
 import com.web.mongdok.service.AuthService;
 import com.web.mongdok.service.DeskService;
@@ -103,15 +105,15 @@ public class KakaoLoginController {
     	RedisUserDto redisUser = null;
     	if(redisUtil.getData(jwtToken) == null) { // redis에서 null
     		User user = authService.findByKakaoId(kakaoId);
-    		System.out.println(user);
     		if(user != null) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
-//    	    	
+    			
+    			Desk desk = deskService.findByUser(user); 
     	    	redisUser = new RedisUserDto();
-    	    	BeanUtils.copyProperties(user, redisUser);
+    	    	redisUser.setDeskId(desk.getDeskId());
+    	    	redisUser.setPromise(desk.getPromise());
+    	    	BeanUtils.copyProperties(user, redisUser);  
     	    	
-//    	    	BeanUtils.copyProperties(user.getDesk(), redisUser.getDesk());
     	    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
-    	    	redisUser.setRefreshToken((String) jwtUtil.extractAllClaims(jwtToken).get("refreshToken"));
 
     	    	System.out.println(redisUser);
     	    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
@@ -119,6 +121,7 @@ public class KakaoLoginController {
     	} else { // redis에 정보 있다면
     		String userInfo = redisUtil.getData(jwtToken);
 
+    		System.out.println(userInfo);
     		try { // redis에서 user 꺼내서 return
 				redisUser = objectMapper.readValue(userInfo, RedisUserDto.class);
 			} catch (Exception e) {
@@ -137,8 +140,8 @@ public class KakaoLoginController {
     public ResponseEntity<?> nickname(@RequestParam @ApiParam(value = "유저의 닉네임") String nickname) {
 
     	if(authService.findByUserName(nickname) == null)
-    		return new ResponseEntity<>(false, HttpStatus.OK);
-    	return new ResponseEntity<>(true, HttpStatus.OK);
+    		return new ResponseEntity<>(true, HttpStatus.OK);
+    	return new ResponseEntity<>(false, HttpStatus.OK);
     }
     
     @PostMapping("/signup")
@@ -150,34 +153,39 @@ public class KakaoLoginController {
     public ResponseEntity<?> signUp(HttpServletRequest request, @RequestBody @ApiParam(value = "회원 가입 form에서 얻은 객체") SignupDto user) {
     	String jwtToken = request.getHeader("auth-token");
     	
-    	System.out.println(jwtToken);
+//    	System.out.println(jwtToken);
 
     	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
     	User newUser = new User();
     	
-    	System.out.println(authService.findByKakaoId(kakaoId));
-    	if(authService.findByKakaoId(kakaoId) == null) {
+    	User findUser = authService.findByKakaoId(kakaoId);
+    	Desk desk = deskService.findByUser(findUser);   
+    	System.out.println("desk: " + desk); 	    
+    	
+    	if(findUser == null) {
 	    	String uuid = UUID.randomUUID().toString();
-	    	
+
 	    	BeanUtils.copyProperties(user, newUser);
 	    	newUser.setUserId(uuid);
-	    	newUser.setKakaoId(kakaoId);
-
-	    	System.out.println(newUser);
+	    	newUser.setKakaoId(kakaoId);	  
 	    	
+	    	System.out.println("newUser : " + newUser);
+	    	
+	    	desk = deskService.setDesk(newUser, user.getPromise()); // 내 책상 초기화
 			authService.signUpSocialUser(newUser); // 회원 가입
-	        deskService.setDesk(uuid, user.getPromise()); // 내 책상 초기화
+	        
     	}    	
     	
     	// redis에 정보 저장
     	RedisUserDto redisUser = new RedisUserDto();
-    	BeanUtils.copyProperties(newUser, redisUser);
+    	BeanUtils.copyProperties(desk.getUser(), redisUser);
+    	redisUser.setDeskId(desk.getDeskId());
+    	redisUser.setPromise(desk.getPromise());
     	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
-    	redisUser.setRefreshToken((String) jwtUtil.extractAllClaims(jwtToken).get("refreshToken"));
 
     	System.out.println(redisUser);
     	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
-    	return new ResponseEntity<>(authService.findByKakaoId(kakaoId), HttpStatus.OK);
+    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
     }
     
     @PostMapping("/mypage")
@@ -193,7 +201,6 @@ public class KakaoLoginController {
 
     	ObjectMapper objectMapper = new ObjectMapper();
     	String userInfo = redisUtil.getData(jwtToken);
-    	System.out.println(userInfo);
     	
     	RedisUserDto redisUser = null;
 		try {

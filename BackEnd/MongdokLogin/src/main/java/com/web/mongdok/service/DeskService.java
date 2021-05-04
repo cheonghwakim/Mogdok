@@ -1,7 +1,12 @@
 package com.web.mongdok.service;
 
+import com.web.mongdok.entity.Desk;
+import com.web.mongdok.entity.User;
+
 public interface DeskService {
 
-	void setDesk(String userId, String promise);
+	Desk findByUser(User user);
+
+	Desk setDesk(User user, String promise);
 
 }
