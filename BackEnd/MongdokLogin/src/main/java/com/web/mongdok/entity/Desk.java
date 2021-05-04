@@ -2,26 +2,17 @@ package com.web.mongdok.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
 
 @Entity
 @Data
-@Table
 @ApiModel
 public class Desk {
 	
@@ -31,14 +22,14 @@ public class Desk {
 	@Column(name = "id")
 	private Long deskId;
 
-//	@ApiModelProperty(value = "유저 아이디", required = true, example = "d56c6ba4-ad2e-4aeb-b27b-de9ad65d5bb2")
-//	private String userId; // 일대일 맵핑
+	@ApiModelProperty(value = "유저 아이디", required = true, example = "d56c6ba4-ad2e-4aeb-b27b-de9ad65d5bb2")
+	private String userId; // 일대일 맵핑
 	
 	@ApiModelProperty(value = "다짐", required = true, example = "장관상 타자!")
 	private String promise;
 	
-	@OneToOne
-	@ApiModelProperty(value = "유저 아이디", required = true, example = "d56c6ba4-ad2e-4aeb-b27b-de9ad65d5bb2")
-	@JoinColumn(name = "userId")
-	private User user;
+//	@OneToOne
+//	@ApiModelProperty(value = "유저 아이디", required = true, example = "d56c6ba4-ad2e-4aeb-b27b-de9ad65d5bb2")
+//	@JoinColumn(name = "deskId")
+//	private User user;
 }

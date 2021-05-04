@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public User findByKakaoId(String kakaoId) {
+	public Optional<User> findByKakaoId(String kakaoId) {
 		return userRepository.findByKakaoId(kakaoId);
 	}
 

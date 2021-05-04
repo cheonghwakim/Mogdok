@@ -1,6 +1,7 @@
 package com.web.mongdok.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -17,7 +18,7 @@ public interface KaKaoUserRepository extends CrudRepository<User, String> {
 	List<User> findAll();
 
 	@Query(value = "select * from user where kakao_id=:kakaoId", nativeQuery = true)
-	User findByKakaoId(@Param("kakaoId") String kakaoId);
+	Optional<User> findByKakaoId(@Param("kakaoId") String kakaoId);
 
 	User findByEmail(String email);
 
