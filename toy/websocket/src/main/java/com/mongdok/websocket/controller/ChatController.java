@@ -1,12 +1,12 @@
 package com.mongdok.websocket.controller;
 
-import com.mongdok.websocket.model.ChatRoom;
-import com.mongdok.websocket.service.ChatService;
+import com.mongdok.websocket.model.ChatMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**
  * author: pinest94
@@ -14,19 +14,27 @@ import java.util.Map;
  */
 
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("/chat")
+@Controller
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
+@Slf4j
 public class ChatController {
 
-    private final ChatService chatService;
+    private final SimpMessageSendingOperations messagingTemplate;
 
-    @PostMapping
-    public ChatRoom create(@RequestBody Map<String, String> resource) {
-        return chatService.createRoom(resource.get("sessionId"), resource.get("name"));
-    }
+    /***
+     * 메시지 발행요청처리
+     * @param chatMessage
+     */
+    @MessageMapping("/chat/message")
+    public void message(ChatMessage chatMessage) {
+        log.info("type : {}", chatMessage.getType());
+        log.info("sender : {}", chatMessage.getSender());
+        log.info("sessionId : {}", chatMessage.getSender());
+        log.info("message : {}", chatMessage.getMessage());
 
-    @GetMapping
-    public List<ChatRoom> findAllRoom() {
-        return chatService.findAllRoom();
+        if(ChatMessage.MessageType.JOIN.equals(chatMessage.getType())) {
+            chatMessage.setMessage(chatMessage.getSender() + "님이 입장하셨습니다.");
+        }
+        messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getSessionId(), chatMessage);
     }
 }

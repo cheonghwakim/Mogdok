@@ -11,7 +11,7 @@ import lombok.Data;
 public class ChatMessage {
 
     public enum MessageType {
-        ENTER, TALK
+        JOIN, TALK
     }
     
     private MessageType type; // 메시지 타입
