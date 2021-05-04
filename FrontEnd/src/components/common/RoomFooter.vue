@@ -1,5 +1,6 @@
 <template lang="">
    <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating">
+      <!-- <div-cam-checker class="cam-check-wrapper"></div-cam-checker> -->
       <div class="postit-wrapper">
          <div-post-it :type="'study'" :timer="'10:30:20'"></div-post-it>
       </div>
@@ -18,6 +19,7 @@ import DivPostIt from '@/components/ui/DivPostIt';
 import BtnCommand from '@/components/ui/BtnCommand';
 import BtnMyDesk from '@/components/ui/BtnMyDesk';
 import BtnLeaveDesk from '@/components/ui/BtnLeaveDesk';
+// import DivCamChecker from '@/components/ui/DivCamChecker'; DivCamChecker
 
 export default {
    name: 'Footer',
@@ -54,10 +56,10 @@ export default {
       },
 
       hideFooter: function() {
-         var footer = document.querySelector('.footer.floating');
+         // var footer = document.querySelector('.footer.floating');
          console.log('마우스가 범위 밖으로');
 
-         footer.classList.add('borrow');
+         // footer.classList.add('borrow');
       },
 
       scrollListener: function() {
@@ -81,6 +83,13 @@ export default {
    max-width: 600px;
 
    height: auto;
+
+   .cam-check-wrapper {
+      position: absolute;
+      bottom: 60%;
+      left: 50%;
+      transform: translateX(-50%);
+   }
 
    .postit-wrapper {
       position: absolute;

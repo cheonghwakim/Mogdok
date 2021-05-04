@@ -9,7 +9,7 @@
       <div class="info borrow">
          <div class="info-content">
             <btn-close class="btnClose" @onClick="exitDesk"></btn-close>
-            <p class="userName kyoboHand">안양불빠따</p>
+            <p class="userName kyoboHand">안양취준생</p>
             <p class="cate kyoboHand">#취업준비생</p>
          </div>
          <div-banner></div-banner>
