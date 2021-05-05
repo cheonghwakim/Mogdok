@@ -7,7 +7,10 @@
     </transition>
     <div class="deskList">
       <div class="deskItem" v-for="(desk, idx) in deskList" :key="idx">
-        <room-desk :desk="desk"></room-desk>
+        <room-desk :desk="desk" :stream-manager="subscribers[idx]"></room-desk>
+      </div>
+      <div class="deskItem">
+        <room-desk :desk="deskList[0]" :stream-manager="publisher"></room-desk>
       </div>
     </div>
     <div v-if="publisher">
