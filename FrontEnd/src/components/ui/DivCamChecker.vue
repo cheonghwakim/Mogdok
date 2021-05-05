@@ -68,8 +68,8 @@ export default {
 
       .cam-wrapper {
          position: relative;
-         width: 90%;
-         height: 44%;
+         width: 280px;
+         height: calc(280px * 0.75);
 
          .cam {
             width: 100%;

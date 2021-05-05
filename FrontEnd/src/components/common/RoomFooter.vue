@@ -1,6 +1,6 @@
 <template lang="">
    <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating">
-      <!-- <div-cam-checker class="cam-check-wrapper"></div-cam-checker> -->
+      <div-cam-checker class="cam-check-wrapper"></div-cam-checker>
       <div class="postit-wrapper">
          <div-post-it :type="'study'" :timer="'10:30:20'"></div-post-it>
       </div>
@@ -19,11 +19,11 @@ import DivPostIt from '@/components/ui/DivPostIt';
 import BtnCommand from '@/components/ui/BtnCommand';
 import BtnMyDesk from '@/components/ui/BtnMyDesk';
 import BtnLeaveDesk from '@/components/ui/BtnLeaveDesk';
-// import DivCamChecker from '@/components/ui/DivCamChecker'; DivCamChecker
+import DivCamChecker from '@/components/ui/DivCamChecker';
 
 export default {
    name: 'Footer',
-   components: { DivPostIt, BtnCommand, BtnMyDesk, BtnLeaveDesk },
+   components: { DivPostIt, BtnCommand, BtnMyDesk, BtnLeaveDesk, DivCamChecker },
    props: {},
    data() {
       return {
