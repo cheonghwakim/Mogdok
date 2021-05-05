@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -38,8 +39,7 @@ public class User extends BaseTimeEntity {
 	
 	private String googleId;
 	
-//	@OneToOne
+//	@OneToOne(mappedBy = "userId")
 //	@ApiModelProperty(value = "유저 아이디", required = true, example = "d56c6ba4-ad2e-4aeb-b27b-de9ad65d5bb2")
-//	@JoinColumn(name = "userId")
 //	private Desk desk;
 }

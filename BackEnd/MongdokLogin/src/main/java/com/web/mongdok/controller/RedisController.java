@@ -33,20 +33,20 @@ public class RedisController {
     private AuthService authService;  
     
 	// user auth (key: 쿠키에 저장된 refresh_token)
-	@PostMapping("/userVerify")
-	@ApiOperation(value = "유저가 유효한지 검사")
-    public ResponseEntity<?> userVerify(@RequestParam @ApiParam(value = "유저가 가진 refreshToken") String jwtRefreshToken, HttpServletResponse res) {
-		
-		try {
-        	
-            if(authService.VerificationUser(jwtRefreshToken).equals("success"))
-            	return new ResponseEntity<>("exist", HttpStatus.OK);
-        
-        } catch (Exception e) {
-        	e.printStackTrace();
-            return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
-        }
-        
-        return new ResponseEntity<>("unknown", HttpStatus.OK); // 이러면 다시 로그인 해야 함
-    }
+//	@PostMapping("/userVerify")
+//	@ApiOperation(value = "유저가 유효한지 검사")
+//    public ResponseEntity<?> userVerify(@RequestParam @ApiParam(value = "유저가 가진 refreshToken") String jwtRefreshToken, HttpServletResponse res) {
+//		
+//		try {
+//        	
+//            if(authService.VerificationUser(jwtRefreshToken).equals("success"))
+//            	return new ResponseEntity<>("exist", HttpStatus.OK);
+//        
+//        } catch (Exception e) {
+//        	e.printStackTrace();
+//            return new ResponseEntity<>("fail", HttpStatus.UNAUTHORIZED);
+//        }
+//        
+//        return new ResponseEntity<>("unknown", HttpStatus.OK); // 이러면 다시 로그인 해야 함
+//    }
 }
