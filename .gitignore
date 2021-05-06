@@ -1,0 +1,26 @@
+node_modules
+/dist
+# local env files
+.env
+.env.local
+.env.*.local
+.env.*
+mail.properties
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# BackEnd
+application.properties
+BackEnd/MongsilDesk/mongdok.sh
+BackEnd/MongsilDesk/Dockerfile
+BackEnd/MongsilDesk/src/main/resources/keystore.p12
