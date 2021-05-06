@@ -25,4 +25,11 @@ function checkUserNameDuplicated(nickname, success, fail) {
     .catch(fail);
 }
 
-export { getAuthToken, login, checkUserNameDuplicated };
+function signup(userInfo, success, fail) {
+  instance
+    .post(`signup`, userInfo )
+    .then(success)
+    .catch(fail);
+}
+
+export { getAuthToken, login, checkUserNameDuplicated ,signup };

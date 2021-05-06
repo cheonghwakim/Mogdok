@@ -10,6 +10,7 @@
             <br />
             <div>
               <div>
+                <p>닉네임</p>
                 <ul>
                   <li>
                     <input
@@ -33,21 +34,21 @@
                     <p v-else id="fail">{{ msg }}</p>
                   </li>
                 </ul>
-                  <p>2글자 이상의 한글,영어 대소문자,숫자만 사용가능 합니다.</p>
+                <p>2글자 이상의 한글,영어 대소문자,숫자만 사용가능 합니다.</p>
               </div>
             </div>
             <p>다짐</p>
-              <div>
-                <input
-                  v-model="promise"
-                  placeholder="다짐을 입력해주세요"
-                  type="text"
-                />
-              </div>
-              <div>
+            <div>
+              <input
+                v-model="promise"
+                placeholder="다짐을 입력해주세요"
+                type="text"
+              />
+            </div>
+            <div>
               <p>카테고리</p>
-              </div>
-              <div>
+            </div>
+            <div>
               <select v-model="selectCategory">
                 <option disabled value="">카테고리를 선택해주세요</option>
                 <option v-for="c in categories" v-bind:key="c">{{ c }}</option>
@@ -56,8 +57,8 @@
             <center>
               <br />
 
-              <button color="red lighten-2" dark @click="signUp()">
-                작성 완료
+              <button color="red lighten-2" dark @click="submit()">
+                가입하기
               </button>
             </center>
           </div>
@@ -67,7 +68,7 @@
   </div>
 </template>
 <script>
-import { checkUserNameDuplicated } from "../api/user";
+import { checkUserNameDuplicated,signup } from "../api/user";
 
 const expName = /^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]{2,10}$/;
 
@@ -103,7 +104,7 @@ export default {
   watch: {
     userName() {
       this.isValid = this.validation();
-      this.isUse = 0; 
+      this.isUse = 0;
     },
   },
   //lifecycle area
@@ -143,7 +144,7 @@ export default {
         () => {}
       );
     },
-    signUp() {
+    submit() {
       if (!this.isValid) {
         //유효성 검사 통과못함
         alert(this.msg);
@@ -157,7 +158,18 @@ export default {
         //카테고리 선택안함
         alert("카테고리를 선택해주세요");
       } else {
-        alert("회원가입이 성공적으로 완료되었습니다.");
+        const userInfo={
+          category:this.selectCategory,
+          promise:this.promise,
+          userName:this.userName
+        }
+        signup(userInfo,() =>{
+          alert("회원가입에 성공하였습니다.");
+          this.$router.push('/');
+        },()=>{
+          alert("회원가입에 실패하였습니다.");
+        });
+
       }
     },
   },
@@ -174,8 +186,7 @@ export default {
 div {
   margin: 20px;
 }
-li{
-  margin:5px;
+li {
+  margin: 5px;
 }
-
 </style>
