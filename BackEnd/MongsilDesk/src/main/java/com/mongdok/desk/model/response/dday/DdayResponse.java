@@ -21,4 +21,6 @@ public class DdayResponse {
 	private String transform;
 
 	private Integer color;
+	
+	private long deskId;
 }
