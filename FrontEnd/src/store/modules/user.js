@@ -1,8 +1,13 @@
 import { getAuthToken, login } from '../../api/user';
 
 const state = () => ({
-  authToken: undefined,
-  userInfo: undefined,
+  userInfo: {
+    // 테스트데이터
+    userId: 1,
+    userName: '테스트',
+  },
+  videoSourceList: [],
+  videoSourceIdx: 0,
 });
 
 const getters = {};
@@ -40,11 +45,12 @@ const actions = {
 };
 
 const mutations = {
-  SET_AUTH_TOKEN(state, payload) {
-    state.authToken = payload;
+  SET_VIDEO_SOURCE_LIST(state, payload) {
+    state.videoSourceList = payload;
+    console.log('%cuser.js line:18 payload', 'color: #007acc;', payload);
   },
-  SET_USER_INFO(state, payload) {
-    state.userInfo = payload;
+  SET_VIDEO_SOURCE_IDX(state, payload) {
+    state.videoSourceIdx = payload;
   },
 };
 
