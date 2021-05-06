@@ -1,4 +1,4 @@
-package com.mongdok.websocket.service;
+package com.mongdok.websocket.repository;
 
 import com.mongdok.websocket.model.StudyRoom;
 import com.mongdok.websocket.pubsub.RedisSubscriber;
@@ -19,7 +19,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Repository
-public class ChatRoomRepository {
+public class RoomRepository {
 
     // 공부방(topic)에 발행되는 메시지를 처리할 Listener
     private final RedisMessageListenerContainer redisMessageListenerContainer;
@@ -51,6 +51,9 @@ public class ChatRoomRepository {
     }
 
     public StudyRoom createRoom(String sessionId, String name) {
+
+        // TODO: 이미 존재하는 경우 생성하지 말아야 함.
+
         StudyRoom studyRoom = StudyRoom.create(sessionId, name);
         opsHashOperations.put(STUDY_ROOMS, studyRoom.getSessionId(), studyRoom);
         return studyRoom;
