@@ -1,5 +1,5 @@
 <template lang="">
-   <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating">
+   <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating" :class="{ borrow: !isShowFooter }">
       <transition name="fade">
          <div-cam-checker v-show="isCamChecker" class="cam-check-wrapper" @onClickClose="closeCamChecker" @onClickStart="doStudy"></div-cam-checker>
       </transition>
@@ -31,6 +31,7 @@ export default {
       return {
          isOpen: false,
          isCamChecker: false,
+         isShowFooter: false,
       };
    },
    computed: {},
@@ -51,20 +52,14 @@ export default {
    methods: {
       // 푸터 표시하기
       showFooter: function() {
-         var footer = document.querySelector('.footer.floating');
-         console.log('마우스 진입');
-
-         if (footer.classList.contains('borrow')) {
-            footer.classList.remove('borrow');
-         }
+         // console.log('마우스 진입');
+         this.isShowFooter = true;
       },
 
       // 푸터 감추기
       hideFooter: function() {
-         var footer = document.querySelector('.footer.floating');
-         console.log('마우스가 범위 밖으로');
-
-         footer.classList.add('borrow');
+         // console.log('마우스가 범위 밖으로');
+         this.isShowFooter = false;
       },
 
       scrollListener: function() {
