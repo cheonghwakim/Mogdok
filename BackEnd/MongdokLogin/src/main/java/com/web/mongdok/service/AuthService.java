@@ -1,6 +1,8 @@
 package com.web.mongdok.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import com.web.mongdok.entity.User;
 
 
@@ -14,11 +16,15 @@ public interface AuthService {
 
 	String VerificationUser(String key);
 
-	User findByKakaoId(String kakaoId);
+	Optional<User> findByKakaoId(String kakaoId);
 
 	User findByEmail(String email);
 
 	void signUpSocialUser(User user);
 
-	boolean findByNickname(String nickname);
+	User findByUserName(String nickname);
+
+	User save(User user);
+
+	boolean deleteByKakaoId(String kakaoId);
 }

@@ -73,10 +73,10 @@ $deskWidth: 20vw;
 
          z-index: 4;
 
-         width: 100%;
+         width: 90%;
          height: 50%;
-         border-radius: 20px;
-         background-color: rgba(62, 62, 62, 0.516);
+         border-radius: 10px;
+         background-color: rgba(150, 150, 150, 0.516);
 
          /* 임시용 */
          color: white;

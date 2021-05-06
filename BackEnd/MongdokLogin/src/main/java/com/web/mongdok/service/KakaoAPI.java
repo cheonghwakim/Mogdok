@@ -11,19 +11,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class KakaoAPI {
-
+	
+	@Value("${spring.kakao.redirect}")
+	private String redirect;
+	
     public Map<String, String> getAccessToken(String authorize_code) {
         String accessToken = "";
         String refreshToken = "";
         String reqURL = "https://kauth.kakao.com/oauth/token"; // 토큰 받기
-
+        
         try {
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -36,7 +39,8 @@ public class KakaoAPI {
             sb.append("grant_type=authorization_code");
 //            sb.append("&client_id=APPKEY");
             sb.append("&client_id=4da2e6372fc055ada48d1942fd63ddcf");
-            sb.append("&redirect_uri=http://localhost:3000/kakaologin");
+//            sb.append("&redirect_uri=http://localhost:8080/join");
+            sb.append("&redirect_uri=" + redirect);
             sb.append("&code=" + authorize_code);
             
             bw.write(sb.toString());
@@ -94,17 +98,11 @@ public class KakaoAPI {
 
 			JsonParser parser = new JsonParser();
             JsonElement element = parser.parse(result);
-            
-            JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
-
+           
             String id = element.getAsJsonObject().get("id").getAsString();
             String email = null;
             
-            if (kakao_account.getAsJsonObject().get("email") != null) {
-				email = kakao_account.getAsJsonObject().get("email").getAsString();
-			 }
 			userInfo.put("id", id);
-            userInfo.put("email", email);
             userInfo.put("refresh_token", refreshToken);
             userInfo.put("access_token", accessToken);
             
@@ -185,9 +183,7 @@ public class KakaoAPI {
 
             accessToken = element.getAsJsonObject().get("access_token").getAsString();
             newRefreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
-            
-//            System.out.println("access_token: " + access_Token);
-//            System.out.println("refresh_token: " + refresh_Token);
+
             br.close();
             bw.close();
         } catch (IOException e) {
@@ -225,5 +221,43 @@ public class KakaoAPI {
         }
 
         return result;
+	}
+
+	public boolean unlinkByAdmin(String kakaoId) {
+		String reqURL = "https://kapi.kakao.com/v1/user/unlink"; // 연결 끊기
+		String result = "";
+		
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "KakaoAK " + "c4d7b7fd679f0d3dc5a5c63ab697ce89");
+			conn.setDoOutput(true);
+			
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("target_id_type=user_id");
+            sb.append("&target_id=" + kakaoId);
+            
+            bw.write(sb.toString());
+            bw.flush();
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            
+            String line = null;
+
+//            while ((line = br.readLine()) != null) {
+//                result += line;
+//            }
+            
+            if((line = br.readLine()) != null)
+            	return true;
+            return false;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
 	}
 }

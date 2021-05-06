@@ -1,11 +1,14 @@
 <template lang="">
-   <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating">
-      <div class="timer-wrapper">
+   <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating" :class="{ borrow: !isShowFooter }">
+      <transition name="fade">
+         <div-cam-checker v-show="isCamChecker" class="cam-check-wrapper" @onClickClose="closeCamChecker" @onClickStart="doStudy"></div-cam-checker>
+      </transition>
+      <div class="postit-wrapper">
          <div-timer-paper :type="'study'" :timer="'10:30:20'"></div-timer-paper>
       </div>
       <div class="content">
          <btn-my-desk class="btnMyDesk-wrapper"></btn-my-desk>
-         <btn-command class="btnCommand-wrapper" :label="'공부 하자!'"></btn-command>
+         <btn-command class="btnCommand-wrapper" :label="'공부 하자!'" @onClick="showCamChecker"></btn-command>
          <btn-leave-desk class="btnLeaveDesk-wrapper"></btn-leave-desk>
       </div>
       <div class="img-wrapper">
@@ -18,14 +21,17 @@ import DivTimerPaper from '@/components/ui/DivTimerPaper';
 import BtnCommand from '@/components/ui/BtnCommand';
 import BtnMyDesk from '@/components/ui/BtnMyDesk';
 import BtnLeaveDesk from '@/components/ui/BtnLeaveDesk';
+import DivCamChecker from '@/components/ui/DivCamChecker';
 
 export default {
    name: 'Footer',
-   components: { DivTimerPaper, BtnCommand, BtnMyDesk, BtnLeaveDesk },
+   components: { DivTimerPaper, BtnCommand, BtnMyDesk, BtnLeaveDesk, DivCamChecker },
    props: {},
    data() {
       return {
          isOpen: false,
+         isCamChecker: false,
+         isShowFooter: false,
       };
    },
    computed: {},
@@ -44,24 +50,38 @@ export default {
       }, 2000);
    },
    methods: {
+      // 푸터 표시하기
       showFooter: function() {
-         var footer = document.querySelector('.footer.floating');
-         console.log('마우스 진입');
-
-         if (footer.classList.contains('borrow')) {
-            footer.classList.remove('borrow');
-         }
+         // console.log('마우스 진입');
+         this.isShowFooter = true;
       },
 
+      // 푸터 감추기
       hideFooter: function() {
-         var footer = document.querySelector('.footer.floating');
-         console.log('마우스가 범위 밖으로');
-
-         footer.classList.add('borrow');
+         // console.log('마우스가 범위 밖으로');
+         this.isShowFooter = false;
       },
 
       scrollListener: function() {
          console.log('스크롤중');
+      },
+
+      // 공부시작 커맨드 버튼 클릭 시, 캠 체커 띄우기
+      showCamChecker: function() {
+         this.isCamChecker = true;
+      },
+
+      // CamChecker를 닫기
+      closeCamChecker: function() {
+         this.isCamChecker = false;
+         this.hideFooter(); // 푸터 닫기
+      },
+
+      // CamChecker에서 진짜 공부 시작
+      doStudy: function() {
+         alert('공부시작 로직');
+         // 타이머 시작, 캠 처리
+         this.closeCamChecker();
       },
    },
 };
@@ -82,7 +102,14 @@ export default {
 
    height: auto;
 
-   .timer-wrapper {
+   .cam-check-wrapper {
+      position: absolute;
+      bottom: 60%;
+      left: 50%;
+      transform: translateX(-50%);
+   }
+
+   .postit-wrapper {
       position: absolute;
       top: -10%;
       left: 50%;
@@ -161,5 +188,14 @@ export default {
 
 .borrow {
    transform: translate(-50%, 75%);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+   transition: all 0.5s ease;
+}
+.fade-enter,
+.fade-leave-to {
+   opacity: 0;
 }
 </style>

@@ -21,6 +21,7 @@ export default {
 <style scoped>
 .close {
    cursor: pointer;
+   z-index: 11;
 }
 
 .close :hover #svg__close {
