@@ -32,11 +32,11 @@ public class CalendarServiceImpl implements CalendarService {
 	public static final Logger logger = LoggerFactory.getLogger(DeskServiceImpl.class);
 
 	@Override
-	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String nickname) {
+	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String userName) {
 		List<StudyResponse> response = new ArrayList<StudyResponse>();
 
 		try {
-			String userId = userDao.findUserIdByNickname(nickname);
+			String userId = userDao.findUserIdByUserName(userName);
 
 			LocalDate date=LocalDate.of(year, month, 1);
 			List<Study> list = studyDao.findAllInThisMonth(date, userId);
@@ -58,11 +58,11 @@ public class CalendarServiceImpl implements CalendarService {
 	}
 
 	@Override
-	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String nickname) {
+	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String userName) {
 		List<StudyResponse> response = new ArrayList<StudyResponse>();
 
 		try {
-			String userId = userDao.findUserIdByNickname(nickname);
+			String userId = userDao.findUserIdByUserName(userName);
 
 			LocalDate date=LocalDate.of(year, month, day);
 			List<Study> list = studyDao.findAllInToday(date, userId);

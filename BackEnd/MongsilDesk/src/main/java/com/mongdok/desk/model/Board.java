@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @Entity
 public class Board {
@@ -36,10 +35,11 @@ public class Board {
 	//객체 생성시간으로 저장
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private Date writeDate;
 	
 	private long deskId;
 	
 	private String userId;
+	
+	private boolean read;
 }

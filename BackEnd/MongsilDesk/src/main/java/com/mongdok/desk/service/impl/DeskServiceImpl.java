@@ -44,7 +44,7 @@ public class DeskServiceImpl implements DeskService {
 	public ResponseEntity<? extends BasicResponse> getPromiseByUserEmail(String nickname) {
 		DeskResponse response = new DeskResponse();
 		try {
-			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByNickname(nickname));
+			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByUserName(nickname));
 			if (optional.isPresent()) {
 				response.setPromise(optional.get().getPromise());
 			} else {
@@ -62,7 +62,7 @@ public class DeskServiceImpl implements DeskService {
 	public ResponseEntity<? extends BasicResponse> updatePromiseByUserId(DeskRequest deskRequest) {
 		DeskResponse response = new DeskResponse();
 		try {
-			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByNickname(deskRequest.getNickname()));
+			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByUserName(deskRequest.getUserName()));
 			if (optional.isPresent()) {
 				Desk desk = optional.get();
 				desk.setPromise(deskRequest.getPromise());// 다짐 수정
@@ -87,7 +87,7 @@ public class DeskServiceImpl implements DeskService {
 		DeskAllResponse response = new DeskAllResponse();
 
 		try {
-			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByNickname(nickname));
+			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByUserName(nickname));
 			if (optional.isPresent()) {
 				Desk desk = optional.get();
 				// 엔티티-> dto 변환
