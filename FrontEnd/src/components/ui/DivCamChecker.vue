@@ -1,20 +1,19 @@
 <template lang="">
    <div class="camChecker">
       <!-- 최상단 닫기 버튼 -->
-      <btn-close class="btnClose" @onClick="exitRoom"></btn-close>
+      <btn-close class="btnClose" @onClick="closeCam"></btn-close>
 
       <!-- 내용들이 들어가는 내부 공간 -->
       <div class="content">
          <div class="cam-wrapper">
             <div-tape></div-tape>
             <div class="cam"></div>
-
-            <!-- 안내 문구 -->
-            <p class="info-wrapper">
-               열정있는 스터디 문화를 위해 <br />
-               공부하는 🖐을 보여주세요
-            </p>
          </div>
+         <!-- 안내 문구 -->
+         <p class="info-wrapper">
+            열정있는 스터디 문화를 위해 <br />
+            공부하는 🖐을 보여주세요
+         </p>
 
          <select name="camSelect">
             <option value="">카메라를 선택하세요</option>
@@ -24,7 +23,7 @@
          </select>
 
          <!-- 하단 버튼 -->
-         <btn-underline :label="'START'"></btn-underline>
+         <btn-underline :label="'START'" @onClick="startStudy"></btn-underline>
       </div>
 
       <!-- 바탕 이미지 -->
@@ -37,6 +36,14 @@ import DivTape from '@/components/ui/DivTape';
 import BtnClose from '@/components/ui/BtnClose';
 export default {
    components: { btnUnderline, DivTape, BtnClose },
+   methods: {
+      closeCam: function() {
+         this.$emit('onClickClose');
+      },
+      startStudy: function() {
+         this.$emit('onClickStart');
+      },
+   },
 };
 </script>
 <style scoped lang="scss">
@@ -84,7 +91,6 @@ export default {
          font-size: 10pt;
          color: rgb(60, 60, 60);
          line-height: 14pt;
-         margin-top: 10px;
       }
    }
 }
