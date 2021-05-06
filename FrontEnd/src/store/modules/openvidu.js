@@ -103,7 +103,7 @@ const actions = {
     // --- 카메라를 통해 스트림할 데이터의 속성을 초기화한다 ---
     let publisher = await state.OV.initPublisherAsync(undefined, {
       audioSource: false, // 오디오소스. If undefined default microphone
-      videoSource: rootState.user.videoSourceList[rootState.user.videoSourceIdx].deviceId, // 비디오소스. If undefined default webcam
+      videoSource: rootState.user.videoSource, // 비디오소스. If undefined default webcam
       publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
       publishVideo: true, // Whether you want to start publishing with your video enabled or not
       resolution: '320x240', // The resolution of your video
@@ -125,12 +125,17 @@ const actions = {
       // 카메라 자원이 여전히 실행 중이게 되므로 카메라 자원을 해제하는 작업을 해주어야 함
       if (state.publisher) state.publisher.stream.disposeMediaStream();
     }
+    commit('SET_PUBLISHED', false);
     commit('SET_PUBLISHER', undefined);
   },
   LEAVE_SESSION({ state, commit, dispatch }) {
     if (state.session) state.session.disconnect();
     dispatch('CAMERA_OFF');
     commit('CLEAR_SESSION');
+  },
+  async CHANGE_CAMERA({ dispatch }) {
+    dispatch('CAMERA_OFF');
+    await dispatch('CAMERA_ON');
   },
 };
 

@@ -6,17 +6,10 @@
       </div>
     </transition>
     <div class="deskList">
-      <div class="deskItem" v-for="(desk, idx) in deskList" :key="idx">
+      <div class="deskItem" v-for="(desk, idx) in deskList" :key="subscribers[idx]">
         <room-desk :desk="desk" :stream-manager="subscribers[idx]"></room-desk>
       </div>
-      <div class="deskItem">
-        <room-desk :desk="deskList[0]" :stream-manager="publisher"></room-desk>
-      </div>
     </div>
-    <!-- <div v-if="publisher">
-      <ov-video :stream-manager="publisher"></ov-video>
-    </div> -->
-    <!-- <user-video :stream-manager="publisher"></user-video> -->
     <div class="bottom-shader"></div>
   </div>
 </template>
@@ -24,8 +17,6 @@
 import { OpenVidu } from 'openvidu-browser';
 import RoomDesk from '@/components/RoomDesk';
 import DivProfile from '@/components/ui/DivProfile';
-// import UserVideo from '@/components/common/UserVideo';
-// import OvVideo from '@/components/common/OvVideo';
 import { mapState } from 'vuex';
 
 export default {
@@ -33,7 +24,6 @@ export default {
   components: {
     RoomDesk,
     DivProfile,
-    // OvVideo, //UserVideo,
   },
   props: {},
   data() {
@@ -58,7 +48,7 @@ export default {
   created() {
     this.sampleData(); // Sample Data 시작하자마 삽입
     this.joinSession();
-    this.$store.dispatch('CAMERA_ON');
+    // this.$store.dispatch('CAMERA_ON');
   },
   methods: {
     // Sample Data 삽입
