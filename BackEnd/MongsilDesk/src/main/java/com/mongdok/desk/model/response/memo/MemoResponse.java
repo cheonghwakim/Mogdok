@@ -14,4 +14,6 @@ public class MemoResponse {
 	private String transform;
 	
 	private Integer color;
+	
+	private long deskId;
 }
