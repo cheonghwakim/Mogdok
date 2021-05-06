@@ -64,55 +64,65 @@ export default {
    },
 };
 </script>
-<style scoped lang="scss">
+
+<style scoped>
 .btnCmdDiv {
    position: relative;
-
-   .title {
-      position: absolute;
-      top: 35%;
-      left: 50%;
-      transform: translateX(-50%);
-
-      width: 100%;
-
-      font-size: 2vmin;
-      font-weight: 600;
-      text-align: center;
-   }
    cursor: pointer;
 
-   #btnCmd-mid {
-      fill: white;
-   }
-   #btnCmd-up {
-      fill: white;
-   }
-   #btnCmd-down {
-      fill: #e8e8e8;
-   }
-   #btnCmd-right {
-      fill: #c8c8c8;
-   }
-   #btnCmd-left {
-      fill: white;
-   }
-   &:hover {
-      #btnCmd-mid {
-         fill: #545454;
-      }
-      #btnCmd-up {
-         fill: #737373;
-      }
-      #btnCmd-down {
-         fill: #ababab;
-      }
-      #btnCmd-right {
-         fill: #888888;
-      }
-      #btnCmd-left {
-         fill: #575757;
-      }
-   }
+   width: 15vw;
+   min-width: 100px;
+   max-width: 150px;
+}
+
+.btnCmdDiv .title {
+   position: absolute;
+   top: 35%;
+   left: 50%;
+   transform: translateX(-50%);
+   width: 100%;
+   font-size: 2vim;
+   font-weight: 600;
+   text-align: center;
+}
+
+.btnCmdDiv #btnCmd-mid {
+   fill: white;
+}
+
+.btnCmdDiv #btnCmd-up {
+   fill: white;
+}
+
+.btnCmdDiv #btnCmd-down {
+   fill: #e8e8e8;
+}
+
+.btnCmdDiv #btnCmd-right {
+   fill: #c8c8c8;
+}
+
+.btnCmdDiv #btnCmd-left {
+   fill: white;
+}
+
+.btnCmdDiv:hover #btnCmd-mid {
+   fill: #545454;
+}
+
+.btnCmdDiv:hover #btnCmd-up {
+   fill: #737373;
+}
+
+.btnCmdDiv:hover #btnCmd-down {
+   fill: #ababab;
+}
+
+.btnCmdDiv:hover #btnCmd-right {
+   fill: #888888;
+}
+
+.btnCmdDiv:hover #btnCmd-left {
+   fill: #575757;
 }
 </style>

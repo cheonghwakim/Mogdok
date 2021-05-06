@@ -1,0 +1,52 @@
+import { Story, Preview, Meta, Props } from '@storybook/addon-docs/blocks';
+import BtnClose from '../components/ui/BtnClose.vue';
+
+<Meta title="Button/Close" Component={BtnClose} />
+
+# CloseButton
+
+<Preview>
+   <Story id="btnClose" height="60px" />
+</Preview>
+
+# Props
+
+<Props of={BtnClose} />
+
+# Styles
+
+## Primary Style
+
+<Story name="primary" height="60px">
+   {{
+      components: { BtnClose },
+      template: '<btn-close name="primary" className="primary" :useDiv="false" :isLoading="false" />',
+   }}
+</Story>
+
+## Secondary Style
+
+<Story name="secondary" height="60px">
+   {{
+      components: { BtnClose },
+      template: '<btn-close name="secondary" className="secondary" :useDiv="false" :isLoading="false" />',
+   }}
+</Story>
+
+## Positive Style
+
+<Story name="positive" height="60px">
+   {{
+      components: { BtnClose },
+      template: '<btn-close name="positive" className="positive" :useDiv="false" :isLoading="false" />',
+   }}
+</Story>
+
+## Negative Style
+
+<Story name="negative" height="60px">
+   {{
+      components: { BtnClose },
+      template: '<btn-close name="negative" className="negative" :useDiv="false" :isLoading="false" />',
+   }}
+</Story>
