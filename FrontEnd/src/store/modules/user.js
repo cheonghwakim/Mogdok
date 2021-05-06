@@ -7,7 +7,7 @@ const state = () => ({
     userName: '테스트',
   },
   videoSourceList: [],
-  videoSourceIdx: 0,
+  videoSource: undefined,
 });
 
 const getters = {};
@@ -47,10 +47,9 @@ const actions = {
 const mutations = {
   SET_VIDEO_SOURCE_LIST(state, payload) {
     state.videoSourceList = payload;
-    console.log('%cuser.js line:18 payload', 'color: #007acc;', payload);
   },
-  SET_VIDEO_SOURCE_IDX(state, payload) {
-    state.videoSourceIdx = payload;
+  SET_VIDEO_SOURCE(state, payload) {
+    state.videoSource = payload;
   },
 };
 
