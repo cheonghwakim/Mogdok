@@ -72,7 +72,7 @@
   </div>
 </template>
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 import Moveable from 'vue-moveable';
 
 const MEMO_MAX_SIZE = 10;
@@ -118,6 +118,7 @@ export default {
         snappable: true,
         bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
       },
+      deskId: undefined,
       memos: [],
       hasInit: false,
       editable: false,
@@ -137,24 +138,26 @@ export default {
     };
   },
   methods: {
-    getMemos() {
-      var tmp = JSON.parse(localStorage.getItem('memos'));
-      return tmp;
-      // return axios
-      //   .get('http://k4a401.p.ssafy.io:2000/desk/all', { params: { nickname: 'ssafy' } })
-      //   .then((res) => {
-      //     console.log(res);
-      //     return res.data.data.memoList;
-      //   })
-      //   .catch((err) => {
-      //     console.error(err);
-      //     return undefined;
-      //   });
+    async getMemos() {
+      // var tmp = JSON.parse(localStorage.getItem('memos'));
+      // return tmp;
+      return await axios
+        .get('http://k4a401.p.ssafy.io:2000/desk/all', { params: { nickname: 'ssafy' } })
+        .then((res) => {
+          console.log(res.data.data);
+          this.deskId = res.data.data.deskId;
+          console.log('%cApp.vue line:149 deskId', 'color: #007acc;', this.deskId);
+          return res.data.data.memoList;
+        })
+        .catch((err) => {
+          console.error(err);
+          return undefined;
+        });
     },
-    initMemos() {
-      // const memos = this.getMemos();
+    async initMemos() {
+      this.memos = (await this.getMemos()) || [];
       this.hasInit = false;
-      this.memos = JSON.parse(localStorage.getItem('memos')) || [];
+      // this.memos = JSON.parse(localStorage.getItem('memos')) || [];
       for (let i = 0; i < this.memos.length; i++) {
         // moveable 초기 세팅
         // 생성하고 난 후 기존에 있던 메모의 위치로 이동해야 하므로 MoveableState 사용
@@ -181,12 +184,12 @@ export default {
       for (let i = 0; i < this.memos.length; i++) this.setMemoState(i, true);
     },
     editComplete() {
+      this.saveMemo(); // 메모 저장
       this.editable = false; // 편집 불가능 상태로 변경
       this.removedList = []; // 삭제했던 리스트 초기화
       this.selectedMemoIdx = -1; // 클릭된 메모 없음 상태로 변경
       // 모든 메모지를 움직일 수 없는 상태로 업데이트
       for (let i = 0; i < this.memos.length; i++) this.setMemoState(i, false);
-      this.saveMemo(); // 메모 저장
     },
     setMemoState(index, state) {
       // 메모지 상태 업데이트
@@ -208,11 +211,13 @@ export default {
       this.memos[this.selectedMemoIdx].zIndex = 3000 + this.zIndexCount;
     },
     removeMemo() {
-      this.removedList.push(this.memos.splice(this.selectedMemoIdx, 1).memoId);
+      this.removedList.push(this.memos[this.selectedMemoIdx].memoId);
+      this.memos.splice(this.selectedMemoIdx, 1);
     },
     createMemo() {
       if (this.memos.length >= MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
       this.memos.push({
+        deskId: this.deskId,
         memoId: 'tmp' + this.createMemoKeyIndex++,
         content: '',
         zIndex: 1,
@@ -224,24 +229,36 @@ export default {
       this.dialog = true;
     },
     saveMemo() {
-      console.log('%cApp.vue line:216 object', 'color: #007acc;', JSON.stringify(this.memos));
-      const result = this.memos.map((e) => {
-        if (e.memoId.substring(0, 3) === 'tmp') {
+      this.memos = this.memos.map((e) => {
+        if (isNaN(e.memoId)) {
           e.memoId = undefined;
           return e;
-        } else return e;
+        } else {
+          return e;
+        }
       });
-      // 임시. 서버와 연동하면 result를 사용하면 됨
-      // 모든 메모, 디데이, 삭제된 메모, 삭제된 디데이 모두 보내야 함
-      console.log('%cApp.vue line:206 result', 'color: #007acc;', result);
-      localStorage.setItem('memos', JSON.stringify(this.memos));
-      // axios.post('http://k4a401.p.ssafy.io:2000/desk/memo', this.memos)
-      // .then(res => {
-      //   console.log(res)
-      // })
-      // .catch(err => {
-      //   console.error(err);
-      // })
+      console.log('%cApp.vue line:245 this.removedList', 'color: #007acc;', this.removedList);
+      this.removedList = this.removedList.filter((e) => {
+        return !isNaN(e);
+      });
+      // 메모 저장
+      axios
+        .post('http://k4a401.p.ssafy.io:2000/desk/memo/update', this.memos)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      // 삭제된 메모
+      axios
+        .post('http://k4a401.p.ssafy.io:2000/desk/memo/delete', this.removedList)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     changeColor(index) {
       this.memos[this.selectedMemoIdx].color = index;
