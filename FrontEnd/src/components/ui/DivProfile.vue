@@ -12,7 +12,7 @@
             <div class="info-wrapper">
                <h1 class="kyoboHand">{{ userName }}</h1>
                <h2 class="kyoboHand">#취업준비생</h2>
-               <p>라인, 카카오 가즈아~~~</p>
+               <p>취업 가자! 아자아자!</p>
             </div>
          </div>
 

@@ -20,6 +20,7 @@ export default {
 <style scoped lang="scss">
 .close {
    cursor: pointer;
+   z-index: 11;
 
    :hover {
       fill: rgb(196, 13, 13);
