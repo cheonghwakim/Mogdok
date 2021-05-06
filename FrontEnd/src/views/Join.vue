@@ -68,7 +68,7 @@
   </div>
 </template>
 <script>
-import { checkUserNameDuplicated,signup } from "../api/user";
+import { checkUserNameDuplicated, signup } from "../api/user";
 
 const expName = /^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]{2,10}$/;
 
@@ -158,18 +158,21 @@ export default {
         //카테고리 선택안함
         alert("카테고리를 선택해주세요");
       } else {
-        const userInfo={
-          category:this.selectCategory,
-          promise:this.promise,
-          userName:this.userName
-        }
-        signup(userInfo,() =>{
-          alert("회원가입에 성공하였습니다.");
-          this.$router.push('/');
-        },()=>{
-          alert("회원가입에 실패하였습니다.");
-        });
-
+        const userInfo = {
+          category: this.selectCategory,
+          promise: this.promise,
+          userName: this.userName,
+        };
+        signup(
+          userInfo,
+          () => {
+            alert("회원가입에 성공하였습니다.");
+            this.$router.push("/");
+          },
+          () => {
+            alert("회원가입에 실패하였습니다.");
+          }
+        );
       }
     },
   },
