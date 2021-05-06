@@ -125,6 +125,7 @@ const actions = {
       // 카메라 자원이 여전히 실행 중이게 되므로 카메라 자원을 해제하는 작업을 해주어야 함
       if (state.publisher) state.publisher.stream.disposeMediaStream();
     }
+    commit('SET_PUBLISHED', false);
     commit('SET_PUBLISHER', undefined);
   },
   LEAVE_SESSION({ state, commit, dispatch }) {

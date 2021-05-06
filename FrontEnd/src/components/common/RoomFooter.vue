@@ -20,8 +20,8 @@
       <btn-my-desk class="btnMyDesk-wrapper"></btn-my-desk>
       <btn-command
         class="btnCommand-wrapper"
-        :label="'공부 하자!'"
-        @onClick="showCamChecker"
+        :label="isStudy ? '쉬기' : '공부하자!'"
+        @onClick="isStudy ? goToRest() : showCamChecker()"
       ></btn-command>
       <btn-leave-desk class="btnLeaveDesk-wrapper"></btn-leave-desk>
     </div>
@@ -44,6 +44,7 @@ export default {
   data() {
     return {
       isOpen: false,
+      isStudy: false,
       isCamChecker: false,
       isShowFooter: false,
     };
@@ -83,7 +84,14 @@ export default {
     // 공부시작 커맨드 버튼 클릭 시, 캠 체커 띄우기
     showCamChecker: function() {
       this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
+      this.$store.dispatch('CAMERA_ON');
       this.isCamChecker = true;
+    },
+
+    goToRest: function() {
+      this.$store.dispatch('CAMERA_OFF');
+      this.$store.commit('SET_PUBLISHED', false);
+      this.isStudy = false;
     },
 
     // CamChecker를 닫기
@@ -94,9 +102,11 @@ export default {
 
     // CamChecker에서 진짜 공부 시작
     doStudy: function() {
-      alert('공부시작 로직');
-      // 타이머 시작, 캠 처리
-      this.closeCamChecker();
+      // 휴식상태에서 클릭하면 세션에 캠 퍼블리시 시작
+      this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
+      this.$store.commit('SET_PUBLISHED', true);
+      this.closeCamChecker(); // 타이머 시작, 캠 처리
+      this.isStudy = true;
     },
   },
 };
