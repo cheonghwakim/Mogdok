@@ -21,7 +21,7 @@
       <btn-command
         class="btnCommand-wrapper"
         :label="isStudy ? '쉬기' : '공부하자!'"
-        @onClick="isStudy ? goToRest() : showCamChecker()"
+        @onClick="isStudy ? doRest() : showCamChecker()"
       ></btn-command>
       <btn-leave-desk class="btnLeaveDesk-wrapper"></btn-leave-desk>
     </div>
@@ -88,9 +88,8 @@ export default {
       this.isCamChecker = true;
     },
 
-    goToRest: function() {
+    doRest: function() {
       this.$store.dispatch('CAMERA_OFF');
-      this.$store.commit('SET_PUBLISHED', false);
       this.isStudy = false;
     },
 
@@ -104,7 +103,6 @@ export default {
     doStudy: function() {
       // 휴식상태에서 클릭하면 세션에 캠 퍼블리시 시작
       this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
-      this.$store.commit('SET_PUBLISHED', true);
       this.closeCamChecker(); // 타이머 시작, 캠 처리
       this.isStudy = true;
     },
