@@ -13,9 +13,9 @@
         <room-desk :desk="deskList[0]" :stream-manager="publisher"></room-desk>
       </div>
     </div>
-    <div v-if="publisher">
+    <!-- <div v-if="publisher">
       <ov-video :stream-manager="publisher"></ov-video>
-    </div>
+    </div> -->
     <!-- <user-video :stream-manager="publisher"></user-video> -->
     <div class="bottom-shader"></div>
   </div>
@@ -25,7 +25,7 @@ import { OpenVidu } from 'openvidu-browser';
 import RoomDesk from '@/components/RoomDesk';
 import DivProfile from '@/components/ui/DivProfile';
 // import UserVideo from '@/components/common/UserVideo';
-import OvVideo from '@/components/common/OvVideo';
+// import OvVideo from '@/components/common/OvVideo';
 import { mapState } from 'vuex';
 
 export default {
@@ -33,7 +33,7 @@ export default {
   components: {
     RoomDesk,
     DivProfile,
-    OvVideo, //UserVideo,
+    // OvVideo, //UserVideo,
   },
   props: {},
   data() {

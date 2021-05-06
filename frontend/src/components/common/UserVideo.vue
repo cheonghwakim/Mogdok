@@ -1,9 +1,6 @@
 <template>
   <div>
     <ov-video :stream-manager="streamManager" />
-    <!-- <div>
-      <p>{{ clientData }}</p>
-    </div> -->
   </div>
 </template>
 

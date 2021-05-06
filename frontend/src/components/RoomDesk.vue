@@ -8,10 +8,10 @@
     <!-- 본문 : 화면과 책상이 기록되는 공간 -->
     <div class="content">
       <!-- 자리의 상태에 따라 캠, 휴식, 빈 공간이 표시 -->
-      <div class="cam">
-        <user-video :stream-manager="streamManager"></user-video>
+      <div v-if="streamManager">
+        <ov-video class="cam" :stream-manager="streamManager"></ov-video>
       </div>
-      <div class="resting">
+      <div class="resting" v-show="!streamManager">
         <svg-sleeping class="character"></svg-sleeping>
       </div>
       <img src="@/assets/img/desk.svg" @click="clickDesk" />
@@ -26,9 +26,9 @@
 </template>
 <script>
 import SvgSleeping from '@/components/svg/SvgSleeping.vue';
-import UserVideo from '@/components/common/UserVideo';
+import OvVideo from '@/components/common/OvVideo';
 export default {
-  components: { SvgSleeping, UserVideo },
+  components: { SvgSleeping, OvVideo },
   props: {
     desk: Object,
     streamManager: Object,
