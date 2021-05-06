@@ -153,12 +153,10 @@ public class KakaoLoginController {
     @ApiOperation(value = "회원 가입할 때 정보 저장// user 반환", notes = "auth-token 예시:  ex. eyJhbGciOiJIUzI1NiJ9.eyJrYWthb0lkIjoiMTcxMDk3MDg4OCIsImFjY2Vzc1Rva2VuIjoiYmxYak0tU3JPclM4cFVCTjg2TE83bHlwbEFKUmxfalV1VlhkdUFvOWMtc0FBQUY1TVp2dXFBIiwiaWF0IjoxNjIwMDM0OTczLCJleHAiOjE2MjI2MjY5NzN9.czK6mnf4MP9ArOg-hqOfYZZzOne8y-LL25ClV2RWl4w")
     public ResponseEntity<?> signUp(HttpServletRequest request, @RequestBody @ApiParam(value = "회원 가입 form에서 얻은 객체") SignupDto user) {
     	String jwtToken = request.getHeader("auth-token");
-    	
-//    	System.out.println(jwtToken);
 
     	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
     	User newUser = new User();
-    	
+    	System.out.println(kakaoId);
     	
     	Optional<User> findUser = authService.findByKakaoId(kakaoId);
     	Desk desk = null;   
