@@ -24,5 +24,6 @@ public class RoomMessage {
     private String sessionId; // 방 번호
     private String sender; // 메시지 보낸 사람
     private String message; // 메시지
+    private Long userCount; // 접속자 수
     private SeatInfo seatInfo; // 좌석정보
 }

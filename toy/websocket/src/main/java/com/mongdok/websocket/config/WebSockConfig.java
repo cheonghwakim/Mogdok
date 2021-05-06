@@ -20,6 +20,7 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-stomp").setAllowedOriginPatterns("*").withSockJS();
+        // TODO: RoomInfo(좌석정보 리스트) 반환
     }
 
     @Override

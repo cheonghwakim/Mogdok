@@ -3,8 +3,10 @@ package com.mongdok.websocket.controller;
 import com.mongdok.websocket.model.RoomMessage;
 import com.mongdok.websocket.pubsub.RedisPublisher;
 import com.mongdok.websocket.repository.RoomRepository;
+import com.mongdok.websocket.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,27 +22,23 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Slf4j
 public class MessageController {
 
-    private final RedisPublisher redisPublisher;
-    private final RoomRepository roomRepository;
+    @Autowired
+    private RoomService roomService;
 
     /***
      * 메시지 발행요청처리
-     * @param roomMessage
+     * @param message
      */
     @MessageMapping("/room/message")
-    public void message(RoomMessage roomMessage) {
-        log.info("type : {}", roomMessage.getType());
-        log.info("sender : {}", roomMessage.getSender());
-        log.info("sessionId : {}", roomMessage.getSessionId());
-        log.info("message : {}", roomMessage.getMessage());
-        if(roomMessage.getSeatInfo() != null) {
-            log.info("seatInfo : {}", roomMessage.getSeatInfo().toString());
+    public void message(RoomMessage message) {
+        log.info("type : {}", message.getType());
+        log.info("sender : {}", message.getSender());
+        log.info("sessionId : {}", message.getSessionId());
+        log.info("message : {}", message.getMessage());
+        if(message.getSeatInfo() != null) {
+            log.info("seatInfo : {}", message.getSeatInfo().toString());
         }
 
-        if(RoomMessage.MessageType.ENTER.equals(roomMessage.getType())) {
-            roomRepository.enterStudyRoom(roomMessage.getSessionId());
-            roomMessage.setMessage(roomMessage.getSender() + "님이 입장하셨습니다.");
-        }
-        redisPublisher.publish(roomRepository.getTopic(roomMessage.getSessionId()), roomMessage);
+        roomService.sendMessage(message);
     }
 }

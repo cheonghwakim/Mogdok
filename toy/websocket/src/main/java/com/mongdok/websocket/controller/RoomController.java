@@ -35,21 +35,22 @@ public class RoomController {
     // 모든 채팅방 목록 반환
     @GetMapping("")
     public ResponseEntity<?> getRoomList() {
-        List<StudyRoom> chatRoomList = roomRepository.findAllRoom();
-        return new ResponseEntity<>(chatRoomList, HttpStatus.OK);
+        List<StudyRoom> roomList = roomRepository.findAllRoom();
+        roomList.stream().forEach(room -> room.setUserCount(roomRepository.getUserCount(room.getSessionId())));
+        return new ResponseEntity<>(roomList, HttpStatus.OK);
     }
 
     // 채팅방 생성
     @PostMapping("")
     public ResponseEntity<?> createRoom(@RequestBody Map<String, String> resource) {
-        StudyRoom chatRoom = roomRepository.createRoom(resource.get("sessionId"), resource.get("name"));
-        return new ResponseEntity<>(chatRoom, HttpStatus.OK);
+        StudyRoom room = roomRepository.createRoom(resource.get("sessionId"), resource.get("name"));
+        return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
     // 특정 채팅방 조회
     @GetMapping("/{sessionId}")
     public ResponseEntity<?> roomInfo(@PathVariable String sessionId) {
-        StudyRoom chatRoom = roomRepository.findRoomById(sessionId);
-        return new ResponseEntity<>(chatRoom, HttpStatus.OK);
+        StudyRoom room = roomRepository.findRoomById(sessionId);
+        return new ResponseEntity<>(room, HttpStatus.OK);
     }
 }
