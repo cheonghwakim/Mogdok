@@ -168,9 +168,6 @@ public class KakaoLoginController {
 	    	newUser.setUserId(uuid);
 	    	newUser.setKakaoId(kakaoId);	  
 	    	
-	    	System.out.println("newUser : " + newUser);
-	    	
-	    	
 			authService.signUpSocialUser(newUser); // 회원 가입
 			desk = deskService.setDesk(newUser.getUserId(), user.getPromise()); // 내 책상 초기화
 			
