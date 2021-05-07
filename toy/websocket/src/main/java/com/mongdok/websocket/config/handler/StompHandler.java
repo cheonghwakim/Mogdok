@@ -40,9 +40,9 @@ public class StompHandler implements ChannelInterceptor {
             log.info("SUB - sessionId : {}", sessionId);
 
             // 열람실에 들어온 클라이언트 userId를 sessionId와 맵핑해 놓는다. (추후 특정 클라이언트가 어떤 열람실에 있는지 알기 위함)
-            String userId = (String) message.getHeaders().get("simpSessionId");
-            log.info("SUB - userId : {}", userId);
-            roomRepository.setUserEnterInfo(userId, sessionId);
+            String clientId = (String) message.getHeaders().get("simpSessionId");
+            log.info("SUB - clientId : {}", clientId);
+            roomRepository.setUserEnterInfo(clientId, sessionId);
 
             // 열람실의 인원 수를 +1한다.
             roomRepository.plusUserCount(sessionId);
@@ -57,24 +57,24 @@ public class StompHandler implements ChannelInterceptor {
             log.info("SUB - userName : {}", userName);
 
             roomService.sendMessage(RoomMessage.builder().type(RoomMessage.MessageType.ENTER).sessionId(sessionId).sender(userName).build());
-            log.info("SUBSCRIBED {} ----- {}", userId, sessionId);
+            log.info("SUBSCRIBED {} ----- {}", clientId, sessionId);
 
         } else if(StompCommand.DISCONNECT == accessor.getCommand()) { // WebSocket 연결 종료
             // 연결이 종료된 클라이언트 userId로 열람실 sessionId를 얻는다.
-            String userId = (String) message.getHeaders().get("simpSessionId");
-            String sessionId = roomRepository.getSessionEnterUserId(userId);
-            log.info("dis : {} --- {}", userId, sessionId);
+            String clientId = (String) message.getHeaders().get("simpSessionId");
+            String sessionId = roomRepository.getSessionEnterUserId(clientId);
+            log.info("dis : {} --- {}", clientId, sessionId);
 
             // 열람실의 인원 수를 -1한다.
             roomRepository.minusUserCount(sessionId);
 
             // 해당 유저의 퇴장 메시지를 열람실에 발송한다.
-            String userName = Optional.ofNullable((Principal)message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
-            roomService.sendMessage(RoomMessage.builder().type(RoomMessage.MessageType.QUIT).sessionId(sessionId).sender(userName).build());
+            //String userName = Optional.ofNullable((Principal)message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+            // roomService.sendMessage(RoomMessage.builder().type(RoomMessage.MessageType.QUIT).sessionId(sessionId).sender(userName).build());
 
             // 퇴장한 클라이언트의 sessionId 매핑 정보를 삭제한다.
-            roomRepository.removeUserEnterInfo(userId);
-            log.info("DISCONNECT {} ----- {}", userId, sessionId);
+            roomRepository.removeUserEnterInfo(clientId);
+            log.info("DISCONNECT {} ----- {}", clientId, sessionId);
         }
         return message;
     }

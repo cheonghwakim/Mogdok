@@ -17,11 +17,12 @@ import lombok.NoArgsConstructor;
 public class RoomMessage {
 
     public enum MessageType {
-        ENTER, SEAT, QUIT
+        ENTER, QUIT, SEAT_ALLOCATED, SEAT_STATUS, CLEAR
     }
     
     private MessageType type; // 메시지 타입
     private String sessionId; // 방 번호
+    private String userId; // 사용자 아이디
     private String sender; // 메시지 보낸 사람
     private String message; // 메시지
     private Long userCount; // 접속자 수

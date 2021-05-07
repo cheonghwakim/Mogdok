@@ -46,14 +46,14 @@ public class RoomRepository {
         return hashOpsStudyRoom.get(STUDY_ROOMS, id);
     }
 
-    // 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
+    // 열람실 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
     public StudyRoom createRoom(String sessionId, String name) {
         StudyRoom studyRoom = StudyRoom.create(sessionId, name);
         hashOpsStudyRoom.put(STUDY_ROOMS, studyRoom.getSessionId(), studyRoom);
         return studyRoom;
     }
 
-    // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
+    // 유저가 입장한 열람실ID와 유저ID 맵핑 정보 저장
     public void setUserEnterInfo(String userId, String sessionId) {
         hashOpsUserInfo.put(USER_INFO, userId, sessionId);
     }
@@ -62,7 +62,7 @@ public class RoomRepository {
         return hashOpsUserInfo.get(USER_INFO, userId);
     }
 
-    // 유저 세션정보와 맵핑된 채팅방ID 삭제
+    // 유저 세션정보와 맵핑된 열람실ID 삭제
     public void removeUserEnterInfo(String userId) {
         hashOpsUserInfo.delete(USER_INFO, userId);
     }
@@ -80,5 +80,9 @@ public class RoomRepository {
     // 채팅방에 입장한 유저수 -1
     public long minusUserCount(String sessionId) {
         return Optional.ofNullable(valueOps.decrement(USER_COUNT + "_" + sessionId)).filter(count -> count > 0).orElse(0L);
+    }
+
+    public long clearUserCount(String sessionId) {
+        valueOps.get(USER_COUNT + "_" + sessionId)
     }
 }

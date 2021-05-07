@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
  */
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class RedisSubscriber {
 
     private final ObjectMapper objectMapper;
