@@ -7,6 +7,7 @@ import desk from './modules/desk';
 import user from './modules/user';
 import room from './modules/room';
 import openvidu from './modules/openvidu';
+import memo from './modules/memo';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ const store = new Vuex.Store({
     user,
     room,
     openvidu,
+    memo,
   },
   plugins: [
     createPersistedState({
