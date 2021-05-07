@@ -1,5 +1,6 @@
 node_modules
-/dist
+/dist
+
 # local env files
 .env
 .env.local
@@ -24,3 +25,13 @@ application.properties
 BackEnd/MongsilDesk/mongdok.sh
 BackEnd/MongsilDesk/Dockerfile
 BackEnd/MongsilDesk/src/main/resources/keystore.p12
+*.classpath
+*.project
+*.prefs
+*.xml
+*.p12
+*.class
+*.MF
+*.properties
+*.springBeans
+*.md
