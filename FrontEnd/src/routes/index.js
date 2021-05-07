@@ -3,8 +3,27 @@
 */
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+// import store from '../store';
 
 Vue.use(VueRouter);
+
+// const requireAuth = () => async (to, from, next) => {
+//   let token = localStorage.getItem('authToken');
+//   if (store.state.user.authToken === undefined && token) {
+//     await store.dispatch('SET_AUTH_TOKEN', token);
+//   }
+//   if (store.state.user.authToken) {
+//     await store
+//       .dispatch('LOGIN')
+//       .then(() => {
+//         if (store.state.user.userInfo) next();
+//         else next('/join');
+//       })
+//       .catch(() => {
+//         next('/login');
+//       });
+//   } else next('/login');
+// };
 
 // ==============================
 
@@ -19,50 +38,69 @@ import Footer from '@/components/common/RoomFooter.vue';
 
 // 바뀌는 views import
 import Login from '@/views/Login.vue';
+import SocialLogin from '@/views/SocialLogin.vue';
 import Enterance from '@/views/Enterance.vue';
 import Room from '@/views/Room.vue';
 import Desk from '@/views/Desk.vue';
+import Join from '@/views/Join.vue';
 
 // ==============================
 // 여러개 태울 때, routes 변수 생성
 const routes = [
-   {
-      path: '/',
-      name: 'Enterance',
-      components: {
-         default: Enterance,
-      },
-   },
-   {
-      path: '/login',
-      name: 'Login',
-      components: {
-         default: Login,
-      },
-   },
-   {
-      path: '/room',
-      name: 'Room',
-      components: {
-         header: Header,
-         default: Room,
-         footer: Footer,
-      },
-   },
-   {
-      path: '/desk',
-      name: 'Desk',
-      components: {
-         default: Desk,
-         footer: Footer,
-      },
-   },
+  {
+    path: '/',
+    name: 'Enterance',
+    //  beforeEnter: requireAuth(),
+    components: {
+      default: Enterance,
+    },
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    components: {
+      default: Login,
+    },
+  },
+  {
+    path: '/kakaologin',
+    name: 'KakaoLogin',
+    components: {
+      default: SocialLogin,
+    },
+  },
+  {
+    path: '/join',
+    name: 'Join',
+    components: {
+      default: Join,
+    },
+  },
+  {
+    path: '/room',
+    name: 'Room',
+    //  beforeEnter: requireAuth(),
+    components: {
+      header: Header,
+      default: Room,
+      footer: Footer,
+    },
+  },
+  {
+    path: '/desk',
+    name: 'Desk',
+    //  beforeEnter: requireAuth(),
+    components: {
+      default: Desk,
+      footer: Footer,
+    },
+  },
 ];
 
 const router = new VueRouter({
-   mode: 'history', //뒤에 # 을 없애줌
-   // base: process.env.BASE_URL,
-   routes,
+  mode: 'history', //뒤에 # 을 없애줌
+  // base: process.env.BASE_URL,
+  routes,
 });
 
 export default router;

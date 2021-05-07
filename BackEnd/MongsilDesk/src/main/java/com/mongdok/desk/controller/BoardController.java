@@ -1,7 +1,9 @@
 package com.mongdok.desk.controller;
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,29 +27,41 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/desk/board")
 public class BoardController {
 	@Autowired
-	BoardService guestBookService;
+	BoardService boardService;
 	
 	@GetMapping
-	@ApiOperation(value = "방명록 불러오기")
-	public ResponseEntity<? extends BasicResponse> getGuestBookById(long boardId){
-		return guestBookService.getGuestBookById(boardId);
+	@ApiOperation(value = "방명록 하나 불러오기")
+	public ResponseEntity<? extends BasicResponse> getBoardById(long boardId){
+		return boardService.getBoardById(boardId);
+	}
+	
+	@GetMapping("/all")
+	@ApiOperation(value = "유저의 모든 방명록 불러오기(페이징처리)")
+	public ResponseEntity<? extends BasicResponse> getBoardByDeskId(Pageable pageable, long deskId){
+		return boardService.getBoardByDeskId(pageable,deskId);
 	}
 	
 	@PostMapping
 	@ApiOperation(value = "방명록 생성")
-	public ResponseEntity<? extends BasicResponse> createGuestBook(BoardCreateRequest request){
-		return guestBookService.createGuestBook(request);
+	public ResponseEntity<? extends BasicResponse> createBoard(BoardCreateRequest request){
+		return boardService.createBoard(request);
 	}
 	
 	@PutMapping
 	@ApiOperation(value = "방명록 수정")
-	public ResponseEntity<? extends BasicResponse> updateGuestBook(BoardUpdateRequest request){
-		return guestBookService.updateGuestBook(request);
+	public ResponseEntity<? extends BasicResponse> updateBoard(BoardUpdateRequest request){
+		return boardService.updateBoard(request);
 	}
 	
 	@DeleteMapping
 	@ApiOperation(value = "방명록 삭제")
-	public ResponseEntity<? extends BasicResponse> deleteGuestBook(long boardId){
-		return guestBookService.deleteGuestBook(boardId);
+	public ResponseEntity<? extends BasicResponse> deleteBoard(long boardId){
+		return boardService.deleteBoard(boardId);
+	}
+	
+	@PutMapping("/read")
+	@ApiOperation(value = "방명록 읽음처리")
+	public ResponseEntity<? extends BasicResponse> readBoard(long boardId){
+		return boardService.readBoard(boardId);
 	}
 }

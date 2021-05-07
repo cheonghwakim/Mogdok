@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @Entity
 public class User {
@@ -21,7 +20,8 @@ public class User {
 	@Column(name = "id")
 	private String userId;
 	
-	private String nickname;
+	@Column(name="nickname")
+	private String userName;
 	
 	private String email;
 	

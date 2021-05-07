@@ -135,9 +135,12 @@ export default {
     joinSession() {
       // --- Get an OpenVidu object ---
       if (!this.OV) this.OV = new OpenVidu();
+      this.videoSourceList.push({ kind: 'videoinput', label: 'default', deviceId: undefined });
       this.OV.getDevices().then((res) => {
-        this.videoSourceList = res.filter((e) => {
-          return e.kind === 'videoinput' && e.label;
+        res.forEach((e) => {
+          if (e.kind === 'videoinput' && e.label) {
+            this.videoSourceList.push(e);
+          }
         });
       });
       // --- Init a session ---
@@ -261,7 +264,8 @@ export default {
       // --- 카메라를 통해 스트림할 데이터의 속성을 초기화한다 ---
       let publisher = await this.OV.initPublisherAsync(undefined, {
         audioSource: false, // 오디오소스. If undefined default microphone
-        videoSource: this.selectedVideoSource, // 비디오소스. If undefined default webcam
+        // videoSource: this.selectedVideoSource, // 비디오소스. If undefined default webcam
+        videoSource: undefined, // 비디오소스. If undefined default webcam
         publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
         publishVideo: true, // Whether you want to start publishing with your video enabled or not
         resolution: '320x240', // The resolution of your video

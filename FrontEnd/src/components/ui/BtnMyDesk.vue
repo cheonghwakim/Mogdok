@@ -25,27 +25,27 @@
 <script>
 export default {};
 </script>
-<style scoped lang="scss">
-@import 'src/assets/css/common';
+<style scoped>
+@import url('../../assets/css/animation.css');
 
 .btnMyDesk {
    cursor: pointer;
 
-   &:hover {
-      .desc {
-         animation: fade-in 1s forwards;
-      }
-   }
+   width: 7vw;
+   min-width: 50px;
+   max-width: 70px;
+}
 
-   .desc {
-      animation: fade-out 1s forwards;
+.btnMyDesk:hover .desc {
+   animation: fade-in 1s forwards;
+}
 
-      font-size: 1vmin;
-      font-weight: 600;
-      text-align: center;
-      line-height: 15px;
-
-      color: rgb(92, 92, 92);
-   }
+.btnMyDesk .desc {
+   animation: fade-out 1s forwards;
+   font-size: 1vmin;
+   font-weight: 600;
+   text-align: center;
+   line-height: 15px;
+   color: #5c5c5c;
 }
 </style>

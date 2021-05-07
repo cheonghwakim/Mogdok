@@ -11,9 +11,9 @@ import com.mongdok.desk.model.User;
 public interface UserDao extends JpaRepository<User, String> {
 	
 	@Query(value = "SELECT nickname FROM user where id=:userId", nativeQuery = true)
-	String findNickNameByUserId(@Param("userId") String userId);
+	String findUserNameByUserId(@Param("userId") String userId);
 	
-	@Query(value = "SELECT id FROM user where nickname=:nickName", nativeQuery = true)
-	String findUserIdByNickname(@Param("nickName") String nickName);
+	@Query(value = "SELECT id FROM user where nickname=:userName", nativeQuery = true)
+	String findUserIdByUserName(@Param("userName") String userName);
 
 }
