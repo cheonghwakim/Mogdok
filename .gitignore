@@ -21,17 +21,16 @@ pnpm-debug.log*
 *.sln
 *.sw?
 # BackEnd
-application.properties
 BackEnd/MongsilDesk/mongdok.sh
 BackEnd/MongsilDesk/Dockerfile
-BackEnd/MongsilDesk/src/main/resources/keystore.p12
 *.classpath
 *.project
 *.prefs
-*.xml
 *.p12
 *.class
 *.MF
 *.properties
 *.springBeans
-*.md
+.settings/
+target/
+HELP.md
