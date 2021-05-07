@@ -1,10 +1,8 @@
-import { createLoginInstance } from "./index.js";
-
-const instance = createLoginInstance();
+import { loginInstance } from './index.js';
 
 // auth-token 요청
 async function getAuthToken(params, success, fail) {
-  await instance
+  await loginInstance
     .get(`klogin`, { params })
     .then(success)
     .catch(fail);
@@ -12,24 +10,24 @@ async function getAuthToken(params, success, fail) {
 
 // login 요청
 async function login(success, fail) {
-  await instance
+  await loginInstance
     .get(`login`)
     .then(success)
     .catch(fail);
 }
 
 function checkUserNameDuplicated(nickname, success, fail) {
-  instance
-    .get(`nickname`, { params: {nickname} })
+  loginInstance
+    .get(`nickname`, { params: { nickname } })
     .then(success)
     .catch(fail);
 }
 
 function signup(userInfo, success, fail) {
-  instance
-    .post(`signup`, userInfo )
+  loginInstance
+    .post(`signup`, userInfo)
     .then(success)
     .catch(fail);
 }
 
-export { getAuthToken, login, checkUserNameDuplicated ,signup };
+export { getAuthToken, login, checkUserNameDuplicated, signup };

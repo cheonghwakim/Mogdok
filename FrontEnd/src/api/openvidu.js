@@ -1,6 +1,5 @@
-import { createOpenViduInstance } from './index.js';
+import { openViduInstance } from './index.js';
 
-const instance = createOpenViduInstance();
 const auth = {
   username: 'OPENVIDUAPP',
   password: process.env.VUE_APP_OPENVIDU_SERVER_SECRET,
@@ -8,7 +7,7 @@ const auth = {
 
 // 세션 생성
 function createSession({ sessionId }, success, resolve, fail) {
-  instance
+  openViduInstance
     .post(
       `openvidu/api/sessions`,
       JSON.stringify({
@@ -23,7 +22,7 @@ function createSession({ sessionId }, success, resolve, fail) {
 
 // 토큰 생성
 function createToken({ sessionId }, success, resolve, fail) {
-  instance
+  openViduInstance
     .post(
       `openvidu/api/sessions/${sessionId}/connection`,
       {},

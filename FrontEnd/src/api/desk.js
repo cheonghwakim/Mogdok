@@ -1,23 +1,21 @@
-import { createDeskInstance } from './index.js';
-
-const instance = createDeskInstance();
+import { deskInstance } from './index.js';
 
 function getDeskInfo(params, success, fail) {
-  instance
+  deskInstance
     .get(`desk/all`, { params })
     .then(success)
     .catch(fail);
 }
 
 function saveMemoList(params, success, fail) {
-  instance
+  deskInstance
     .post(`desk/memo/update`, params)
     .then(success)
     .catch(fail);
 }
 
 function deleteMemoList(params, success, fail) {
-  instance
+  deskInstance
     .post(`desk/memo/delete`, params)
     .then(success)
     .catch(fail);
