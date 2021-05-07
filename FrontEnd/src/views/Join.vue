@@ -380,10 +380,10 @@ export default {
                font-size: 12pt;
                line-height: 20px;
 
-               padding: 10px;
+               padding: 30px 10px;
 
                width: 100%;
-               height: 100px;
+               /* height: 100px; */
                resize: none;
 
                text-align: center;
