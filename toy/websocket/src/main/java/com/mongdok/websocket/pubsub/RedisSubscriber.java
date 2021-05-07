@@ -18,30 +18,23 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class RedisSubscriber implements MessageListener {
+public class RedisSubscriber {
 
     private final ObjectMapper objectMapper;
-    private final RedisTemplate redisTemplate;
     private final SimpMessageSendingOperations messageSendingOperations;
 
     /***
      * Redis에서 메시지가 발행되면 해당 메서드가 실행되어 처리한다.
-    * @param message
-     * @param pattern
+     * @param message
      */
-    @Override
-    public void onMessage(Message message, byte[] pattern) {
+    public void sendMessage(String message) {
 
         try {
             // redis에서 발행된 데이터를 받아 deserialize
-            String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-
-            // ChatMessage 객체로 매핑
-            RoomMessage roomMessage = objectMapper.readValue(publishMessage, RoomMessage.class);
+            RoomMessage roomMessage = objectMapper.readValue(message, RoomMessage.class);
 
             // Websocket 구독자에게 채팅 메시지 Send
             messageSendingOperations.convertAndSend("/sub/room/" + roomMessage.getSessionId(), roomMessage);
-
 
         } catch (Exception e) {
             log.error(e.getMessage());

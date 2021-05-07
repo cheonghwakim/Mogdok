@@ -54,11 +54,11 @@ public class RoomRepository {
     }
 
     // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
-    public void setUserEnterInfo(String sessionId, String userId) {
+    public void setUserEnterInfo(String userId, String sessionId) {
         hashOpsUserInfo.put(USER_INFO, userId, sessionId);
     }
 
-    public String getUserEnterSessionId(String userId) {
+    public String getSessionEnterUserId(String userId) {
         return hashOpsUserInfo.get(USER_INFO, userId);
     }
 

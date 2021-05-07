@@ -1,8 +1,6 @@
 package com.mongdok.websocket.controller;
 
 import com.mongdok.websocket.model.RoomMessage;
-import com.mongdok.websocket.pubsub.RedisPublisher;
-import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,13 +29,9 @@ public class MessageController {
      */
     @MessageMapping("/room/message")
     public void message(RoomMessage message) {
-        log.info("type : {}", message.getType());
-        log.info("sender : {}", message.getSender());
-        log.info("sessionId : {}", message.getSessionId());
-        log.info("message : {}", message.getMessage());
-        if(message.getSeatInfo() != null) {
-            log.info("seatInfo : {}", message.getSeatInfo().toString());
-        }
+
+        //TODO: JWT Token을 이용해서 userName 매핑 구현
+        log.info("userName : {}", message.getSender());
 
         roomService.sendMessage(message);
     }
