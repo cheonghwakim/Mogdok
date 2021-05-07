@@ -1,7 +1,7 @@
 <template>
    <div class="join">
       <div class="container">
-         <p>아래 정보를 입력하고, 공부를 시작하세요</p>
+         <p class="kyoboHand" style="color:gray; font-size:10pt">독서실 가입서를 작성해주세요!</p>
          <!-- <v-lottie-player name="scooterAnim" :width="'200px'" :height="'200px'" loop path="https://assets7.lottiefiles.com/private_files/lf30_z8mfdyic.json" /> -->
          <div class="content">
             <!-- STPE 1 : 닉네임 -->
@@ -22,22 +22,25 @@
             <!-- STPE 2 : 카테고리 -->
             <transition name="slide-left">
                <div v-show="second" class="step-box second">
-                  <button class="category" v-for="item in categories" :key="item">
+                  <div class="category" :class="{ 'cate--selected': selectCategory === item }" v-for="item in categories" :key="item" @click="clickCategory(item)">
                      {{ item }}
-                  </button>
+                  </div>
                </div>
             </transition>
             <!-- STPE 3 : 다짐 입력 -->
             <transition name="slide-left">
-               <div v-show="last" class="step-box last">
-                  <input v-model="promise" placeholder="다짐을 입력해주세요" type="text" />
+               <div v-show="third" class="step-box third">
+                  <textarea v-model="promise" placeholder="공부 목표를 적고, 학습의 능률을 높이세요💪" />
+                  <span class="info">다짐을 적으면, 독서실에 입장하실 수 있어요!</span>
                </div>
             </transition>
-            <!-- 최종 버튼 -->
-            <button color="red lighten-2" dark @click="submit()">
-               가입하기
-            </button>
          </div>
+         <!-- 최종 버튼 -->
+         <transition name="slide-left">
+            <button v-show="last" class="submit-button" @click="submit()">
+               독서실 입장하기
+            </button>
+         </transition>
          <logo></logo>
       </div>
    </div>
@@ -54,26 +57,43 @@ export default {
    props: {},
    data() {
       return {
-         first: true,
-         second: true,
-         last: true,
-
+         // STEP1 : 닉네임 중복
+         first: false,
          isShowInfo: false, // 닉네임 필드 하단 안내 표시 여부
-         isUse: false, // 닉네임 중복 여부 체크
+         isCheckNameDup: false, // 닉네임 중복 여부 체크 - 최종적으로 체크하는 역할
+         isValid: false, //유효성 검사 flag - 최종적으로 체크하는 역할
          isError: false, // 에러일 경우 붉은 info박스
-
          userName: '',
-         selectCategory: '',
-         categories: ['초등학생', '중학생', '고등학생1,2학년', '고3n수생', '대학생', '대학원', '편입생', '공무원', '고시생', '취업준비생', '자격증', '기타'],
          msg: '닉네임을 입력해주세요',
-         isValid: false, //유효성 검사 flag
+
+         // STEP2 : 카테고리 선택
+         second: false,
+         categories: ['초등학생', '중학생', '고등학생', '고3/N수생', '대학생', '대학원', '편입준비생', '공무원', '고시생', '취업준비생', '자격증', '기타'],
+         selectCategory: '',
+
+         // STEP3 : 다짐 입력
+         third: false,
          promise: '',
+
+         // STEP4 : 제출 단계
+         last: false,
       };
    },
 
    watch: {
-      userName() {
+      // userName 작성할 때마다 검사
+      userName: function() {
          this.isValid = this.validation();
+         this.isCheckNameDup = false; // 새로 작성시, 중복 체크 여부 초기화
+      },
+
+      // 다짐이 작성되어 있으면, 제출 버튼 활성화
+      promise: function() {
+         if (this.promise.length === 0) {
+            this.last = false;
+         } else {
+            this.last = true;
+         }
       },
    },
    //lifecycle area
@@ -84,7 +104,8 @@ export default {
       }, 500);
    },
    methods: {
-      validation() {
+      // STEP1 : 닉네임 중복
+      validation: function() {
          if (this.userName.length == 0) {
             this.isShowInfo = false;
             return false;
@@ -101,7 +122,7 @@ export default {
             return true;
          }
       },
-      checkuserNameDuplicate() {
+      checkuserNameDuplicate: function() {
          // 비워진 상태에서 실행시 거르기
          if (this.userName.length == 0) {
             //입력 안한경우
@@ -116,33 +137,39 @@ export default {
             this.userName,
             (res) => {
                if (res.data) {
-                  this.msg = '사용가능한 닉네임입니다.';
+                  this.msg = '사용 가능한 닉네임입니다.';
                   this.isShowInfo = true;
                   this.isError = false;
                   this.second = true;
+                  this.isCheckNameDup = true;
                } else {
                   this.msg = '이미 사용중인 닉네임입니다.';
                   this.isShowInfo = true;
                   this.isError = true;
                   this.second = false;
+                  this.isCheckNameDup = false;
                }
             },
             () => {}
          );
       },
-      submit() {
+
+      // STEP 2 : 카테고리 선택
+      clickCategory: function(item) {
+         this.selectCategory = item;
+         this.third = true;
+      },
+
+      // STEP 3 : 다짐 입력
+
+      // LAST : 최종 제출
+      submit: function() {
          if (!this.isValid) {
             //유효성 검사 통과못함
-            alert(this.msg);
-         } else if (this.isUse == 0) {
+            alert('닉네임을 다시 확인해주세요');
+         } else if (!this.isCheckNameDup) {
             //중복체크안함
-            alert('닉네임 중복체크를 해주세요');
-         } else if (this.isUse == 1) {
-            //닉네임 중복됨
-            alert(this.msg);
-         } else if (!this.selectCategory) {
-            //카테고리 선택안함
-            alert('카테고리를 선택해주세요');
+            alert('닉네임 중복 체크를 다시 해주세요');
          } else {
             const userInfo = {
                category: this.selectCategory,
@@ -175,7 +202,7 @@ export default {
    align-items: center;
    justify-content: center;
 
-   border: 1px solid pink;
+   /* border: 1px solid pink; */
 
    .container {
       display: inherit;
@@ -185,12 +212,11 @@ export default {
       width: 100vw;
       height: 90vh;
 
-      border: 1px solid rgb(194, 23, 52);
+      /* border: 1px solid rgb(194, 23, 52); */
 
       .content {
          width: inherit;
          /* border: 1px solid rgb(15, 15, 198); */
-
          overflow-y: auto;
          overflow-x: hidden;
 
@@ -207,26 +233,17 @@ export default {
 
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
          }
 
-         .category {
-            border-radius: 20px;
-            margin: 5px;
-            text-align: center;
-            padding: 8px 10px;
-            font-size: 10pt;
-            color: rgb(45, 45, 45);
-            border: 1px solid rgb(45, 45, 45);
-         }
-
-         /* 닉네임 입력 스텝 */
+         /* STEP 1 : 닉네임 */
          .first {
             position: relative;
             height: 180px;
 
             input {
                font-family: 'KyoboHand';
-               font-size: 14pt;
+               font-size: 12pt;
 
                width: 100%;
                height: 50px;
@@ -298,8 +315,6 @@ export default {
                height: 50px;
 
                position: relative;
-               left: 42%;
-               bottom: 0px;
 
                display: flex;
                flex-direction: row;
@@ -332,8 +347,97 @@ export default {
                }
             }
          }
+
+         // STEP 2 : 카테고리
+         .second {
+            .category {
+               cursor: pointer;
+
+               $cate-color: #c9c9c9;
+               $cate-color-sel: #a7a7a7;
+
+               border-radius: 20px;
+               margin: 5px;
+               text-align: center;
+               padding: 8px 10px;
+               font-size: 10pt;
+               color: $cate-color;
+               border: $cate-color 1px solid;
+
+               &.cate--selected {
+                  color: rgb(255, 255, 255);
+                  background-color: $cate-color-sel;
+                  border: none;
+                  font-weight: 600;
+               }
+            }
+         }
+
+         // STEP 3 : 다짐 입력
+         .third {
+            textarea {
+               font-family: 'KyoboHand';
+               font-size: 12pt;
+               line-height: 20px;
+
+               padding: 10px;
+
+               width: 100%;
+               height: 100px;
+               resize: none;
+
+               text-align: center;
+               border: none;
+
+               background-color: rgb(244, 244, 244);
+               border-radius: 30px;
+
+               &:focus {
+                  outline: none;
+               }
+               &::placeholder {
+                  color: #2d2d2d;
+               }
+            }
+
+            .info {
+               color: rgb(114, 114, 114);
+               font-weight: 500;
+               font-size: 8pt;
+               margin-top: 10px;
+            }
+         }
+      } // content-end
+
+      // LAST : 최종 제출
+      .submit-button {
+         width: 320px;
+         min-height: 45px;
+
+         font-size: 10pt;
+         text-transform: uppercase;
+         letter-spacing: 2.5px;
+         font-weight: 500;
+         color: rgb(63, 63, 63);
+         background-color: #fff;
+         border: none;
+         border-radius: 45px;
+         box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+         transition: all 0.3s ease 0s;
+         cursor: pointer;
+         outline: none;
+
+         display: block;
+         margin: 0px auto;
+
+         &:hover {
+            background-color: #2ee59d;
+            box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+            color: #fff;
+            transform: translateY(-7px);
+         }
       }
-   }
+   } // container-end
 }
 
 .slide-left-enter-active,
