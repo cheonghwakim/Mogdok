@@ -63,7 +63,7 @@ public class KakaoLoginController {
     @GetMapping("/klogin") // 로그인 토큰 발급 -> redis, 쿠키에 저장
     @ResponseBody
     @ApiOperation(value = "로그인", notes="성공 시 kakaoId, 실패 시 false (boolean)")
-    public ResponseEntity<?> klogin(@RequestParam @ApiParam(value = "프론트에서 전달받은 authCode") String authorizeCode) {
+    public ResponseEntity<?> klogin(@RequestParam(value = "authorizeCode") @ApiParam(value = "프론트에서 전달받은 authCode") String authorizeCode) {
     	
     	try {
 	    	Map<String, String> kakaoAccessToken = kakaoAPI.getAccessToken(authorizeCode);
@@ -91,7 +91,7 @@ public class KakaoLoginController {
     
     @GetMapping("/login")
     @ApiOperation(value = "로그인 요청 (객체가 있다면 user return, 없다면 null)")
-    public ResponseEntity<?> login(@RequestParam @ApiParam(value = "유저 kakaoId") String kakaoId) {
+    public ResponseEntity<?> login(@RequestParam(value = "kakaoId") @ApiParam(value = "유저 kakaoId") String kakaoId) {
     	
     	ObjectMapper objectMapper = new ObjectMapper();
     	
