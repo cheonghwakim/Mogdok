@@ -1,5 +1,6 @@
 <template lang="">
   <div v-dragscroll="true" class="desk">
+    <button @click="$router.replace({ name: 'DeskEdit' })">편집하기</button>
     <transition name="fade">
       <div v-show="isFirst" class="caution covering">
         <img src="@/assets/img/discover.gif" alt="" />
@@ -19,7 +20,7 @@
       <div class="desk-draw-area"></div>
       <svg-desk></svg-desk>
     </div>
-    <vue-moveable> </vue-moveable>
+    <vue-moveable></vue-moveable>
   </div>
 </template>
 <script>

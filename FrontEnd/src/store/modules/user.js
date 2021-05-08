@@ -1,6 +1,7 @@
 import { getAuthToken, login } from '../../api/user';
 
 const state = () => ({
+  authToken: undefined,
   userInfo: {
     // 테스트데이터
     userId: 1,

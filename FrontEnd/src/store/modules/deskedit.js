@@ -44,27 +44,27 @@ const state = () => ({
   boardList: [],
   selectedMemoIdx: -1,
   editable: false,
-  dialog: false,
   removedMemoList: [],
   memoEditDialog: false,
+  createMemoKeyIndex: 0,
 });
 
 const getters = {
-  convertedMemoIdList(state) {
-    return state.memoList.map((e) => {
-      if (isNaN(e.memoId)) {
-        e.memoId = undefined;
-        return e;
-      } else {
-        return e;
-      }
-    });
-  },
-  convertRemovedMemoList(state) {
-    return state.removedMemoList.filter((e) => {
-      return !isNaN(e);
-    });
-  },
+  // convertedMemoIdList(state) {
+  //   return state.memoList.map((e) => {
+  //     if (isNaN(e.memoId)) {
+  //       e.memoId = undefined;
+  //       return e;
+  //     } else {
+  //       return e;
+  //     }
+  //   });
+  // },
+  // convertRemovedMemoList(state) {
+  //   return state.removedMemoList.filter((e) => {
+  //     return !isNaN(e);
+  //   });
+  // },
 };
 
 const actions = {
@@ -81,18 +81,35 @@ const actions = {
       () => {}
     );
   },
-  SAVE_MEMO_LIST({ commit, getters }) {
+  SAVE_MEMO_LIST({ state, commit }) {
+    commit(
+      'SET_MEMO_LIST',
+      state.memoList.map((e) => {
+        if (isNaN(e.memoId)) {
+          e.memoId = undefined;
+          return e;
+        } else {
+          return e;
+        }
+      })
+    );
     saveMemoList(
-      getters.convertedMemoIdList,
+      state.memoList,
       (res) => {
         commit('SET_MEMO_LIST', res.data.data);
       },
       () => {}
     );
   },
-  DELETE_MEMO_LIST({ commit, getters }) {
+  DELETE_MEMO_LIST({ state, commit }) {
+    commit(
+      'SET_REMOVED_MEMO_LIST',
+      state.removedMemoList.filter((e) => {
+        return !isNaN(e);
+      })
+    );
     deleteMemoList(
-      getters.convertRemovedMemoList,
+      state.removedMemoList,
       (res) => {
         commit('SET_MEMO_LIST', res.data.data);
       },
@@ -101,18 +118,18 @@ const actions = {
   },
   UPDATE_SELECTED_MEMO_UI_BY_INDEX({ state, commit }, index) {
     if (state.selectedMemoIdx >= 0 && state.selectedMemoIdx < state.memoList.length) {
-      commit('SET_MEO_CLASSNAME_BY_INDEX', {
+      commit('SET_MEMO_CLASSNAME_BY_INDEX', {
         index: state.selectedMemoIdx,
         className: state.editable ? 'moveable' : 'movedisable',
       }); // 이전에 클릭한 메모의 선택이 풀린 UI로 변경
-      state.memoList[state.selectedMemoIdx].zIndex = zIndexCount++;
+      //   state.memoList[state.selectedMemoIdx].zIndex = zIndexCount++;
     }
     commit('SET_SELECTED_MEMO_IDX', index); // 클릭된 메모의 index 업데이트
-    commit('SET_MEO_CLASSNAME_BY_INDEX', {
+    commit('SET_MEMO_CLASSNAME_BY_INDEX', {
       index: state.selectedMemoIdx,
       className: state.editable ? 'clicked' : 'moveable',
     });
-    state.memoList[state.selectedMemoIdx].zIndex = 3000 + zIndexCount;
+    // state.memoList[state.selectedMemoIdx].zIndex = 3000 + zIndexCount;
   },
 };
 
@@ -138,6 +155,7 @@ const mutations = {
   },
   SET_EDIT_STATE(state, payload) {
     state.editable = payload;
+    state.createMemoKeyIndex = 0;
   },
   SET_REMOVED_MEMO_LIST(state, payload) {
     state.removedMemoList = payload;
@@ -145,8 +163,11 @@ const mutations = {
   SET_SELECTED_MEMO_IDX(state, payload) {
     state.selectedMemoIdx = payload;
   },
-  SET_MEO_CLASSNAME_BY_INDEX(state, { index, className }) {
+  SET_MEMO_CLASSNAME_BY_INDEX(state, { index, className }) {
     state.memoList[index].moveable.className = className;
+  },
+  SET_MEMO_TRANSFORM_BY_INDEX(state, { index, transform }) {
+    state.memoList[index].transform = transform;
   },
   SET_MEMO_MOVEABLE_STATUS_BY_INDEX(state, { index, status }) {
     state.memoList[index].moveable.draggable = status;
@@ -154,27 +175,32 @@ const mutations = {
     state.memoList[index].moveable.rotatable = status;
   },
   REMOVE_MEMO(state) {
+    if (state.selectedMemoIdx < 0) return;
     state.removedMemoList.push(state.memoList[state.selectedMemoIdx].memoId);
     state.memoList.splice(state.selectedMemoIdx, 1);
+    state.selectedMemoIdx = -1;
   },
   CREATE_MEMO(state) {
-    if (state.memoList.length >= MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
-    state.memoList.push({
+    if (state.memoList.length > MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
+    const memo = {
       deskId: state.deskId,
       memoId: 'tmp' + state.createMemoKeyIndex++,
       content: '',
       zIndex: 1,
       moveable: { ...moveableState },
       color: 0,
-    });
+    };
+    state.memoList.push(memo);
   },
   SET_SELECTED_MEMO_CONTENT(state, payload) {
+    if (state.selectedMemoIdx < 0) return;
     state.memoList[state.selectedMemoIdx].content = payload;
   },
   SET_MEMO_EDIT_DIALOG(state, payload) {
     state.memoEditDialog = payload;
   },
   SET_SELECTED_MEMO_COLOR(state, payload) {
+    if (state.selectedMemoIdx < 0) return;
     state.memoList[state.selectedMemoIdx].color = payload;
   },
 };

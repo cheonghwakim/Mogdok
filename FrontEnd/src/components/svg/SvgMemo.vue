@@ -36,11 +36,11 @@ export default {
   data() {
     return {
       colors: [
-        { colorName: '오렌지', front: 'rgb(255, 228, 225)', back: 'rgb(255, 160, 122)' },
-        { colorName: '그린', front: 'rgb(240, 255, 240)', back: 'rgb(152, 251, 152)' },
-        { colorName: '스카이블루', front: 'rgb(240, 255, 255)', back: 'rgb(224, 255, 255)' },
-        { colorName: '레몬', front: 'rgb(245, 245, 220)', back: 'rgb(238, 232, 170)' },
-        { colorName: '토마토', front: 'rgb(255, 69, 0)', back: 'rgb(255, 0, 0)' },
+        { front: 'rgb(255, 228, 225)', back: 'rgb(255, 160, 122)' },
+        { front: 'rgb(240, 255, 240)', back: 'rgb(152, 251, 152)' },
+        { front: 'rgb(240, 255, 255)', back: 'rgb(224, 255, 255)' },
+        { front: 'rgb(245, 245, 220)', back: 'rgb(238, 232, 170)' },
+        { front: 'rgb(255, 69, 0)', back: 'rgb(255, 0, 0)' },
       ],
     };
   },

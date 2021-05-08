@@ -213,6 +213,7 @@ export default {
     removeMemo() {
       this.removedList.push(this.memos[this.selectedMemoIdx].memoId);
       this.memos.splice(this.selectedMemoIdx, 1);
+      this.selectedMemoIdx = -1;
     },
     createMemo() {
       if (this.memos.length >= MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
