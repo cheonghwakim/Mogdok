@@ -83,8 +83,8 @@ export default {
       this.getToken();
     },
     login() {
-      axios.post("https://k4a401.p.ssafy.io:8080/login", this.form).then((res) => {
-        // axios.get("https://localhost:2000/login", this.form).then((res) => {
+      // axios.post("https://k4a401.p.ssafy.io:8080/login", this.form).then((res) => {
+        axios.get("https://localhost:2000/login", this.form).then((res) => {
         if (res.data != null) {
           document.cookie = `accessToken=${res.data}`;
           axios.defaults.headers.common["x-access-token"] = res.data;
@@ -97,8 +97,8 @@ export default {
     getToken() {
       console.log(this.codes);
       axios
-        .get("https://k4a401.p.ssafy.io:8080/klogin?authorizeCode=" + this.codes)
-        // .get("https://localhost:2000/klogin?authorizeCode=" + this.codes)
+        // .get("https://k4a401.p.ssafy.io:8080/klogin?authorizeCode=" + this.codes)
+        .get("https://localhost:2000/klogin?authorizeCode=" + this.codes)
         .then((res) => {
           console.log(res);
           this.form.email = res.data.email;
