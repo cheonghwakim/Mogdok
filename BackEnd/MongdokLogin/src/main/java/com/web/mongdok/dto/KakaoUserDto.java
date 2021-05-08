@@ -8,10 +8,10 @@ import lombok.ToString;
 @Setter
 @ToString
 public class KakaoUserDto {
+
+	private String UserId;
 	
-	private String accessToken;
-	
-	private String refreshToken;
+	private String userName;
 	
 	private String kakaoId;
 }

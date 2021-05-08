@@ -1,5 +1,6 @@
 package com.web.mongdok.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,7 +62,7 @@ public class KakaoLoginController {
 
     @GetMapping("/klogin") // 로그인 토큰 발급 -> redis, 쿠키에 저장
     @ResponseBody
-    @ApiOperation(value = "로그인", notes="성공 시 jwtRefreshToken, 실패 시 false (boolean)")
+    @ApiOperation(value = "로그인", notes="성공 시 kakaoId, 실패 시 false (boolean)")
     public ResponseEntity<?> klogin(@RequestParam @ApiParam(value = "프론트에서 전달받은 authCode") String authorizeCode) {
     	
     	try {
@@ -70,17 +71,17 @@ public class KakaoLoginController {
 	    	String refreshToken = kakaoAccessToken.get("refreshToken");
 	        Map<String, String> userInfo = kakaoAPI.getUserInfo(accessToken, refreshToken);
 
-	        String jwtRefreshToken;
+//	        String jwtRefreshToken;
 	        
-	        KakaoUserDto kakaoUser = new KakaoUserDto();
-	        kakaoUser.setAccessToken(accessToken);
+//	        KakaoUserDto kakaoUser = new KakaoUserDto();
+//	        kakaoUser.setAccessToken(accessToken);
 //	        kakaoUser.setRefreshToken(refreshToken);
-	        kakaoUser.setKakaoId(userInfo.get("id"));
+//	        kakaoUser.setKakaoId(userInfo.get("id"));
 	        // 여기서 담겨줘야 되는 것들 생각해보기 (지금: accessToken, refreshToken, kakaoId)
-	        jwtRefreshToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+//	        jwtRefreshToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.TOKEN_VALIDATION_SECOND);
 
-	        System.out.println("klogin jwt: " + jwtRefreshToken);
-	        return new ResponseEntity<>(jwtRefreshToken, HttpStatus.OK);
+//	        System.out.println("klogin jwt: " + jwtRefreshToken);
+	        return new ResponseEntity<>(userInfo.get("id"), HttpStatus.OK);
     	
     	} catch (Exception e) {
     		e.printStackTrace();
@@ -89,50 +90,37 @@ public class KakaoLoginController {
     }
     
     @GetMapping("/login")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
-                dataType = "string", paramType = "header", defaultValue = "")
-    })
-    @ApiOperation(value = "로그인 요청 (객체가 있다면 user return, 없다면 null)", notes = "auth-token 예시:  ex. eyJhbGciOiJIUzI1NiJ9.eyJrYWthb0lkIjoiMTcxMDk3MDg4OCIsImFjY2Vzc1Rva2VuIjoiYmxYak0tU3JPclM4cFVCTjg2TE83bHlwbEFKUmxfalV1VlhkdUFvOWMtc0FBQUY1TVp2dXFBIiwiaWF0IjoxNjIwMDM0OTczLCJleHAiOjE2MjI2MjY5NzN9.czK6mnf4MP9ArOg-hqOfYZZzOne8y-LL25ClV2RWl4w")
-    public ResponseEntity<?> login(HttpServletRequest request) {
-    	String jwtToken = request.getHeader("auth-token");
-
-    	String kakaoId = (String) jwtUtil.extractKakaoId(jwtToken);
-    	System.out.println("kakaoId: " + kakaoId);
+    @ApiOperation(value = "로그인 요청 (객체가 있다면 user return, 없다면 null)")
+    public ResponseEntity<?> login(@RequestParam @ApiParam(value = "유저 kakaoId") String kakaoId) {
     	
     	ObjectMapper objectMapper = new ObjectMapper();
     	
+    	String newJwtToken = null;
     	RedisUserDto redisUser = null;
-    	if(redisUtil.getData(jwtToken) == null) { // redis에서 null
-    		Optional<User> user = authService.findByKakaoId(kakaoId);
-    		if(user.isPresent()) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
-    			
-    			System.out.println("asfsd");
-    			Desk desk = deskService.findByUserId(user.get().getUserId()); 
-    	    	redisUser = new RedisUserDto();
-    	    	redisUser.setDeskId(desk.getDeskId());
-    	    	redisUser.setPromise(desk.getPromise());
-    	    	BeanUtils.copyProperties(user.get(), redisUser);  
-    	    	
-    	    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
 
-    	    	System.out.println(redisUser);
-    	    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
-    		}
-    	} else { // redis에 정보 있다면
-    		String userInfo = redisUtil.getData(jwtToken);
-
-    		System.out.println(userInfo);
-    		try { // redis에서 user 꺼내서 return
-				redisUser = objectMapper.readValue(userInfo, RedisUserDto.class);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-    	}
+    	Optional<User> user = authService.findByKakaoId(kakaoId);
+		if(user.isPresent()) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
+			
+			System.out.println("asfsd");
+			Desk desk = deskService.findByUserId(user.get().getUserId()); 
+	    	redisUser = new RedisUserDto();
+	    	redisUser.setDeskId(desk.getDeskId());
+	    	redisUser.setPromise(desk.getPromise());
+	    	BeanUtils.copyProperties(user.get(), redisUser);  
+	    	
+	    	KakaoUserDto kakaoUser = new KakaoUserDto();
+	    	kakaoUser.setKakaoId(kakaoId);
+	    	kakaoUser.setUserId(user.get().getUserId());
+	    	kakaoUser.setUserName(user.get().getUserName());
+	    	newJwtToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+	    	
+	    	redisUser.setJwtToken(newJwtToken);
+	    	System.out.println(redisUser);
+	    	redisUtil.setObjectExpire(newJwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+		}	
     		
     	System.out.println("user: " + redisUser);
-
+    			
     	return new ResponseEntity<>(redisUser, HttpStatus.OK);
     }
     
@@ -146,20 +134,16 @@ public class KakaoLoginController {
     }
     
     @PostMapping("/signup")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
-                dataType = "string", paramType = "header", defaultValue = "")
-    })
-    @ApiOperation(value = "회원 가입할 때 정보 저장// user 반환", notes = "auth-token 예시:  ex. eyJhbGciOiJIUzI1NiJ9.eyJrYWthb0lkIjoiMTcxMDk3MDg4OCIsImFjY2Vzc1Rva2VuIjoiYmxYak0tU3JPclM4cFVCTjg2TE83bHlwbEFKUmxfalV1VlhkdUFvOWMtc0FBQUY1TVp2dXFBIiwiaWF0IjoxNjIwMDM0OTczLCJleHAiOjE2MjI2MjY5NzN9.czK6mnf4MP9ArOg-hqOfYZZzOne8y-LL25ClV2RWl4w")
-    public ResponseEntity<?> signUp(HttpServletRequest request, @RequestBody @ApiParam(value = "회원 가입 form에서 얻은 객체") SignupDto user) {
-    	String jwtToken = request.getHeader("auth-token");
+    @ApiOperation(value = "회원 가입할 때 정보 저장// user 반환")
+    public ResponseEntity<?> signUp(@RequestBody @ApiParam(value = "회원 가입 form에서 얻은 객체") SignupDto user) {
 
-    	String kakaoId = (String) jwtUtil.extractAllClaims(jwtToken).get("kakaoId");
+    	String kakaoId = user.getKakaoId();
     	User newUser = new User();
     	System.out.println(kakaoId);
     	
     	Optional<User> findUser = authService.findByKakaoId(kakaoId);
     	Desk desk = null;   
+    	String newJwtToken = null;
     	RedisUserDto redisUser = new RedisUserDto();
     	if(!findUser.isPresent()) {
 	    	String uuid = UUID.randomUUID().toString();
@@ -177,14 +161,22 @@ public class KakaoLoginController {
 	    	BeanUtils.copyProperties(newUser, redisUser);
 	    	redisUser.setDeskId(desk.getDeskId());
 	    	redisUser.setPromise(desk.getPromise());
-	    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
+//	    	redisUser.setAccessToken((String) jwtUtil.extractAllClaims(jwtToken).get("accessToken"));
 	
+	    	KakaoUserDto kakaoUser = new KakaoUserDto();
+	    	kakaoUser.setKakaoId(kakaoId);
+	    	kakaoUser.setUserId(uuid);
+	    	kakaoUser.setUserName(user.getUserName());
+	    	newJwtToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+	    	
+	    	redisUser.setJwtToken(newJwtToken);
+	    	
 	    	System.out.println(redisUser);
-	    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+	    	redisUtil.setObjectExpire(newJwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
 	    	
 	    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
     	}    	
-    	return new ResponseEntity<>(null, HttpStatus.OK);
+    	return new ResponseEntity<>(findUser.get(), HttpStatus.OK);
     }
     
     @PostMapping("/mypage")

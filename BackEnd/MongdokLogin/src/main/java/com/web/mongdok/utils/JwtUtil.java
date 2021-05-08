@@ -82,7 +82,9 @@ public class JwtUtil {
     	
         Claims claims = Jwts.claims();
         claims.put("kakaoId", kakaoUser.getKakaoId());
-        claims.put("accessToken", kakaoUser.getAccessToken());
+        claims.put("userName", kakaoUser.getUserName());
+        claims.put("userId", kakaoUser.getUserId());
+//        claims.put("accessToken", kakaoUser.getAccessToken());
         String jwt = null;
         try {
         	
