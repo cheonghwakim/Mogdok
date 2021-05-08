@@ -9,15 +9,16 @@ import com.mongdok.websocket.model.RoomMessage;
 public interface RoomService {
 
     /***
-     * destination에서 sessionId 추출
+     * destination에서 roomId 추출
      * @param dest
      * @return
      */
-    String getSessionId(String dest);
+    String getRoomId(String dest);
 
     /***
      * 열람실에 메시지 발송
      * @param roomMessage
      */
     void sendMessage(RoomMessage roomMessage);
+
 }

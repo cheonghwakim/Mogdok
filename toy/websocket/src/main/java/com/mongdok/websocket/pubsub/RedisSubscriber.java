@@ -34,7 +34,7 @@ public class RedisSubscriber {
             RoomMessage roomMessage = objectMapper.readValue(message, RoomMessage.class);
 
             // Websocket 구독자에게 채팅 메시지 Send
-            messageSendingOperations.convertAndSend("/sub/room/" + roomMessage.getSessionId(), roomMessage);
+            messageSendingOperations.convertAndSend("/sub/room/" + roomMessage.getRoomId(), roomMessage);
 
         } catch (Exception e) {
             log.error(e.getMessage());

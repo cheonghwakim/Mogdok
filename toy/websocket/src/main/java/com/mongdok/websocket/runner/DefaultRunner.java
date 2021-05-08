@@ -1,20 +1,12 @@
 package com.mongdok.websocket.runner;
 
-import com.mongdok.websocket.model.AuthUser;
-import com.mongdok.websocket.repository.AuthUserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 /**
  * author: pinest94

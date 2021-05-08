@@ -12,13 +12,13 @@ import java.io.Serializable;
 @Data
 public class StudyRoom implements Serializable {
 
-    private String sessionId;
+    private String roomId;
     private String name;
     private Long userCount;
 
-    public static StudyRoom create(String sessionId, String name) {
+    public static StudyRoom create(String roomId, String name) {
         StudyRoom room = new StudyRoom();
-        room.sessionId = sessionId;
+        room.roomId = roomId;
         room.name = name;
         room.userCount = 0L;
         return room;

@@ -21,7 +21,7 @@ public class RoomMessage {
     }
     
     private MessageType type; // 메시지 타입
-    private String sessionId; // 방 번호
+    private String roomId; // 방 번호
     private String userId; // 사용자 아이디
     private String sender; // 메시지 보낸 사람
     private String message; // 메시지
