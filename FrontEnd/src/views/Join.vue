@@ -7,7 +7,7 @@
             <!-- STPE 1 : 닉네임 -->
             <transition name="slide-left">
                <div v-show="first" class="step-box first">
-                  <input v-model="userName" placeholder="닉네임을 입력하세요" type="text" maxlength="10" />
+                  <input v-model="userName" placeholder="닉네임을 입력하세요" type="text" maxlength="10" @keyup.enter="checkuserNameDuplicate" />
 
                   <div v-show="isShowInfo" class="info" :class="{ 'valid--fail': isError }">
                      {{ msg }}
@@ -129,6 +129,13 @@ export default {
             this.isShowInfo = true;
             this.msg = '닉네임을 입력해주세요';
             this.isError = true;
+            return;
+         }
+
+         // 유효성 검사 불통시 거르기
+         if (!this.isValid) {
+            //유효성 검사 통과못함
+            alert('닉네임을 다시 확인해주세요');
             return;
          }
 

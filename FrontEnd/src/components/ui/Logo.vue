@@ -4,9 +4,9 @@
          <svg-mndk-logo></svg-mndk-logo>
          <p>몽실이네 독서실</p>
       </div>
-      <div class="about-modal">
+      <!-- <div class="about-modal">
          모달입니당
-      </div>
+      </div> -->
    </div>
 </template>
 <script>
@@ -34,7 +34,7 @@ export default {
       position: fixed;
       width: 300px;
       height: 400px;
-      background-color: black;
+      background-color: rgb(255, 255, 255);
       z-index: 10;
 
       top: 50%;
