@@ -5,6 +5,7 @@ import com.mongdok.websocket.model.Seat;
 import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.repository.SeatRepository;
 import com.mongdok.websocket.service.RoomService;
+import com.mongdok.websocket.service.StudyLogService;
 import com.mongdok.websocket.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.Optional;
 @Component
 public class StompHandler implements ChannelInterceptor {
 
+    private final StudyLogService studyLogService;
     private final SeatRepository seatRepository;
     private final RoomRepository roomRepository;
     private final RoomService roomService;
@@ -99,7 +101,8 @@ public class StompHandler implements ChannelInterceptor {
             
             // 좌석정보가 있는 경우 ----> 시간 정보 저장
             if(seat != null) {
-                log.info("SEAT : {}", seat.getTimestampList());
+                // TODO: 현재 토큰에 담긴 userId가 실제 id가 아니므로 DB오류 발생시킨다.
+                // studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
             }
 
             roomRepository.removeToken(sessionId);

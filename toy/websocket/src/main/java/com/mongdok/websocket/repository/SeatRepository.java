@@ -38,7 +38,9 @@ public class SeatRepository {
     // 특정 좌석정보 조회
     public Seat findSeatByUserId(String roomId, String userId) {
         Seat seat =  hashOpsSeatInfo.get(SEAT_INFO+"_"+roomId, userId);
-        log.info("[SEAT 조회] : {}", seat.toString());
+        if(seat != null) {
+            log.info("[SEAT 조회] : {}", seat.toString());
+        }
         return seat;
     }
 
