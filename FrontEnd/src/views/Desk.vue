@@ -182,13 +182,4 @@ export default {
       }
    }
 }
-
-.fade-enter-active,
-.fade-leave-active {
-   transition: all 1s ease;
-}
-.fade-enter,
-.fade-leave-to {
-   opacity: 0;
-}
 </style>

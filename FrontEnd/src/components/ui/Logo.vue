@@ -1,18 +1,31 @@
 <template lang="">
    <div class="logo">
-      <div class="logo-wrapper">
+      <div class="logo-wrapper" @click="toggleAbout">
          <svg-mndk-logo></svg-mndk-logo>
          <p>몽실이네 독서실</p>
       </div>
+      <modal-about :isOpenAbout="isOpenAbout"></modal-about>
       <!-- <div class="about-modal">
-         모달입니당
+         모달
       </div> -->
    </div>
 </template>
 <script>
 import SvgMndkLogo from '@/components/svg/SvgMndkLogo';
+import ModalAbout from '@/components/ui/ModalAbout';
+
 export default {
-   components: { SvgMndkLogo },
+   components: { SvgMndkLogo, ModalAbout },
+   data() {
+      return {
+         isOpenAbout: false,
+      };
+   },
+   methods: {
+      toggleAbout: function() {
+         this.isOpenAbout = !this.isOpenAbout;
+      },
+   },
 };
 </script>
 <style scoped lang="scss">
@@ -22,24 +35,14 @@ export default {
       flex-direction: column;
       align-items: center;
 
+      cursor: pointer;
+
       p {
          color: #d0d0d0;
          font-size: 0.7rem;
          font-weight: 600;
          margin-top: 5px;
       }
-   }
-
-   .about-modal {
-      position: fixed;
-      width: 300px;
-      height: 400px;
-      background-color: rgb(255, 255, 255);
-      z-index: 10;
-
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
    }
 }
 </style>

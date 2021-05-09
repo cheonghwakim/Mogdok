@@ -79,3 +79,12 @@ h3 {
     animation-timing-function: cubic-bezier(.65,0,.34,1);
     z-index: -1;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+   transition: all 1s ease;
+}
+.fade-enter,
+.fade-leave-to {
+   opacity: 0;
+}
