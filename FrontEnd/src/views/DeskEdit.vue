@@ -111,7 +111,7 @@ export default {
       this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
       this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
       // 모든 메모지를 이동가능한 상태로 업데이트
-      for (let i = 0; i < this.memos.length; i++) this.setMemoState(i, true);
+      for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, true);
     },
     editComplete() {
       this.saveMemo(); // 메모 저장
@@ -119,7 +119,7 @@ export default {
       this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
       this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
       // 모든 메모지를 움직일 수 없는 상태로 업데이트
-      for (let i = 0; i < this.memos.length; i++) this.setMemoState(i, false);
+      for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, false);
     },
     setMemoState(index, state) {
       // 메모지 상태 업데이트
@@ -140,8 +140,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
-// scoped를 없애야 메모지에 css가 적용되는데 왜그런가요?
+<style scoped lang="scss">
 @import 'src/assets/css/common';
 
 /* $desk-width: 1280px; */
@@ -274,32 +273,6 @@ export default {
   opacity: 0;
 }
 
-.moveable-container {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 200px;
-  height: 200px;
-}
-.moveable .moveable-line {
-  background: black !important;
-}
-.moveable .moveable-control {
-  display: none;
-}
-.moveable .moveable-rotation-line {
-  display: none;
-}
-.movedisable .moveable-line,
-.moveable-control {
-  display: none;
-}
-.clicked .moveable-control,
-.moveable-line,
-.moveable-rotation-line {
-  display: block;
-}
 /* The Modal (background) */
 .modal {
   position: fixed; /* Stay in place */

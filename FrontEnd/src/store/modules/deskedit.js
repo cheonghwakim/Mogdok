@@ -47,25 +47,10 @@ const state = () => ({
   removedMemoList: [],
   memoEditDialog: false,
   createMemoKeyIndex: 0,
+  zIndexCount: 0,
 });
 
-const getters = {
-  // convertedMemoIdList(state) {
-  //   return state.memoList.map((e) => {
-  //     if (isNaN(e.memoId)) {
-  //       e.memoId = undefined;
-  //       return e;
-  //     } else {
-  //       return e;
-  //     }
-  //   });
-  // },
-  // convertRemovedMemoList(state) {
-  //   return state.removedMemoList.filter((e) => {
-  //     return !isNaN(e);
-  //   });
-  // },
-};
+const getters = {};
 
 const actions = {
   GET_DESK_INFO({ commit }, nickname) {
@@ -122,14 +107,15 @@ const actions = {
         index: state.selectedMemoIdx,
         className: state.editable ? 'moveable' : 'movedisable',
       }); // 이전에 클릭한 메모의 선택이 풀린 UI로 변경
-      //   state.memoList[state.selectedMemoIdx].zIndex = zIndexCount++;
+      state.memoList[state.selectedMemoIdx].zIndex = state.zIndexCount;
+      commit('ADD_ZINDEX_COUNT');
     }
     commit('SET_SELECTED_MEMO_IDX', index); // 클릭된 메모의 index 업데이트
     commit('SET_MEMO_CLASSNAME_BY_INDEX', {
       index: state.selectedMemoIdx,
       className: state.editable ? 'clicked' : 'moveable',
     });
-    // state.memoList[state.selectedMemoIdx].zIndex = 3000 + zIndexCount;
+    state.memoList[state.selectedMemoIdx].zIndex = state.zIndexCount;
   },
 };
 
@@ -156,6 +142,7 @@ const mutations = {
   SET_EDIT_STATE(state, payload) {
     state.editable = payload;
     state.createMemoKeyIndex = 0;
+    state.zIndexCount = 0;
   },
   SET_REMOVED_MEMO_LIST(state, payload) {
     state.removedMemoList = payload;
@@ -202,6 +189,9 @@ const mutations = {
   SET_SELECTED_MEMO_COLOR(state, payload) {
     if (state.selectedMemoIdx < 0) return;
     state.memoList[state.selectedMemoIdx].color = payload;
+  },
+  ADD_ZINDEX_COUNT(state) {
+    state.zIndexCount++;
   },
 };
 
