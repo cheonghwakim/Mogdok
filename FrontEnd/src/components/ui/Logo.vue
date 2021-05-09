@@ -4,7 +4,7 @@
          <svg-mndk-logo></svg-mndk-logo>
          <p>몽실이네 독서실</p>
       </div>
-      <modal-about :isOpenAbout="isOpenAbout"></modal-about>
+      <modal-about :isOpenAbout="isOpenAbout" @onClick="closeModalAbout"></modal-about>
       <!-- <div class="about-modal">
          모달
       </div> -->
@@ -24,6 +24,9 @@ export default {
    methods: {
       toggleAbout: function() {
          this.isOpenAbout = !this.isOpenAbout;
+      },
+      closeModalAbout: function() {
+         this.isOpenAbout = false;
       },
    },
 };

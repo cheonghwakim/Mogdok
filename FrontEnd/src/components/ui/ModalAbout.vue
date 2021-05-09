@@ -20,7 +20,7 @@ export default {
 
    methods: {
       closeAbout: function() {
-         this.isOpenAbout = false;
+         this.$emit('onClick');
       },
    },
 };
@@ -29,16 +29,20 @@ export default {
 @import 'src/assets/css/common';
 
 .about-modal {
-   position: fixed;
-   width: 40vw;
+   min-width: 300px;
+   max-width: 600px;
+   width: 80vw;
    height: 80vh;
-   background-color: rgb(255, 255, 255);
-   box-shadow: 0px 9px 20px 0px #56565629;
-   border-radius: 25px;
-   z-index: 10;
+   max-height: 900px;
 
+   position: fixed;
+   z-index: 10;
    top: 50%;
    left: 50%;
    transform: translate(-50%, -50%);
+
+   background-color: rgb(255, 255, 255);
+   box-shadow: 0px 9px 20px 0px #56565629;
+   border-radius: 25px;
 }
 </style>
