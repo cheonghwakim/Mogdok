@@ -42,6 +42,7 @@ import SocialLogin from '@/views/SocialLogin.vue';
 import Enterance from '@/views/Enterance.vue';
 import Room from '@/views/Room.vue';
 import Desk from '@/views/Desk.vue';
+import DeskEdit from '@/views/DeskEdit.vue';
 import Join from '@/views/Join.vue';
 
 // ==============================
@@ -92,6 +93,15 @@ const routes = [
     //  beforeEnter: requireAuth(),
     components: {
       default: Desk,
+      footer: Footer,
+    },
+  },
+  {
+    path: '/desk',
+    name: 'DeskEdit',
+    //  beforeEnter: requireAuth(),
+    components: {
+      default: DeskEdit,
       footer: Footer,
     },
   },

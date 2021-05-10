@@ -10,6 +10,7 @@ function createDeskInstance() {
   });
   return setInterceptors(instance);
 }
+export const deskInstance = createDeskInstance();
 
 function createRoomInstance() {
   const instance = axios.create({
@@ -20,6 +21,7 @@ function createRoomInstance() {
   });
   return setInterceptors(instance);
 }
+export const roomInstance = createRoomInstance();
 
 function createLoginInstance() {
   const instance = axios.create({
@@ -30,6 +32,7 @@ function createLoginInstance() {
   });
   return setInterceptors(instance);
 }
+export const loginInstance = createLoginInstance();
 
 function createOpenViduInstance() {
   const instance = axios.create({
@@ -38,7 +41,6 @@ function createOpenViduInstance() {
       'Content-Type': 'application/json',
     },
   });
-  return instance;
+  return setInterceptors(instance);
 }
-
-export { createDeskInstance, createLoginInstance, createRoomInstance, createOpenViduInstance };
+export const openViduInstance = createOpenViduInstance();
