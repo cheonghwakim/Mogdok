@@ -1,12 +1,7 @@
 import { getAuthToken, login } from '../../api/user';
 
 const state = () => ({
-  authToken: undefined,
-  userInfo: {
-    // 테스트데이터
-    userId: 1,
-    userName: '테스트',
-  },
+  userInfo: {},
   videoSourceList: [],
   videoSource: undefined,
 });
@@ -14,38 +9,46 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-  async GET_AUTH_TOKEN({ dispatch }, code) {
-    await getAuthToken(
+  GET_AUTH_TOKEN({ commit }, code) {
+    return getAuthToken(
       { authorizeCode: code },
-      async (res) => {
-        await dispatch('SET_AUTH_TOKEN', res.data);
-        localStorage.setItem('authToken', res.data);
+      (res) => {
+        commit('SET_KAKAO_ID', res.data);
       },
       () => {}
     );
   },
-  async SET_AUTH_TOKEN({ commit }, authToken) {
-    await commit('SET_AUTH_TOKEN', authToken);
-  },
-  async LOGIN({ commit }) {
-    let ret = 'error';
-    await login(
-      async (res) => {
-        if (res.data) {
-          // 기존회원
-          await commit('SET_USER_INFO', res.data);
-          ret = 'ok';
-        } else {
-          ret = 'join';
+  LOGIN({ state, commit }) {
+    return new Promise((resolve, reject) => {
+      login(
+        { kakaoId: state.userInfo.kakaoId },
+        (res) => {
+          if (res.data) {
+            commit('SET_USER_INFO', res.data);
+            localStorage.setItem('authToken', state.userInfo.authToken);
+            resolve('ok');
+          } else {
+            resolve('join');
+          }
+        },
+        () => {
+          reject();
         }
-      },
-      () => {}
-    );
-    return ret;
+      );
+    });
   },
 };
 
 const mutations = {
+  SET_KAKAO_ID(state, payload) {
+    state.userInfo.kakaoId = payload;
+  },
+  SET_USERINFO_PROPERTY(state, { key, value }) {
+    state.userInfo[key] = value;
+  },
+  SET_USER_INFO(state, payload) {
+    state.userInfo = payload;
+  },
   SET_VIDEO_SOURCE_LIST(state, payload) {
     state.videoSourceList = payload;
   },
