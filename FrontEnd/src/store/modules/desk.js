@@ -1,4 +1,5 @@
 import { getDeskInfo } from '../../api/desk';
+import { movedisableState } from './deskedit';
 
 // 컴포넌트 간에 공유할 data
 const state = () => ({
@@ -18,9 +19,15 @@ const actions = {
       // { nickname },
       { nickname: 'ssafy' }, // 테스트용
       (res) => {
-        console.log('%cdesk.js line:21 res', 'color: #007acc;', res);
         commit('SET_DESK_ID', res.data.data.deskId);
-        commit('SET_MEMO_LIST', res.data.data.memoList, { root: true });
+        commit(
+          'SET_MEMO_LIST',
+          res.data.data.memoList.map((e) => {
+            e.moveable = { ...movedisableState };
+            return e;
+          }),
+          { root: true }
+        );
         commit('SET_DDAY_LIST', res.data.data.ddayList, { root: true });
         commit('SET_BOARD_LIST', res.data.data.boardList, { root: true });
         commit('SET_PROMISE', res.data.data.promise, { root: true });
@@ -42,6 +49,9 @@ const mutations = {
   CLEAR_DESK: function(state) {
     state.desk = null;
     state.isOpenProfile = false;
+  },
+  SET_DESK_ID(state, payload) {
+    state.deskId = payload;
   },
 };
 

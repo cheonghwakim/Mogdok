@@ -20,19 +20,30 @@
       <div class="desk-draw-area"></div>
       <svg-desk></svg-desk>
     </div>
-    <vue-moveable></vue-moveable>
+    <vue-moveable
+      v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memoList"
+      :key="'memo' + index + memoId"
+      class="moveable-container"
+      v-bind="moveable"
+      @click.native="clickMemo(index)"
+      :style="{ zIndex, transform }"
+    >
+      <svg-memo :text="content" :color="color"></svg-memo>
+    </vue-moveable>
   </div>
 </template>
 <script>
 import { dragscroll } from 'vue-dragscroll';
 import VueMoveable from 'vue-moveable';
 import SvgDesk from '@/components/svg/SvgDesk';
+import SvgMemo from '@/components/svg/SvgMemo';
 import DivBanner from '@/components/ui/DivBanner';
 import BtnClose from '@/components/ui/BtnClose';
+import { mapState } from 'vuex';
 
 export default {
   name: 'Desk',
-  components: { SvgDesk, DivBanner, BtnClose, VueMoveable },
+  components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo },
   props: {},
   data() {
     return {
@@ -42,10 +53,17 @@ export default {
   directives: {
     dragscroll,
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      deskId: (state) => state.desk.deskId,
+      memoList: (state) => state.deskedit.memoList,
+      ddayList: (state) => state.deskedit.ddayList,
+      boardList: (state) => state.deskedit.boardList,
+    }),
+  },
   watch: {},
   //lifecycle area
-  created: function() {
+  created() {
     // n초 뒤 몽실이 안내 화면이 사라짐
     setTimeout(() => {
       this.isFirst = false;
@@ -60,6 +78,9 @@ export default {
       if (isExit) {
         this.$router.push('/room');
       }
+    },
+    clickMemo(index) {
+      console.log(index + '번째 메모 클릭');
     },
   },
 };

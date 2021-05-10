@@ -4,6 +4,7 @@
       {{ text }}
     </span>
     <svg
+      v-if="color !== undefined"
       width="100%"
       height="100%"
       viewBox="0 0 357 333"
