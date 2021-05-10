@@ -5,6 +5,7 @@ import com.mongdok.websocket.model.StudyRoom;
 import com.mongdok.websocket.model.UserInfo;
 import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.util.JWTUtil;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public class RoomController {
     }
 
     // 모든 채팅방 목록 반환
+    @ApiOperation(value = "모든 열람실 정보 리스트 조회 🏢")
     @GetMapping("")
     public ResponseEntity<?> getRoomList() {
         List<StudyRoom> roomList = roomRepository.findAllRoom();
@@ -48,6 +50,7 @@ public class RoomController {
     }
 
     // 특정 채팅방 조회
+    @ApiOperation(value = "특정 열람실 정보 조회 🏢")
     @GetMapping("/{roomId}")
     public ResponseEntity<?> roomInfo(@PathVariable String roomId) {
         StudyRoom room = roomRepository.getRoomById(roomId);
@@ -55,9 +58,9 @@ public class RoomController {
     }
 
     // 특정 채팅방 조회
-    @PostMapping("/user")
-    public ResponseEntity<?> getToken(@RequestBody UserInfo userInfo) {
-        String token = jwtUtil.generateToken(userInfo.getUserId(), userInfo.getUserName());
-        return new ResponseEntity<>(token, HttpStatus.OK);
-    }
+//    @PostMapping("/user")
+//    public ResponseEntity<?> getToken(@RequestBody UserInfo userInfo) {
+//        String token = jwtUtil.generateToken(userInfo.getUserId(), userInfo.getUserName());
+//        return new ResponseEntity<>(token, HttpStatus.OK);
+//    }
 }
