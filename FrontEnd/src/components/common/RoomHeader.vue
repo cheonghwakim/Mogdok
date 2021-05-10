@@ -1,10 +1,10 @@
 <template lang="">
   <div class="header floating">
     <div class="section">
-      <h2>{{ roomInfo.roomTitle }}</h2>
+      <h2>{{ roomInfo.name }}</h2>
       <div-num-person
         class="NumOfPerson"
-        :current="this.roomCurrent"
+        :current="roomInfo.roomCurrent"
         :limit="roomInfo.roomLimit"
       ></div-num-person>
     </div>
