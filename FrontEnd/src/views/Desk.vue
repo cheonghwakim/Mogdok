@@ -50,6 +50,8 @@ export default {
     setTimeout(() => {
       this.isFirst = false;
     }, 3000);
+    // this.$store.dispatch('GET_DESK_INFO', userName 입력);
+    this.$store.dispatch('GET_DESK_INFO');
   },
   methods: {
     exitDesk: function() {

@@ -1,4 +1,4 @@
-import { getDeskInfo, saveMemoList, deleteMemoList } from '../../api/desk';
+import { saveMemoList, deleteMemoList } from '../../api/desk';
 
 const MEMO_MAX_SIZE = 10;
 
@@ -37,7 +37,7 @@ const moveableState = {
 };
 
 const state = () => ({
-  deskId: undefined,
+  deskId: undefined, // TODO: deskId는 desk에서 받아온다
   promise: '',
   memoList: [],
   ddayList: [],
@@ -53,33 +53,19 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-  GET_DESK_INFO({ commit }, nickname) {
-    getDeskInfo(
-      { nickname },
-      (res) => {
-        commit('SET_DESK_ID', res.data.data.deskId);
-        commit('SET_MEMO_LIST', res.data.data.memoList);
-        commit('SET_DDAY_LIST', res.data.data.ddayList);
-        commit('SET_BOARD_LIST', res.data.data.boardList);
-        commit('SET_PROMISE', res.data.data.promise);
-      },
-      () => {}
-    );
-  },
   SAVE_MEMO_LIST({ state, commit }) {
-    commit(
-      'SET_MEMO_LIST',
-      state.memoList.map((e) => {
-        if (isNaN(e.memoId)) {
-          e.memoId = undefined;
-          return e;
-        } else {
-          return e;
-        }
-      })
-    );
+    const tmp = [];
+    state.memoList.forEach((e) => {
+      tmp.push({
+        color: e.color,
+        content: e.content,
+        deskId: e.deskId,
+        memoId: isNaN(e.memoId) ? undefined : e.memoId,
+        transform: e.transform,
+      });
+    });
     saveMemoList(
-      state.memoList,
+      tmp,
       (res) => {
         commit('SET_MEMO_LIST', res.data.data);
       },
