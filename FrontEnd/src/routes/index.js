@@ -3,27 +3,27 @@
 */
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-// import store from '../store';
+import store from '../store';
 
 Vue.use(VueRouter);
 
-// const requireAuth = () => async (to, from, next) => {
-//   let token = localStorage.getItem('authToken');
-//   if (store.state.user.authToken === undefined && token) {
-//     await store.dispatch('SET_AUTH_TOKEN', token);
-//   }
-//   if (store.state.user.authToken) {
-//     await store
-//       .dispatch('LOGIN')
-//       .then(() => {
-//         if (store.state.user.userInfo) next();
-//         else next('/join');
-//       })
-//       .catch(() => {
-//         next('/login');
-//       });
-//   } else next('/login');
-// };
+const requireAuth = () => async (to, from, next) => {
+  let token = localStorage.getItem('authToken');
+  if (store.state.user.userInfo.authToken === undefined && token) {
+    await store.dispatch('SET_AUTH_TOKEN', token);
+  }
+  if (store.state.user.userInfo.authToken) {
+    await store
+      .dispatch('LOGIN')
+      .then(() => {
+        if (store.state.user.userInfo) next();
+        else next('/join');
+      })
+      .catch(() => {
+        next('/login');
+      });
+  } else next('/login');
+};
 
 // ==============================
 
@@ -51,7 +51,7 @@ const routes = [
   {
     path: '/',
     name: 'Enterance',
-    //  beforeEnter: requireAuth(),
+    beforeEnter: requireAuth(),
     components: {
       default: Enterance,
     },
@@ -80,7 +80,7 @@ const routes = [
   {
     path: '/room',
     name: 'Room',
-    //  beforeEnter: requireAuth(),
+    beforeEnter: requireAuth(),
     components: {
       header: Header,
       default: Room,
@@ -90,7 +90,7 @@ const routes = [
   {
     path: '/desk',
     name: 'Desk',
-    //  beforeEnter: requireAuth(),
+    beforeEnter: requireAuth(),
     components: {
       default: Desk,
       footer: Footer,
@@ -99,7 +99,7 @@ const routes = [
   {
     path: '/desk',
     name: 'DeskEdit',
-    //  beforeEnter: requireAuth(),
+    beforeEnter: requireAuth(),
     components: {
       default: DeskEdit,
       footer: Footer,
