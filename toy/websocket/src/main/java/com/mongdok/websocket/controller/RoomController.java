@@ -34,9 +34,9 @@ public class RoomController {
 
     @PostConstruct
     public void init() {
-        roomRepository.createRoom(RoomElements.ROOM_A, RoomElements.ROOM_A_NAME);
-        roomRepository.createRoom(RoomElements.ROOM_B, RoomElements.ROOM_B_NAME);
-        roomRepository.createRoom(RoomElements.ROOM_C, RoomElements.ROOM_C_NAME);
+        roomRepository.createRoom(RoomElements.ROOM_A, RoomElements.ROOM_A_NAME, RoomElements.ROOM_A_SIZE);
+        roomRepository.createRoom(RoomElements.ROOM_B, RoomElements.ROOM_B_NAME, RoomElements.ROOM_B_SIZE);
+        roomRepository.createRoom(RoomElements.ROOM_C, RoomElements.ROOM_C_NAME, RoomElements.ROOM_C_SIZE);
     }
 
     // 모든 채팅방 목록 반환

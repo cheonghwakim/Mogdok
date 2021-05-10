@@ -103,7 +103,7 @@ public class StompHandler implements ChannelInterceptor {
             // 좌석정보가 있는 경우 ----> 시간 정보 저장
             if(seat != null) {
                 // TODO: 현재 토큰에 담긴 userId가 실제 id가 아니므로 DB오류 발생시킨다.
-                // studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
+                studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
             }
 
             roomRepository.removeToken(sessionId);
