@@ -2,6 +2,7 @@ package com.mongdok.websocket.config.handler;
 
 import com.mongdok.websocket.model.RoomMessage;
 import com.mongdok.websocket.model.Seat;
+import com.mongdok.websocket.model.enums.MessageType;
 import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.repository.SeatRepository;
 import com.mongdok.websocket.service.RoomService;
@@ -67,7 +68,7 @@ public class StompHandler implements ChannelInterceptor {
             log.info("userId : {}", userId);
 
             // 클라이언트 입장 메시지를 채팅방에 발송한다.
-            roomService.sendMessage(RoomMessage.builder().type(RoomMessage.MessageType.ENTER)
+            roomService.sendMessage(RoomMessage.builder().type(MessageType.ENTER)
                     .roomId(roomId)
                     .sender(userName)
                     .userId(userId)
@@ -94,7 +95,7 @@ public class StompHandler implements ChannelInterceptor {
             log.info("userId : {}", userId);
 
             // 해당 유저의 퇴장 메시지를 열람실에 발송한다.
-            roomService.sendMessage(RoomMessage.builder().type(RoomMessage.MessageType.QUIT).roomId(roomId).sender(userName).userId(userId).build());
+            roomService.sendMessage(RoomMessage.builder().type(MessageType.QUIT).roomId(roomId).sender(userName).userId(userId).build());
             log.info("DISCONNECT {} ----- {}", sessionId, roomId);
 
             Seat seat = seatRepository.findSeatByUserId(roomId, userId);

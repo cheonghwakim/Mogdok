@@ -4,10 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -39,15 +35,6 @@ public class JWTUtil {
                 .setIssuedAt(now) // 토큰 발행일자
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    public Authentication getAuth(String token) {
-        Claims claims = getClaims(token);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(claims, null);
-        SecurityContext contextHolder = SecurityContextHolder.getContext();
-        contextHolder.setAuthentication(authentication);
-
-        return authentication;
     }
 
     public String getUserName(String token) {

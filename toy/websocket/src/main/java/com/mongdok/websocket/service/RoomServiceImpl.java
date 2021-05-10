@@ -1,6 +1,7 @@
 package com.mongdok.websocket.service;
 
 import com.mongdok.websocket.model.RoomMessage;
+import com.mongdok.websocket.model.enums.MessageType;
 import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +57,6 @@ public class RoomServiceImpl implements RoomService{
                 break;
             case QUIT:
                 // TODO: MariaDB에 공부기록 저장
-
                 roomMessage.setMessage(roomMessage.getSender() + "님이 열람실에 퇴장했습니다. ");
                 break;
             case SEAT_ALLOCATED:
@@ -65,7 +65,11 @@ public class RoomServiceImpl implements RoomService{
                                            roomMessage.getUserId(),
                                            roomMessage.getSender(),
                                            roomMessage.getSeatInfo());
-                if(!check) return; // 좌석에 착석할 수 없는 경우
+                // 좌석에 착석할 수 없는 경우
+                if(!check) {
+                    roomMessage.setType(MessageType.SEAT_ALLOCATE_FAIL);
+                    roomMessage.setMessage("착석에 실패했습니다.");
+                }
                 break;
             case SEAT_STATUS:
                 // TODO: 공부시작, 휴식시작시간 저장 호출
@@ -73,9 +77,6 @@ public class RoomServiceImpl implements RoomService{
                                               roomMessage.getUserId(),
                                               roomMessage.getSeatInfo());
                 break;
-            case CLEAR:
-                log.info("CLEAR 호출");
-                seatRepository.removeAll(roomMessage.getRoomId());
         }
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), roomMessage);

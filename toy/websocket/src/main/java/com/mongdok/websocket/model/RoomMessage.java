@@ -1,5 +1,6 @@
 package com.mongdok.websocket.model;
 
+import com.mongdok.websocket.model.enums.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,10 +16,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomMessage {
-
-    public enum MessageType {
-        ENTER, QUIT, SEAT_ALLOCATED, SEAT_STATUS, CLEAR
-    }
     
     private MessageType type; // 메시지 타입
     private String roomId; // 방 번호
