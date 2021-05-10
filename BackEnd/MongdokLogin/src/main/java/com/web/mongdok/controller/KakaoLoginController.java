@@ -113,7 +113,7 @@ public class KakaoLoginController {
 	    	kakaoUser.setUserName(user.get().getUserName());
 	    	newJwtToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.TOKEN_VALIDATION_SECOND);
 	    	
-	    	redisUser.setJwtToken(newJwtToken);
+	    	redisUser.setAuthToken(newJwtToken);
 	    	System.out.println(redisUser);
 	    	redisUtil.setObjectExpire(newJwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
 		}	
@@ -168,7 +168,7 @@ public class KakaoLoginController {
 	    	kakaoUser.setUserName(user.getUserName());
 	    	newJwtToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.TOKEN_VALIDATION_SECOND);
 	    	
-	    	redisUser.setJwtToken(newJwtToken);
+	    	redisUser.setAuthToken(newJwtToken);
 	    	
 	    	System.out.println(redisUser);
 	    	redisUtil.setObjectExpire(newJwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
