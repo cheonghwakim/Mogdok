@@ -35,7 +35,7 @@ public class RedisUserDto implements Serializable {
 	
 	private String promise;
 	
-	private String jwtToken;
+	private String authToken;
 	
 //	private String refreshToken;
 	
