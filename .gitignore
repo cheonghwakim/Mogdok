@@ -34,3 +34,5 @@ BackEnd/MongsilDesk/Dockerfile
 .settings/
 target/
 HELP.md
+build/
+.gradle/
