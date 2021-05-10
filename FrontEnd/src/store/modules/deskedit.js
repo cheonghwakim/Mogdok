@@ -18,6 +18,7 @@ const movedisableState = {
   snappable: true,
   bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
 };
+export { movedisableState };
 
 const moveableState = {
   draggable: true,
@@ -53,6 +54,18 @@ const state = () => ({
 const getters = {};
 
 const actions = {
+  CREATE_MEMO({ state, rootState, commit }) {
+    if (state.memoList.length > MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
+    const memo = {
+      deskId: rootState.desk.deskId,
+      memoId: 'tmp' + state.createMemoKeyIndex++,
+      content: '',
+      zIndex: 1,
+      moveable: { ...moveableState },
+      color: 0,
+    };
+    commit('ADD_MEMO', memo);
+  },
   SAVE_MEMO_LIST({ state, commit }) {
     const tmp = [];
     state.memoList.forEach((e) => {
@@ -106,11 +119,11 @@ const actions = {
 };
 
 const mutations = {
-  SET_DESK_ID(state, payload) {
-    state.deskId = payload;
-  },
   SET_MEMO_LIST(state, payload) {
     state.memoList = payload;
+  },
+  ADD_MEMO(state, payload) {
+    state.memoList.push(payload);
   },
   SET_DDAY_LIST(state, payload) {
     state.ddayList = payload;
@@ -152,18 +165,6 @@ const mutations = {
     state.removedMemoList.push(state.memoList[state.selectedMemoIdx].memoId);
     state.memoList.splice(state.selectedMemoIdx, 1);
     state.selectedMemoIdx = -1;
-  },
-  CREATE_MEMO(state) {
-    if (state.memoList.length > MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
-    const memo = {
-      deskId: state.deskId,
-      memoId: 'tmp' + state.createMemoKeyIndex++,
-      content: '',
-      zIndex: 1,
-      moveable: { ...moveableState },
-      color: 0,
-    };
-    state.memoList.push(memo);
   },
   SET_SELECTED_MEMO_CONTENT(state, payload) {
     if (state.selectedMemoIdx < 0) return;

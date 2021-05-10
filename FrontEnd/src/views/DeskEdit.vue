@@ -2,7 +2,7 @@
   <div v-dragscroll="true" class="desk">
     <div>
       <button @click="editComplete">편집완료(저장)</button>
-      <button @click="$store.commit('CREATE_MEMO')">메모 생성</button>
+      <button @click="$store.dispatch('CREATE_MEMO')">메모 생성</button>
       <button v-show="selectedMemoIdx >= 0" @click="$store.commit('REMOVE_MEMO')">
         이 메모 삭제하기
       </button>
@@ -75,7 +75,7 @@ export default {
   },
   computed: {
     ...mapState({
-      deskId: (state) => state.deskedit.deskId,
+      deskId: (state) => state.desk.deskId,
       memoList: (state) => state.deskedit.memoList,
       ddayList: (state) => state.deskedit.ddayList,
       boardList: (state) => state.deskedit.boardList,
@@ -87,8 +87,8 @@ export default {
   },
   watch: {},
   //lifecycle area
-  created: function() {
-    this.$store.commit('SET_EDIT_STATE', true);
+  created() {
+    this.edit();
   },
   methods: {
     handleDrag({ target, transform }) {
@@ -120,12 +120,13 @@ export default {
       this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
       // 모든 메모지를 움직일 수 없는 상태로 업데이트
       for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, false);
+      this.$router.replace({ name: 'Desk' });
     },
     setMemoState(index, state) {
       // 메모지 상태 업데이트
       this.$store.commit('SET_MEMO_CLASSNAME_BY_INDEX', {
         index,
-        state: state ? 'moveable' : 'movedisable',
+        className: state ? 'moveable' : 'movedisable',
       });
       this.$store.commit('SET_MEMO_MOVEABLE_STATUS_BY_INDEX', { index, status: state });
     },
