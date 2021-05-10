@@ -1,4 +1,4 @@
-import { getAuthToken, login } from '../../api/user';
+import { getAuthToken, login, loginByAuthToken } from '../../api/user';
 
 const state = () => ({
   userInfo: {},
@@ -31,11 +31,22 @@ const actions = {
             resolve('join');
           }
         },
-        () => {
-          reject();
+        (error) => {
+          reject(error);
         }
       );
     });
+  },
+  async LOGIN_BY_AUTH_TOKEN({ commit }, token) {
+    commit('SET_AUTH_TOKEN', token);
+    await loginByAuthToken(
+      (res) => {
+        commit('SET_USER_INFO', res.data);
+      },
+      (error) => {
+        alert(error);
+      }
+    );
   },
 };
 
@@ -54,6 +65,9 @@ const mutations = {
   },
   SET_VIDEO_SOURCE(state, payload) {
     state.videoSource = payload;
+  },
+  SET_AUTH_TOKEN(state, payload) {
+    state.userInfo.authToken = payload;
   },
 };
 
