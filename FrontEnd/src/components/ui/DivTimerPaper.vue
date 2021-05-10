@@ -19,9 +19,16 @@
 </template>
 <script>
 export default {
+   name: 'DivTimerPaper',
    props: {
-      type: String,
-      timer: String,
+      type: {
+         type: String,
+         required: true,
+      },
+      timer: {
+         type: String,
+         default: '00:00:00',
+      },
    },
 
    data() {
@@ -42,36 +49,31 @@ export default {
    },
 };
 </script>
-<style scoped lang="scss">
-@import 'src/assets/css/common';
-
+<style scoped>
 .postit {
+   width: 15vw;
+   min-width: 100px;
+   max-width: 160px;
+}
+
+.postit .content {
+   position: absolute;
+   bottom: 30%;
+   left: 50%;
+   transform: translateX(-50%) rotate(-4deg);
    width: 100%;
-   /* height: inherit; */
-   .content {
-      position: absolute;
-      bottom: 30%;
-      left: 50%;
-      transform: translateX(-50%) rotate(-4deg);
-
-      width: 100%;
-      text-align: center;
-
-      font-size: 1.5vmin;
-      font-weight: 700;
-      color: white;
-   }
+   text-align: center;
+   font-size: 1.5vmin;
+   font-weight: 700;
+   color: white;
 }
 
-// 바인딩 된 속성에 따라 포스트잇 색상을 변경
-.post--study {
-   #post {
-      fill: rgb(228, 33, 33);
-   }
+/* 바인딩 된 속성에 따라 포스트잇 색상을 변경 */
+.post--study #post {
+   fill: #e42121;
 }
-.post--rest {
-   #post {
-      fill: #19c520;
-   }
+
+.post--rest #post {
+   fill: #19c520;
 }
 </style>

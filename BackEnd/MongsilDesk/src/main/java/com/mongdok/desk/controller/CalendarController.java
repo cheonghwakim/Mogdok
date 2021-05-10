@@ -23,13 +23,13 @@ public class CalendarController {
 
 	@GetMapping("/month")
 	@ApiOperation(value = "커밋 달력 년,월로 불러오기")
-	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String nickname) {
-		return calendarService.getCalendarInMonth(year, month, nickname);
+	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String userName) {
+		return calendarService.getCalendarInMonth(year, month, userName);
 	}
 
 	@GetMapping("/day")
 	@ApiOperation(value = "커밋 달력 년,월,일로 불러오기")
-	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String nickname) {
-		return calendarService.getCalendarInDay(year, month, day, nickname);
+	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String userName) {
+		return calendarService.getCalendarInDay(year, month, day, userName);
 	}
 }

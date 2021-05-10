@@ -37,37 +37,39 @@
 <script>
 export default {};
 </script>
-<style scoped lang="scss">
-@import 'src/assets/css/common';
+<style scoped>
+@import url('../../assets/css/animation.css');
 
 .btnLeaveDesk {
    cursor: pointer;
 
-   &:hover {
-      #hand {
-         animation: wobble 2s both infinite;
-      }
-      #effect {
-         animation: fade-in 1s forwards;
-      }
-      .desc {
-         animation: fade-in 1s forwards;
-      }
-   }
+   width: 10vw;
+   min-width: 50px;
+   max-width: 100px;
+}
 
-   #effect {
-      animation: fade-out 1s forwards;
-   }
+.btnLeaveDesk:hover #hand {
+   animation: wobble 2s both infinite;
+}
 
-   .desc {
-      animation: fade-out 1s forwards;
+.btnLeaveDesk:hover #effect {
+   animation: fade-in 1s forwards;
+}
 
-      font-size: 1vmin;
-      font-weight: 600;
-      text-align: center;
-      line-height: 0px;
+.btnLeaveDesk:hover .desc {
+   animation: fade-in 1s forwards;
+}
 
-      color: rgb(92, 92, 92);
-   }
+.btnLeaveDesk #effect {
+   animation: fade-out 1s forwards;
+}
+
+.btnLeaveDesk .desc {
+   animation: fade-out 1s forwards;
+   font-size: 1vmin;
+   font-weight: 600;
+   text-align: center;
+   line-height: 0px;
+   color: #5c5c5c;
 }
 </style>

@@ -1,8 +1,10 @@
 package com.web.mongdok.utils;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +25,7 @@ public class JwtUtil {
     @Autowired
     private RedisUtil redisUtil;
     
-    public final static long TOKEN_VALIDATION_SECOND = 1000 * 60 * 60 * 12; // access token 유효기간: 12시간
+    public final static long TOKEN_VALIDATION_SECOND = 1000 * 60 * 60 * 48; // access token 유효기간: 12시간 (여기선 48시간)
     public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 24 * 30; // refresh token 유효기간: 30일
 
     final static public String ACCESS_TOKEN_NAME = "accessToken";
@@ -39,19 +41,28 @@ public class JwtUtil {
 
     // 토큰이 유효한 토큰인지 검사한 후, 토큰에 담긴 Payload 값을 가져온다.
     public Claims extractAllClaims(String token) throws ExpiredJwtException {
-        Jws<Claims> claims = null;
+    	Claims claims = null;
         try {
-            claims = Jwts.parser()
-            			.setSigningKey(SECRET_KEY.getBytes())
-            			.parseClaimsJws(token);
+        	
+//            claims = Jwts.parser()
+//            			.setSigningKey(SECRET_KEY)
+//            			.parseClaimsJws(token)
+//            			.getBody();
+        	
+        	claims = Jwts.parser()
+        			.setSigningKey(SECRET_KEY
+        					.getBytes(Charset.forName("UTF-8")))
+        			.parseClaimsJws(token.replace("{", "").replace("}",""))
+        			.getBody();
         
         } catch (final Exception e) {
-            throw new RuntimeException();
+        	e.printStackTrace();
+//            throw new RuntimeException();
         }
 
-//        System.out.println("claims : {}" + claims);
+        System.out.println("claims : " + claims);
         // Claims는 Map의 구현체이다.
-        return claims.getBody();
+        return claims;
     }
 
     // 추출한 Payload로부터 email을 가져온다.
@@ -71,16 +82,26 @@ public class JwtUtil {
     	
         Claims claims = Jwts.claims();
         claims.put("kakaoId", kakaoUser.getKakaoId());
-        claims.put("accessToken", kakaoUser.getAccessToken());
+        claims.put("userName", kakaoUser.getUserName());
+        claims.put("userId", kakaoUser.getUserId());
+//        claims.put("accessToken", kakaoUser.getAccessToken());
         String jwt = null;
         try {
         	
-	        jwt = Jwts.builder()
-	                .setClaims(claims)
-	                .setIssuedAt(new Date(System.currentTimeMillis()))
-	                .setExpiration(new Date(System.currentTimeMillis() + expireTime))
-	                .signWith(signatureAlgorithm, SECRET_KEY.getBytes("UTF-8"))
-	                .compact();
+//	        jwt = Jwts.builder()
+//	                .setClaims(claims)
+//	                .setIssuedAt(new Date(System.currentTimeMillis()))
+//	                .setExpiration(new Date(System.currentTimeMillis() + expireTime))
+//	                .signWith(signatureAlgorithm, SECRET_KEY.getBytes("UTF-8"))
+//	                .compact();
+            jwt =  Jwts
+            		.builder()
+            		.setClaims(claims)
+            		.setSubject("user") // 토큰 용도
+            		.setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDATION_SECOND * 1000))
+                    .signWith(SignatureAlgorithm.HS512, SECRET_KEY.getBytes(Charset.forName("UTF-8")))
+                    .compact();
 
         } catch (Exception e) {
         	e.printStackTrace();
@@ -99,5 +120,10 @@ public class JwtUtil {
     		return true;
     	return false;
     }
+
+	public String extractKakaoId(String jwtToken) {
+		String kakaoId = (String) extractAllClaims(jwtToken).get("kakaoId");
+		return kakaoId;
+	}
 
 }

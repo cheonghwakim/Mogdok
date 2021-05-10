@@ -3,10 +3,12 @@ package com.mongdok.desk.model.response.dday;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DdayResponse {
 	
 	private long ddayId;
@@ -19,4 +21,6 @@ public class DdayResponse {
 	private String transform;
 
 	private Integer color;
+	
+	private long deskId;
 }

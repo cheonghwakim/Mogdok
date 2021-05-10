@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -222,5 +221,43 @@ public class KakaoAPI {
         }
 
         return result;
+	}
+
+	public boolean unlinkByAdmin(String kakaoId) {
+		String reqURL = "https://kapi.kakao.com/v1/user/unlink"; // 연결 끊기
+		String result = "";
+		
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "KakaoAK " + "c4d7b7fd679f0d3dc5a5c63ab697ce89");
+			conn.setDoOutput(true);
+			
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("target_id_type=user_id");
+            sb.append("&target_id=" + kakaoId);
+            
+            bw.write(sb.toString());
+            bw.flush();
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            
+            String line = null;
+
+//            while ((line = br.readLine()) != null) {
+//                result += line;
+//            }
+            
+            if((line = br.readLine()) != null)
+            	return true;
+            return false;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
 	}
 }

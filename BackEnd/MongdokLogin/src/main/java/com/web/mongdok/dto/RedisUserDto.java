@@ -21,7 +21,7 @@ public class RedisUserDto implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String id;
+	private String userId;
 	
 	private String email;
 	
@@ -31,9 +31,15 @@ public class RedisUserDto implements Serializable {
 	
 	private String category;
 	
+	private Long deskId;
+	
 	private String promise;
 	
-	private String refreshToken;
+	private String authToken;
 	
-	private String accessToken;
+//	private String refreshToken;
+	
+//	private String accessToken;
+	
+//	private Desk desk;
 }

@@ -1,0 +1,27 @@
+.moveable-container {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+}
+.moveable .moveable-line {
+  background: black !important;
+}
+.moveable .moveable-control {
+  display: none;
+}
+.moveable .moveable-rotation-line {
+  display: none;
+}
+
+.movedisable .moveable-line,
+.moveable-control {
+  display: none;
+}
+.clicked .moveable-control,
+.moveable-line,
+.moveable-rotation-line {
+  display: block;
+}

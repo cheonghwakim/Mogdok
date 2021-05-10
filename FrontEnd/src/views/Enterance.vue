@@ -5,7 +5,7 @@
             <svg-sagam></svg-sagam>
             <div class="roomList">
                <div class="roomItem" v-for="(room, idx) in roomList" :key="idx">
-                  <enterance-door :room="room"></enterance-door>
+                  <enterance-door :room="room" @click="enterRoom(room)"></enterance-door>
                </div>
             </div>
          </div>
@@ -37,25 +37,33 @@ export default {
       // Sample Data 삽입
       sampleData: function() {
          this.roomList = [
+            // Todo: 서버에서 룸 리스트 정보 받아와야 함
             {
                roomNumber: 1,
                roomTitle: '자유 열람 1실',
                roomCurrent: 12,
-               roomLimit: 30,
+               roomLimit: 16,
+               sessionId: 'sessionA',
             },
             {
                roomNumber: 2,
                roomTitle: '자유 열람 2실',
                roomCurrent: 34,
-               roomLimit: 50,
+               roomLimit: 20,
+               sessionId: 'sessionB',
             },
             {
                roomNumber: 3,
                roomTitle: '고삼 전용',
                roomCurrent: 4,
-               roomLimit: 30,
+               roomLimit: 16,
+               sessionId: 'sessionC',
             },
          ];
+      },
+      enterRoom(room) {
+         this.$store.commit('SET_ROOMINFO', room);
+         this.$router.replace({ name: 'Room' });
       },
    },
 };
@@ -76,8 +84,6 @@ export default {
       align-items: center;
       width: 70vw;
       height: 90vh;
-
-      /* border: 1px solid red; */
 
       .content {
          margin-top: 5vh;
