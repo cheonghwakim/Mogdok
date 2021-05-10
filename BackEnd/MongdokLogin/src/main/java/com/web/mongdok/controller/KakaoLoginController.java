@@ -124,6 +124,55 @@ public class KakaoLoginController {
     	return new ResponseEntity<>(redisUser, HttpStatus.OK);
     }
     
+    @GetMapping("/auth")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "auth-token", value = "jwt 토큰", required = true,
+                dataType = "string", paramType = "header", defaultValue = "")
+    })
+    @ApiOperation(value = "jwt로 유저 인증(로그인) (객체가 있다면 user return, 없다면 null)", notes = "auth-token 예시:  ex. eyJhbGciOiJIUzUxMiJ9.eyJrYWthb0lkIjoiMTcxMDk3MDg4OCIsInVzZXJOYW1lIjoiY2hlb25naHdhMiIsInVzZXJJZCI6IjIyMTYwZGEwLWM5ZDgtNDdkMS1iOTgwLTI5N2RmMWY4ODMwNSIsInN1YiI6InVzZXIiLCJpYXQiOjE2MjA2MzY1MTUsImV4cCI6NDIxMjYzNjUxNX0.GMLjTPmUohO0B-az74gm49Ubybh-CJ_yS2of0obPaJEtpTZwv3Y1WM3A8EbP90_tOATnAPwz1Hb0TTJUM2qGIg")
+    public ResponseEntity<?> login(HttpServletRequest request) {
+    	String jwtToken = request.getHeader("auth-token");
+
+    	String kakaoId = (String) jwtUtil.extractKakaoId(jwtToken);
+    	System.out.println("kakaoId: " + kakaoId);
+    	
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	
+    	RedisUserDto redisUser = null;
+    	if(redisUtil.getData(jwtToken) == null) { // redis에서 null
+    		Optional<User> user = authService.findByKakaoId(kakaoId);
+    		if(user.isPresent()) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
+    			
+    			System.out.println("asfsd");
+    			Desk desk = deskService.findByUserId(user.get().getUserId()); 
+    	    	redisUser = new RedisUserDto();
+    	    	redisUser.setDeskId(desk.getDeskId());
+    	    	redisUser.setPromise(desk.getPromise());
+    	    	redisUser.setAuthToken(jwtToken);
+    	    	BeanUtils.copyProperties(user.get(), redisUser);
+
+    	    	System.out.println(redisUser);
+    	    	redisUtil.setObjectExpire(jwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+    		}
+    	} else { // redis에 정보 있다면
+    		String userInfo = redisUtil.getData(jwtToken);
+
+    		System.out.println(userInfo);
+    		try { // redis에서 user 꺼내서 return
+				redisUser = objectMapper.readValue(userInfo, RedisUserDto.class);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+    	}
+    		
+    	System.out.println("user: " + redisUser);
+
+    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
+    }
+
+    
+    
     @GetMapping("/nickname")
     @ApiOperation(value = "닉네임 중복 처리 // 실패 false 성공 true (boolean)")
     public ResponseEntity<?> nickname(@RequestParam @ApiParam(value = "유저의 닉네임") String nickname) {
