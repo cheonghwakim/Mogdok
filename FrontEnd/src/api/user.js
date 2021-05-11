@@ -16,6 +16,13 @@ async function login({ kakaoId }, success, fail) {
     .catch(fail);
 }
 
+async function loginByAuthToken(success, fail) {
+  await loginInstance
+    .get(`auth`)
+    .then(success)
+    .catch(fail);
+}
+
 function checkUserNameDuplicated(nickname, success, fail) {
   loginInstance
     .get(`nickname`, { params: { nickname } })
@@ -30,4 +37,4 @@ function signup(userInfo, success, fail) {
     .catch(fail);
 }
 
-export { getAuthToken, login, checkUserNameDuplicated, signup };
+export { getAuthToken, login, checkUserNameDuplicated, signup, loginByAuthToken };
