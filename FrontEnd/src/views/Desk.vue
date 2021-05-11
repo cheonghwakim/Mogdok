@@ -8,7 +8,7 @@
             <p class="desc kyoboHand">드래그를 하면 책상을 <span>탐닉</span>할 수 있어요!</p>
          </div>
       </transition>
-      <div class="info borrow">
+      <div class="info">
          <div class="info-content">
             <btn-close class="btnClose" @onClick="exitDesk"></btn-close>
             <p class="userName kyoboHand">안양취준생</p>
@@ -171,12 +171,10 @@ export default {
       left: 50%;
       transform: translate(-50%, -2vmax);
 
-      transition: transform 1s ease;
-
-      z-index: 11;
-
       width: 280px;
 
+      transition: transform 1s ease;
+      z-index: 11;
       text-align: center;
 
       .info-content {

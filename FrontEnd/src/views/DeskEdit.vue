@@ -1,24 +1,32 @@
 <template lang="">
    <div v-dragscroll="true" class="desk">
-      <div>
-         <button @click="editComplete">편집완료(저장)</button>
-         <button @click="$store.dispatch('CREATE_MEMO', moveableState)">메모 생성</button>
-         <button v-show="selectedMemoIdx >= 0" @click="$store.commit('REMOVE_MEMO')">
-            이 메모 삭제하기
-         </button>
-         <button v-show="selectedMemoIdx >= 0" @click="$store.commit('SET_MEMO_EDIT_DIALOG', true)">
-            내용 작성하기
-         </button>
-         <button v-for="index in 5" :key="'color' + index" v-show="editable && selectedMemoIdx >= 0" @click="$store.commit('SET_SELECTED_MEMO_COLOR', index)">색상-{{ index }}로 변경</button>
-      </div>
-      <!-- <div class="info borrow">
-         <div class="info-content">
-            <btn-close class="btnClose" @onClick="exitDesk"></btn-close>
-            <p class="userName kyoboHand">편집화면</p>
-            <p class="cate kyoboHand">#편집</p>
+      <!-- 최상단 에디팅 관련 DIV -->
+      <div class="top-editor-wrapper">
+         <div class="first-row">
+            <!-- 메모 생성 -->
+            <div class="btn btn-add" @click="$store.dispatch('CREATE_MEMO', moveableState)"></div>
+            <span>Desk Editor</span>
+            <!-- 메모 저장 -->
+            <div class="btn btn-save" @click="editComplete"></div>
          </div>
-         <div-banner></div-banner>
-      </div> -->
+         <transition name="memo-down">
+            <div v-show="selectedMemoIdx >= 0" class="second-row">
+               <!-- 메모 글 작성 -->
+               <div class="btn btn-write" @click="$store.commit('SET_MEMO_EDIT_DIALOG', true)"></div>
+               <div
+                  class="btn btn-color"
+                  v-for="(item, index) in memoColor"
+                  :key="'color' + index"
+                  :style="{ 'background-color': item.code }"
+                  @click="$store.commit('SET_SELECTED_MEMO_COLOR', index)"
+               ></div>
+               <!-- 메모 삭제 -->
+               <div class="btn btn-delete" @click="$store.commit('REMOVE_MEMO')"></div>
+            </div>
+         </transition>
+      </div>
+
+      <!-- 메모가 들어가는 영역 -->
       <div class="desk-wrapper">
          <div class="desk-draw-area">
             <vue-moveable
@@ -39,6 +47,7 @@
          <svg-desk></svg-desk>
       </div>
 
+      <!-- 글 작성 모달 -->
       <div class="modal" v-show="dialog">
          <div v-if="memoList[selectedMemoIdx]" class="modal-content">
             <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="input-box" />
@@ -62,6 +71,26 @@ export default {
    props: {},
    data() {
       return {
+         // 포스트잇 색상 리스트 (with SvgMemo)
+         memoColor: [
+            {
+               title: 'white',
+               code: '#FFFFFF',
+            },
+            {
+               title: 'yelloe',
+               code: '#FAFFDC',
+            },
+            {
+               title: 'red',
+               code: '#FFE2E2',
+            },
+            {
+               title: 'blue',
+               code: '#DAEBFF',
+            },
+         ],
+
          // 움직일 수 있는 상태 (=편집 모드 접근 상태)
          moveableState: {
             draggable: true, // changed
@@ -161,95 +190,103 @@ export default {
 <style scoped lang="scss">
 @import 'src/assets/css/common';
 
-/* $desk-width: 1280px; */
-
 .desk {
-   /* margin-top: $HeaderHeight; */
-   /* margin-bottom: 60px; */
-
    width: 100%;
-   /* height: calc(100% - #{$HeaderHeight}); */
 
    display: flex;
    flex-direction: column;
 
    overflow: hidden;
-   /* overflow-x: auto; // hidden으로 해도, npm에서 드래그 제공 */
 
-   // 몽실이가 안내하는 화면
-   .caution {
+   /* 에디팅 관련 영역 */
+   .top-editor-wrapper {
+      position: fixed;
+      top: 1vmax;
+      left: 50%;
+      transform: translate(-50%, 1vmax);
+
       width: 300px;
-      height: 200px;
+      height: 90px;
 
-      background-color: rgb(255, 255, 255);
+      border-radius: 50px;
+      background-color: white;
       box-shadow: 0px 9px 20px 0px #56565629;
-      border-radius: 20px;
+      z-index: 30;
 
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
 
-      img {
-         width: 40%;
-      }
+      padding: 0px 20px;
 
-      .desc {
-         color: rgb(43, 43, 43);
-         font-size: 12pt;
+      .first-row {
+         width: 80%;
+         display: flex;
+         align-items: center;
+         justify-content: space-around;
 
          span {
-            font-family: inherit;
-            color: rgb(247, 85, 85);
-            font-weight: bold;
+            font-size: 10pt;
+            font-weight: 600;
+            margin-bottom: 7px;
          }
       }
-   }
 
-   /* 상단에 표시되는 책상의 이름 안내 요소 */
-   .info {
-      position: fixed;
-      top: 1vmax;
-      left: 50%;
-      transform: translate(-50%, -2vmax);
-
-      transition: transform 1s ease;
-
-      z-index: 11;
-
-      width: 280px;
-
-      text-align: center;
-
-      .info-content {
-         position: absolute;
-         top: 50%;
-         left: 50%;
-         transform: translate(-50%);
-
+      .second-row {
          width: 90%;
+         display: flex;
+         align-items: center;
+         justify-content: space-around;
+         margin-top: 10px;
 
-         .btnClose {
-            position: absolute;
-            top: 20%;
-            right: 10px;
+         background-color: rgba(227, 227, 227, 0.495);
+         border-radius: 30px;
+         padding: 5px;
+      }
 
+      .btn {
+         width: 25px;
+         height: 25px;
+         cursor: pointer;
+
+         &.btn-add {
+            background-image: url('../assets/img/emoji/pencil.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+         }
+         &.btn-delete {
+            background-image: url('../assets/img/emoji/wastebasket.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+         }
+         &.btn-write {
+            background-image: url('../assets/img/emoji/write.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+         }
+         &.btn-color {
             width: 20px;
-            height: auto;
+            height: 20px;
+            border: 1px solid rgb(159, 159, 159);
+            border-radius: 50%;
+            margin: 3px;
          }
-
-         .userName {
-            font-size: 18pt;
-         }
-
-         .cate {
-            font-size: 14pt;
-            margin-top: 5px;
-            color: rgb(150, 150, 150);
+         &.btn-save {
+            background-image: url('../assets/img/emoji/save.png');
+            background-repeat: no-repeat;
+            background-size: cover;
          }
       }
+
+      /* .color-box {
+         width: 70px;
+         display: flex;
+         flex-wrap: wrap;
+      } */
    }
 
+   /* 메모 들어가는 영역 */
    .desk-wrapper {
       cursor: grab; // 드래그 영역에선 grap으로 표시
 
@@ -328,5 +365,17 @@ textarea {
    border-radius: 5px;
    width: 100%;
    min-height: 10vh;
+}
+
+.memo-down-enter-active {
+   transition: all 0.5s ease;
+}
+.memo-down-leave-active {
+   transition: all 0.2s ease;
+}
+.memo-down-enter,
+.memo-down-leave-to {
+   transform: translateY(10px);
+   opacity: 0;
 }
 </style>
