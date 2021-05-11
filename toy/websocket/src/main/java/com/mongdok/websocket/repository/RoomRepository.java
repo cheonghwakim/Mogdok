@@ -50,8 +50,8 @@ public class RoomRepository {
     }
 
     // 열람실 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
-    public StudyRoom createRoom(String roomId, String name) {
-        StudyRoom studyRoom = StudyRoom.create(roomId, name);
+    public StudyRoom createRoom(String roomId, String name, Long limitUserCount) {
+        StudyRoom studyRoom = StudyRoom.create(roomId, name, limitUserCount);
         hashOpsStudyRoom.put(STUDY_ROOMS, studyRoom.getRoomId(), studyRoom);
         return studyRoom;
     }

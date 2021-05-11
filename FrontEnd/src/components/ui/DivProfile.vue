@@ -174,6 +174,8 @@ export default {
          }
 
          .btnClose {
+            width: 25px;
+            height: auto;
             margin-left: 10%;
          }
       }

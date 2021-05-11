@@ -1,12 +1,7 @@
-import { getAuthToken, login } from '../../api/user';
+import { getAuthToken, login, loginByAuthToken } from '../../api/user';
 
 const state = () => ({
-  authToken: undefined,
-  userInfo: {
-    // 테스트데이터
-    userId: 1,
-    userName: '테스트',
-  },
+  userInfo: {},
   videoSourceList: [],
   videoSource: undefined,
 });
@@ -14,43 +9,67 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-  async GET_AUTH_TOKEN({ dispatch }, code) {
-    await getAuthToken(
+  async GET_AUTH_TOKEN({ commit }, code) {
+    return await getAuthToken(
       { authorizeCode: code },
-      async (res) => {
-        await dispatch('SET_AUTH_TOKEN', res.data);
-        localStorage.setItem('authToken', res.data);
+      (res) => {
+        commit('SET_KAKAO_ID', res.data);
       },
-      () => {}
+      (error) => {
+        alert('카카오아이디를 받아오는데 실패했습니다. ' + error);
+      }
     );
   },
-  async SET_AUTH_TOKEN({ commit }, authToken) {
-    await commit('SET_AUTH_TOKEN', authToken);
-  },
-  async LOGIN({ commit }) {
-    let ret = 'error';
-    await login(
-      async (res) => {
-        if (res.data) {
-          // 기존회원
-          await commit('SET_USER_INFO', res.data);
-          ret = 'ok';
-        } else {
-          ret = 'join';
+  LOGIN({ state, commit }) {
+    return new Promise((resolve, reject) => {
+      login(
+        { kakaoId: state.userInfo.kakaoId },
+        (res) => {
+          if (res.data) {
+            commit('SET_USER_INFO', res.data);
+            localStorage.setItem('authToken', state.userInfo.authToken);
+            resolve('ok');
+          } else {
+            resolve('join');
+          }
+        },
+        (error) => {
+          reject(error);
         }
+      );
+    });
+  },
+  async LOGIN_BY_AUTH_TOKEN({ commit }, token) {
+    commit('SET_AUTH_TOKEN', token);
+    await loginByAuthToken(
+      (res) => {
+        commit('SET_USER_INFO', res.data);
       },
-      () => {}
+      (error) => {
+        alert(error);
+      }
     );
-    return ret;
   },
 };
 
 const mutations = {
+  SET_KAKAO_ID(state, payload) {
+    state.userInfo.kakaoId = payload;
+  },
+  SET_USERINFO_PROPERTY(state, { key, value }) {
+    state.userInfo[key] = value;
+  },
+  SET_USER_INFO(state, payload) {
+    state.userInfo = payload;
+  },
   SET_VIDEO_SOURCE_LIST(state, payload) {
     state.videoSourceList = payload;
   },
   SET_VIDEO_SOURCE(state, payload) {
     state.videoSource = payload;
+  },
+  SET_AUTH_TOKEN(state, payload) {
+    state.userInfo.authToken = payload;
   },
 };
 

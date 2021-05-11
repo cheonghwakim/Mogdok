@@ -15,13 +15,19 @@ export default {
   computed: {},
   watch: {},
   //lifecycle area
-  async created() {
-    await this.GET_AUTH_TOKEN(this.$route.query.code);
-    const status = await this.LOGIN();
-    let movePath = 'Login';
-    if (status === 'ok') movePath = 'Enterance';
-    else if (status === 'join') movePath = 'Join';
-    this.$router.push({ name: movePath });
+  created() {
+    this.GET_AUTH_TOKEN(this.$route.query.code).then(async () => {
+      try {
+        let movePath = 'Login';
+        const status = await this.LOGIN();
+        if (status === 'ok') movePath = 'Enterance';
+        else if (status === 'join') movePath = 'Join';
+        this.$router.replace({ name: movePath });
+      } catch (e) {
+        alert(e);
+        this.$router.replace({ name: 'Login' });
+      }
+    });
   },
   methods: {
     ...mapActions(['GET_AUTH_TOKEN', 'LOGIN']),

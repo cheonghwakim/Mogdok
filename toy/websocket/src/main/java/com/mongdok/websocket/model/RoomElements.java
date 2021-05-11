@@ -15,7 +15,7 @@ public class RoomElements {
     public final static String ROOM_B_NAME = "열람실 2";
     public final static String ROOM_C_NAME = "열람실 3";
 
-    public final static Integer ROOM_A_SIZE = 16;
-    public final static Integer ROOM_B_SIZE = 16;
-    public final static Integer ROOM_C_SIZE = 16;
+    public final static Long ROOM_A_SIZE = 16L;
+    public final static Long ROOM_B_SIZE = 16L;
+    public final static Long ROOM_C_SIZE = 16L;
 }
