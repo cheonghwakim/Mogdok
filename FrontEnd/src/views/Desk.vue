@@ -64,14 +64,27 @@ export default {
    },
    watch: {},
    //lifecycle area
-   created() {
+   mounted() {
       // n초 뒤 몽실이 안내 화면이 사라짐
       setTimeout(() => {
          this.isFirst = false;
       }, 3000);
 
       // 생성되자마자 데스크 내 메모를 가져와서 VUEX에 셋팅
-      this.$store.dispatch('GET_DESK_INFO');
+      console.log('> Desk : created');
+
+      new Promise((resolve) => {
+         resolve(this.$store.dispatch('GET_DESK_ALL_MEMO'));
+      }).then(() => {
+         console.log('생성 후의 area elem 상황');
+         const elem = document.getElementsByClassName('desk-draw-area')[0];
+         console.log(elem);
+      });
+   },
+   beforeDestroy() {
+      console.log('beforeDestroy');
+      this.$store.commit('SET_MEMO_LIST', []);
+      console.log('memoList 초기화', this.memoList);
    },
    methods: {
       exitDesk: function() {

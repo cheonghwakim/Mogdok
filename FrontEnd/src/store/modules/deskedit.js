@@ -2,6 +2,7 @@ import { saveMemoList, deleteMemoList } from '../../api/desk';
 
 const MEMO_MAX_SIZE = 10;
 
+// 움직이지 못하는 상태(DeskEdit 페이지 접근 외)
 const moveDisableState = {
    draggable: false,
    scalable: false,
@@ -16,11 +17,12 @@ const moveDisableState = {
    zoom: 1,
    className: 'movedisable',
    snappable: true,
-   //  bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
+   bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
    container: null,
 };
 export { moveDisableState };
 
+// 움직일 수 있는 상태(편집 모드 접근 상태)
 const moveableState = {
    draggable: true,
    scalable: true,
@@ -35,9 +37,10 @@ const moveableState = {
    zoom: 1,
    className: 'moveable',
    snappable: true,
-   //  bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
+   bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
    container: null,
 };
+export { moveableState };
 
 const state = () => ({
    deskId: undefined, // TODO: deskId는 desk에서 받아온다
@@ -121,7 +124,7 @@ const actions = {
 
    //  DeskEdit 페이지일 경우, container를 랜더링된 엘리먼트로 다시 셋팅해줌
    CHANGE_CONTAINER_EDIT_PAGE({ state, commit }) {
-      const editElem = document.getElementsByClassName('desk-edit-area')[0];
+      const editElem = document.getElementsByClassName('desk-draw-area')[0];
       console.log('Edit 엘리먼트');
       console.log(editElem);
 
