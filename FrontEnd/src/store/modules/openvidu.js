@@ -24,12 +24,10 @@ const actions = {
     });
     commit('SET_VIDEO_SOURCE_LIST', videoSoruces, { root: true });
   },
-  INIT_OV_SESSION_EVENT({ state, commit, dispatch }) {
+  INIT_OV_SESSION_EVENT({ state, commit }) {
     state.session.on('streamCreated', ({ stream }) => {
       const subscriber = state.session.subscribe(stream);
       commit('ADD_SUBSCRIBER', subscriber);
-      // 추가된 subscriber를 seatList에 전달
-      dispatch('ADD_SUBSCRIBER_INTO_SEAT_LIST', subscriber, { root: true });
     });
     state.session.on('streamDestroyed', ({ stream }) => {
       const index = state.subscribers.indexOf(stream.streamManager, 0);
@@ -86,16 +84,15 @@ const actions = {
       );
     });
   },
-  PUBLISH_VIDEO_TO_SESSION({ state, commit, dispatch }, seatNo) {
+  PUBLISH_VIDEO_TO_SESSION({ state, commit, dispatch }) {
     // 현재 접속중인 세션에 영상을 publish 함
     // publish에 성공하면, 내 캠화면을 내가 선택한 element에서 보이도록 함
-    console.log('%copenvidu.js line:92 state.publisher', 'color: #007acc;', state.publisher);
     const publisher = state.publisher;
-    console.log('%copenvidu.js line:94 publisher', 'color: #007acc;', publisher);
     state.session
       .publish(state.publisher)
       .then(() => {
-        commit('REMOVE_AND_ADD_SUBSCRIBER', seatNo);
+        // commit('REMOVE_AND_ADD_SUBSCRIBER', seatNo);
+        commit('ADD_SUBSCRIBER', state.publisher);
         dispatch('ADD_SUBSCRIBER_INTO_SEAT_LIST', publisher, { root: true });
         commit('SET_PUBLISHED', true);
       })
@@ -160,7 +157,8 @@ const mutations = {
     state.subscribers.push(payload);
   },
   SET_SUBSCRIBERS(state, payload) {
-    state.subscribers = new Array(payload);
+    console.log('%copenvidu.js line:163 payload', 'color: #007acc;', payload);
+    state.subscribers = [];
   },
   REMOVE_SUBSCRIBER(state, payload) {
     state.subscribers.splice(payload, 1);

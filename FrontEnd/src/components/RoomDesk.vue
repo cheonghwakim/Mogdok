@@ -11,7 +11,7 @@
       <div v-if="streamManager">
         <ov-video class="cam" :stream-manager="streamManager"></ov-video>
       </div>
-      <div class="resting" v-show="seat && seat.studyType === 'PAUSE'">
+      <div class="resting" v-show="seat && !streamManager">
         <svg-sleeping class="character"></svg-sleeping>
       </div>
       <img src="@/assets/img/desk.svg" @click="$emit('click')" />

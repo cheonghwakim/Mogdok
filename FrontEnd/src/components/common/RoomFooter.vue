@@ -125,7 +125,7 @@ export default {
     doStudy: function() {
       // 휴식상태에서 클릭하면 세션에 캠 퍼블리시 시작
       this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
-      this.closeCamChecker(); // 타이머 시작, 캠 처리
+      // this.closeCamChecker(); // 타이머 시작, 캠 처리
       this.isStudy = true;
     },
 

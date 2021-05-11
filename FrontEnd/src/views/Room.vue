@@ -51,7 +51,15 @@ export default {
       subscribers: (state) => state.openvidu.subscribers,
     }),
   },
-  watch: {},
+  watch: {
+    subscribers: {
+      immediate: true,
+      handler(value) {
+        console.log('%cRoom.vue line:61 value', 'color: #007acc;', value);
+        this.$store.dispatch('CONNECT_ROOM_WITH_OPENVIDU');
+      },
+    },
+  },
   //lifecycle area
   created() {
     this.joinSession();

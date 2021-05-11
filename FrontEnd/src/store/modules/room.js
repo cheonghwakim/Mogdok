@@ -77,7 +77,6 @@ const actions = {
         console.log(message);
         const res = JSON.parse(message.body);
         if (res.type === 'SEAT_ALLOCATED') {
-          alert('자리에 앉았어요.');
           console.log('%croom.js line:81 res', 'color: #007acc;', res);
           // 자리앉기
           res.seatInfo.userName = res.sender;
@@ -86,7 +85,7 @@ const actions = {
           commit('SET_USER_ROOM_STATE', 'PAUSE');
           commit('UPDATE_ROOM_INFO', { key: 'userCount', value: res.userCount });
         } else if (res.type === 'SEAT_ALLOCATE_FAIL') {
-          alert('자리에 앉지 못했어요.');
+          console.log('%croom.js line:88 SEAT_ALLOCATE_FAIL', 'color: #007acc;');
         }
       },
       (error) => {
@@ -96,14 +95,23 @@ const actions = {
   },
   CONNECT_ROOM_WITH_OPENVIDU({ state, rootState, commit }) {
     // userName을 이용해서 자리 매칭
-    rootState.openvidu.subscribers.forEach((subscriber) => {
-      for (let i = 0; i < state.seatList.length; i++) {
-        if (state.seatList[i] && state.seatList[i].userName === subscriber.stream.connection.data) {
+    console.log(
+      '%croom.js line:98 rootState.openvidu.subscribers',
+      'color: #007acc;',
+      rootState.openvidu.subscribers
+    );
+    for (let i = 0; i < state.seatList.length; i++) {
+      if (!state.seatList[i]) continue;
+      console.log('%croom.js line:106 state.seatList[i]', 'color: #007acc;', state.seatList[i]);
+      for (let j = 0; j < rootState.openvidu.subscribers.length; j++) {
+        const subscriber = rootState.openvidu.subscribers[j];
+        console.log('%croom.js line:108 subscriber', 'color: #007acc;', subscriber);
+        if (state.seatList[i].userName === subscriber.stream.connection.data) {
           commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, subscriber });
           break;
         }
       }
-    });
+    }
   },
   SEND_SEAT_ALLOCATED({ state, rootState }, { seatNo }) {
     state.stomp.send(
@@ -127,12 +135,6 @@ const actions = {
     );
 
     for (let i = 0; i < state.seatList.length; i++) {
-      if (state.seatList[i])
-        console.log(
-          '%croom.js line:123 state.seatList[i].userName',
-          'color: #007acc;',
-          state.seatList[i].userName
-        );
       if (state.seatList[i] && state.seatList[i].userName === subscriber.stream.connection.data) {
         console.log('%croom.js line:121 매칭!!', 'color: #007acc;');
         commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, subscriber });
@@ -158,11 +160,16 @@ const mutations = {
     state.roomInfo[key] = value;
   },
   ADD_SEAT_INFO(state, { index, seatInfo }) {
-    state.seatList.splice(index, 1, seatInfo);
+    const tmp = [...state.seatList];
+    tmp.splice(index, 1, seatInfo);
+    state.seatList = tmp;
   },
   ADD_SUBSCRIBER_INTO_SEAT(state, { index, subscriber }) {
     console.log('%croom.js line:144 add!!', 'color: #007acc;');
-    state.seatList[index].subscriber = subscriber;
+    const tmp = [...state.seatList];
+    tmp[index].subscriber = subscriber;
+    state.seatList = tmp;
+    // state.seatList[index].subscriber = subscriber;
     console.log('%croom.js line:146 ', 'color: #007acc;', state.seatList[index]);
   },
   SET_SELECTED_SEAT_INFO(state, payload) {
