@@ -37,11 +37,6 @@ public class MessageController {
     @MessageMapping("/room/message")
     public void message(RoomMessage message, @Header("token") String token) {
 
-        log.info("type : [{}]", message.getType());
-        log.info("seatNo : {}", message.getSeatInfo().getSeatNo());
-        log.info("studyType : {}", message.getSeatInfo().getStudyType());
-        log.info("token : {}", token);
-
         //TODO: JWT Token을 이용해서 userName 매핑 구현
         if(token == null) { return; } // token이 없으면 발송하지 않음
 

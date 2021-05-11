@@ -49,7 +49,8 @@ public class SeatRepository {
     // 좌석정보 저장
     public boolean setSeatInfo(String roomId, String userId, String userName, SeatInfo seatInfo) {
         // 1. 좌석이 꽉찬 경우
-        if(hashOpsSeatInfo.size(SEAT_INFO+DELIMITER+roomId) >= roomRepository.getRoomById(roomId).getLimitUserCount()) {
+        if(hashOpsSeatInfo.size(SEAT_INFO+DELIMITER+roomId) > roomRepository.getRoomById(roomId).getLimitUserCount()) {
+            log.info("{} : 좌석이 꽉 찼음... {}명", roomId, hashOpsSeatInfo.size(SEAT_INFO+DELIMITER+roomId));
             return false;
         }
 
@@ -114,6 +115,8 @@ public class SeatRepository {
     // 좌석번호 저장
     public boolean isAllocate(String roomId, int seatNo, String userId) {
         if(hashOpsSeatNoInfo.hasKey(SEAT_NO_INFO+DELIMITER+roomId, seatNo)) {
+            log.info("{}---{} : 현재 자리 있음.. {}명", roomId, seatNo,
+                    hashOpsSeatNoInfo.get(SEAT_NO_INFO+DELIMITER+roomId, seatNo));
             return false;
         }
         hashOpsSeatNoInfo.put(SEAT_NO_INFO+DELIMITER+roomId, seatNo, userId);
