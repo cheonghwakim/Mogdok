@@ -20,8 +20,8 @@
       <btn-my-desk class="btnMyDesk-wrapper"></btn-my-desk>
       <btn-command
         class="btnCommand-wrapper"
-        :label="isStudy ? '쉬기' : '공부하자!'"
-        @onClick="isStudy ? doRest() : showCamChecker()"
+        :label="btnLabel"
+        @onClick="btnClickEvent"
       ></btn-command>
       <btn-leave-desk class="btnLeaveDesk-wrapper"></btn-leave-desk>
     </div>
@@ -36,6 +36,12 @@ import BtnCommand from '@/components/ui/BtnCommand';
 import BtnMyDesk from '@/components/ui/BtnMyDesk';
 import BtnLeaveDesk from '@/components/ui/BtnLeaveDesk';
 import DivCamChecker from '@/components/ui/DivCamChecker';
+import { mapState } from 'vuex';
+import {
+  ROOM_STUDY_TYPE_NO_ACTION,
+  ROOM_STUDY_TYPE_PAUSE,
+  ROOM_STUDY_TYPE_START,
+} from '../../store/modules/room';
 
 export default {
   name: 'Footer',
@@ -49,7 +55,22 @@ export default {
       isShowFooter: false,
     };
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      userRoomState: (state) => state.room.userRoomState,
+    }),
+    btnLabel() {
+      switch (this.userRoomState) {
+        case ROOM_STUDY_TYPE_NO_ACTION:
+          return '공부 하자!';
+        case ROOM_STUDY_TYPE_PAUSE:
+          return '공부 하자!';
+        case ROOM_STUDY_TYPE_START:
+          return '쉬기';
+      }
+      return '';
+    },
+  },
   // watch: {},
   //lifecycle area
   created: function() {
@@ -106,6 +127,20 @@ export default {
       this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
       this.closeCamChecker(); // 타이머 시작, 캠 처리
       this.isStudy = true;
+    },
+
+    btnClickEvent() {
+      switch (this.userRoomState) {
+        case ROOM_STUDY_TYPE_NO_ACTION:
+          alert('공부를 시작하려면 자리에 앉아야 합니다. 좌석을 클릭해서 자리에 앉아주세요.');
+          break;
+        case ROOM_STUDY_TYPE_PAUSE:
+          this.showCamChecker();
+          break;
+        case ROOM_STUDY_TYPE_START:
+          // 공부를 멈췄을 때
+          break;
+      }
     },
   },
 };

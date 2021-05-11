@@ -24,10 +24,12 @@ const actions = {
     });
     commit('SET_VIDEO_SOURCE_LIST', videoSoruces, { root: true });
   },
-  INIT_OV_SESSION_EVENT({ state, commit }) {
+  INIT_OV_SESSION_EVENT({ state, commit, dispatch }) {
     state.session.on('streamCreated', ({ stream }) => {
       const subscriber = state.session.subscribe(stream);
       commit('ADD_SUBSCRIBER', subscriber);
+      // 추가된 subscriber를 seatList에 전달
+      dispatch('ADD_SUBSCRIBER_INTO_SEAT_LIST', subscriber, { root: true });
     });
     state.session.on('streamDestroyed', ({ stream }) => {
       const index = state.subscribers.indexOf(stream.streamManager, 0);
@@ -39,8 +41,7 @@ const actions = {
     // });
   },
   CONNECT_USER_TO_SESSION({ state, rootState, dispatch }, { userId, userName }) {
-    console.log('%copenvidu.js line:40 rootState.roomInfo.sessionId', 'color: #007acc;', rootState);
-    dispatch('GET_TOKEN', rootState.room.roomInfo.sessionId).then((token) => {
+    dispatch('GET_TOKEN', rootState.room.roomInfo.roomId).then((token) => {
       state.session
         .connect(token, `${userId}##${userName}`) // Todo: 현재 로그인 중인 유저이름 (userId##userName)
         .then(() => {
@@ -57,18 +58,18 @@ const actions = {
   CREATE_SESSION({ rootState }) {
     return new Promise((resolve, reject) => {
       createSession(
-        { sessionId: rootState.room.roomInfo.sessionId },
+        { sessionId: rootState.room.roomInfo.roomId },
         (res) => res.data,
         (data) => {
           console.log('세션 생성 성공');
           resolve(data.id);
         },
         (error) => {
-          if (error.response.status === 409) {
-            resolve(rootState.room.roomInfo.sessionId);
+          if (error.response && error.response.status === 409) {
+            resolve(rootState.room.roomInfo.roomId);
           } else {
             // 에러처리
-            alert('createSession ERROR');
+            alert('createSession ERROR', error);
             reject(error.response);
           }
         }
@@ -78,23 +79,28 @@ const actions = {
   CREATE_TOKEN({ rootState }) {
     return new Promise((resolve, reject) => {
       createToken(
-        { sessionId: rootState.room.roomInfo.sessionId },
+        { sessionId: rootState.room.roomInfo.roomId },
         (res) => res.data,
         (data) => resolve(data.token),
         (error) => reject(error.response)
       );
     });
   },
-  PUBLISH_VIDEO_TO_SESSION({ state, commit }, seatNo) {
+  PUBLISH_VIDEO_TO_SESSION({ state, commit, dispatch }, seatNo) {
     // 현재 접속중인 세션에 영상을 publish 함
     // publish에 성공하면, 내 캠화면을 내가 선택한 element에서 보이도록 함
+    console.log('%copenvidu.js line:92 state.publisher', 'color: #007acc;', state.publisher);
+    const publisher = state.publisher;
+    console.log('%copenvidu.js line:94 publisher', 'color: #007acc;', publisher);
     state.session
       .publish(state.publisher)
       .then(() => {
         commit('REMOVE_AND_ADD_SUBSCRIBER', seatNo);
+        dispatch('ADD_SUBSCRIBER_INTO_SEAT_LIST', publisher, { root: true });
         commit('SET_PUBLISHED', true);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log('%copenvidu.js line:102 error', 'color: #007acc;', error);
         alert('영상 공유를 실패했습니다');
         commit('SET_PUBLISHED', false);
       });
