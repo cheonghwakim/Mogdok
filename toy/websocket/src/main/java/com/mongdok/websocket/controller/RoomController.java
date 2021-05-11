@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,8 +33,6 @@ public class RoomController {
     @Autowired
     private RoomRepository roomRepository;
 
-    private final JWTUtil jwtUtil;
-
     @PostConstruct
     public void init() {
         roomRepository.createRoom(RoomElements.ROOM_A, RoomElements.ROOM_A_NAME, RoomElements.ROOM_A_SIZE);
@@ -45,6 +45,7 @@ public class RoomController {
     @GetMapping("")
     public ResponseEntity<?> getRoomList() {
         List<StudyRoom> roomList = roomRepository.findAllRoom();
+        Collections.sort(roomList, Comparator.comparing(StudyRoom::getRoomId));
         roomList.stream().forEach(room -> room.setUserCount(roomRepository.getUserCount(room.getRoomId())));
         return new ResponseEntity<>(roomList, HttpStatus.OK);
     }
@@ -56,11 +57,4 @@ public class RoomController {
         StudyRoom room = roomRepository.getRoomById(roomId);
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
-
-    // 특정 채팅방 조회
-//    @PostMapping("/user")
-//    public ResponseEntity<?> getToken(@RequestBody UserInfo userInfo) {
-//        String token = jwtUtil.generateToken(userInfo.getUserId(), userInfo.getUserName());
-//        return new ResponseEntity<>(token, HttpStatus.OK);
-//    }
 }
