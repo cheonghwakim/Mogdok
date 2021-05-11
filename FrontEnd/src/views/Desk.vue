@@ -69,7 +69,8 @@ export default {
       setTimeout(() => {
          this.isFirst = false;
       }, 3000);
-      // this.$store.dispatch('GET_DESK_INFO', userName 입력);
+
+      // 생성되자마자 데스크 내 메모를 가져와서 VUEX에 셋팅
       this.$store.dispatch('GET_DESK_INFO');
    },
    methods: {

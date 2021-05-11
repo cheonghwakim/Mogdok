@@ -24,7 +24,7 @@
          <div class="desk-draw-area">
             <vue-moveable
                v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memoList"
-               :key="'memo' + memoId"
+               :key="'memo-edit' + memoId + $store.state.deskedit.editable"
                class="moveable-container"
                v-bind="moveable"
                @drag="handleDrag"
@@ -81,11 +81,19 @@ export default {
    },
    watch: {},
    //lifecycle area
-   created() {
-      this.edit();
+   mounted() {
+      console.log('--- CREATED ---');
+      this.$store.dispatch('GET_DESK_INFO');
+      // this.edit();
    },
    methods: {
       handleDrag({ target, transform }) {
+         target.style.transform = transform;
+      },
+      handleRotate({ target, transform }) {
+         target.style.transform = transform;
+      },
+      handleScale({ target, transform }) {
          target.style.transform = transform;
       },
       handleRenderEnd(index, event) {
@@ -94,18 +102,25 @@ export default {
             transform: event.target.style.transform,
          });
       },
-      handleRotate({ target, transform }) {
-         target.style.transform = transform;
-      },
-      handleScale({ target, transform }) {
-         target.style.transform = transform;
-      },
+      // 편집 모드 시작
       edit() {
-         this.$store.commit('SET_EDIT_STATE', true); // 편집을 가능 상태로 변경
-         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
-         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
+         console.log('DeskEdit.vue / edit() \n', this.memoList);
+
+         // const elem = document.getElementsByClassName('desk-edit-area')[0];
+         // console.log('새롭게 할당된 desk-edit-area');
+         // console.log(elem);
+
+         new Promise((resolve) => {
+            resolve(this.$store.dispatch('CHANGE_CONTAINER_EDIT_PAGE'));
+         }).then(() => {
+            console.log('변경 후 메모 리스트 \n', this.memoList);
+         });
+
+         // this.$store.commit('SET_EDIT_STATE', true); // 편집을 가능 상태로 변경
+         // this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
+         // this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
          // 모든 메모지를 이동가능한 상태로 업데이트
-         for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, true);
+         // for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, true);
       },
       editComplete() {
          this.saveMemo(); // 메모 저장
