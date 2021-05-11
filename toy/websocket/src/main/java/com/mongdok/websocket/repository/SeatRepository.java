@@ -1,14 +1,11 @@
 package com.mongdok.websocket.repository;
 
-import com.mongdok.websocket.model.RoomElements;
 import com.mongdok.websocket.model.Seat;
 import com.mongdok.websocket.model.SeatInfo;
 import com.mongdok.websocket.model.Timestamp;
 import com.mongdok.websocket.model.enums.StudyType;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Repository;
 
@@ -52,7 +49,7 @@ public class SeatRepository {
     // 좌석정보 저장
     public boolean setSeatInfo(String roomId, String userId, String userName, SeatInfo seatInfo) {
         // 1. 좌석이 꽉찬 경우
-        if(hashOpsSeatInfo.size(SEAT_INFO+DELIMITER+roomId) >= RoomElements.ROOM_A_SIZE) {
+        if(hashOpsSeatInfo.size(SEAT_INFO+DELIMITER+roomId) >= roomRepository.getRoomById(roomId).getLimitUserCount()) {
             return false;
         }
 
