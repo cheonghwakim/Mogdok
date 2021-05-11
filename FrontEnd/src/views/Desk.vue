@@ -17,19 +17,20 @@
          <div-banner></div-banner>
       </div>
       <div class="desk-wrapper">
-         <div class="desk-draw-area"></div>
+         <div class="desk-draw-area">
+            <vue-moveable
+               v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memoList"
+               :key="'memo' + index + memoId"
+               class="moveable-container"
+               v-bind="moveable"
+               @click.native="clickMemo(index)"
+               :style="{ zIndex, transform }"
+            >
+               <svg-memo :text="content" :color="color"></svg-memo>
+            </vue-moveable>
+         </div>
          <svg-desk></svg-desk>
       </div>
-      <vue-moveable
-         v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memoList"
-         :key="'memo' + index + memoId"
-         class="moveable-container"
-         v-bind="moveable"
-         @click.native="clickMemo(index)"
-         :style="{ zIndex, transform }"
-      >
-         <svg-memo :text="content" :color="color"></svg-memo>
-      </vue-moveable>
    </div>
 </template>
 <script>
