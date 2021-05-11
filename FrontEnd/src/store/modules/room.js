@@ -70,7 +70,7 @@ const actions = {
       );
     });
   },
-  SUBSCRIBE_ROOM_SERVER({ state, commit }) {
+  SUBSCRIBE_ROOM_SERVER({ state, rootState, commit }) {
     state.stomp.subscribe(
       `/sub/room/${state.roomInfo.roomId}`,
       (message) => {
@@ -85,6 +85,7 @@ const actions = {
           commit('SET_USER_ROOM_STATE', 'PAUSE');
           commit('UPDATE_ROOM_INFO', { key: 'userCount', value: res.userCount });
         } else if (res.type === 'SEAT_ALLOCATE_FAIL') {
+          if (res.sender === rootState.user.userInfo.userName) alert('자리에 앉을 수 없어요!');
           console.log('%croom.js line:88 SEAT_ALLOCATE_FAIL', 'color: #007acc;');
         }
       },
@@ -100,7 +101,7 @@ const actions = {
       'color: #007acc;',
       rootState.openvidu.subscribers
     );
-    for (let i = 0; i < state.seatList.length; i++) {
+    loop: for (let i = 0; i < state.seatList.length; i++) {
       if (!state.seatList[i]) continue;
       console.log('%croom.js line:106 state.seatList[i]', 'color: #007acc;', state.seatList[i]);
       for (let j = 0; j < rootState.openvidu.subscribers.length; j++) {
@@ -108,24 +109,32 @@ const actions = {
         console.log('%croom.js line:108 subscriber', 'color: #007acc;', subscriber);
         if (state.seatList[i].userName === subscriber.stream.connection.data) {
           commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, subscriber });
-          break;
+          continue loop;
         }
       }
+      commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, undefined });
     }
   },
   SEND_SEAT_ALLOCATED({ state, rootState }, { seatNo }) {
-    state.stomp.send(
-      `/pub/room/message`,
-      JSON.stringify({
-        type: ROOM_MESSAGE_SEAT_ALLOCATED,
-        roomId: state.roomInfo.roomId,
-        seatInfo: {
-          seatNo,
-          studyType: ROOM_STUDY_TYPE_PAUSE,
-        },
-      }),
-      { token: rootState.user.userInfo.authToken }
-    );
+    return new Promise((resolve, reject) => {
+      if (state.userRoomState !== ROOM_STUDY_TYPE_NO_ACTION) {
+        reject('이미 앉아있는 좌석이 있습니다. 자리에서 일어나서 시도해주세요.');
+        return;
+      }
+      state.stomp.send(
+        `/pub/room/message`,
+        JSON.stringify({
+          type: ROOM_MESSAGE_SEAT_ALLOCATED,
+          roomId: state.roomInfo.roomId,
+          seatInfo: {
+            seatNo,
+            studyType: ROOM_STUDY_TYPE_PAUSE,
+          },
+        }),
+        { token: rootState.user.userInfo.authToken }
+      );
+      resolve();
+    });
   },
   ADD_SUBSCRIBER_INTO_SEAT_LIST({ state, commit }, subscriber) {
     console.log(
@@ -152,6 +161,12 @@ const mutations = {
     state.socket = new SockJS(process.env.VUE_APP_BASE_URL_ROOM_CONNECT);
     state.stomp = Stomp.over(state.socket);
   },
+  CLEAR_CONNECT(state) {
+    state.stomp.disconnect();
+    state.socket.close();
+    state.stomp = undefined;
+    state.socket = undefined;
+  },
   SET_ROOM_INFO(state, payload) {
     state.roomInfo = payload;
     state.seatList = new Array(payload.limitUserCount);
@@ -165,6 +180,7 @@ const mutations = {
     state.seatList = tmp;
   },
   ADD_SUBSCRIBER_INTO_SEAT(state, { index, subscriber }) {
+    // TODO : 매번 깊은복사해서 바꿔주는 과정 별로 안좋아보임
     console.log('%croom.js line:144 add!!', 'color: #007acc;');
     const tmp = [...state.seatList];
     tmp[index].subscriber = subscriber;

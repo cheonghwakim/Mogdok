@@ -54,8 +54,8 @@ export default {
   watch: {
     subscribers: {
       immediate: true,
-      handler(value) {
-        console.log('%cRoom.vue line:61 value', 'color: #007acc;', value);
+      handler() {
+        console.log('%cRoom.vue line:58 subscribers에 변경이 감지됨!', 'color: #007acc;');
         this.$store.dispatch('CONNECT_ROOM_WITH_OPENVIDU');
       },
     },
@@ -103,7 +103,7 @@ export default {
       // TODO: close버튼을 클릭하는게 아니라 이 부분에서도 자원해제를 해야하는지 판단후 적용
       window.removeEventListener('beforeunload', this.leaveSession);
     },
-    clickDesk(seat, index) {
+    async clickDesk(seat, index) {
       if (seat) {
         this.$store.commit('SET_SELECTED_SEAT_INFO', seat);
         alert(`${this.selectedSeatInfo.userName} 클릭되었습니다.`);
@@ -111,7 +111,11 @@ export default {
       } else {
         if (confirm(`${index + 1}번 좌석에 앉으시겠습니까?`)) {
           // room 서버에 해당 좌석에 앉았음을 알림
-          this.$store.dispatch('SEND_SEAT_ALLOCATED', { seatNo: index + 1 });
+          try {
+            await this.$store.dispatch('SEND_SEAT_ALLOCATED', { seatNo: index + 1 });
+          } catch (error) {
+            alert(error);
+          }
         } else {
           console.log('%cRoom.vue line:121 앉지않음', 'color: #007acc;');
         }

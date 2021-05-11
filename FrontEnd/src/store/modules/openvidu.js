@@ -28,6 +28,7 @@ const actions = {
     state.session.on('streamCreated', ({ stream }) => {
       const subscriber = state.session.subscribe(stream);
       commit('ADD_SUBSCRIBER', subscriber);
+      // TODO : seatList에 subsciber 이 단계에서 집어넣는것은 어떤지?
     });
     state.session.on('streamDestroyed', ({ stream }) => {
       const index = state.subscribers.indexOf(stream.streamManager, 0);
@@ -67,7 +68,7 @@ const actions = {
             resolve(rootState.room.roomInfo.roomId);
           } else {
             // 에러처리
-            alert('createSession ERROR', error);
+            alert('createSession ERROR' + error);
             reject(error.response);
           }
         }
@@ -84,16 +85,13 @@ const actions = {
       );
     });
   },
-  PUBLISH_VIDEO_TO_SESSION({ state, commit, dispatch }) {
+  async PUBLISH_VIDEO_TO_SESSION({ state, commit }) {
     // 현재 접속중인 세션에 영상을 publish 함
     // publish에 성공하면, 내 캠화면을 내가 선택한 element에서 보이도록 함
-    const publisher = state.publisher;
-    state.session
+    await state.session
       .publish(state.publisher)
       .then(() => {
-        // commit('REMOVE_AND_ADD_SUBSCRIBER', seatNo);
         commit('ADD_SUBSCRIBER', state.publisher);
-        dispatch('ADD_SUBSCRIBER_INTO_SEAT_LIST', publisher, { root: true });
         commit('SET_PUBLISHED', true);
       })
       .catch((error) => {
@@ -117,17 +115,21 @@ const actions = {
     });
     commit('SET_PUBLISHER', publisher);
   },
-  CAMERA_OFF({ state, commit }) {
+  async CAMERA_OFF({ state, commit }) {
     // 카메라 끄기
     // if (this.session && this.isPublished) {
     if (state.session && state.isPublished) {
       // 세션에 들어가있고 "publish 중인 상태"에서는 unpublish 해야 함
       // unpublish는 카메라 자원 해제까지 해주는 메서드 존재
-      state.session.unpublish(state.publisher);
+      await state.session.unpublish(state.publisher);
+      const index = state.subscribers.indexOf(state.publisher, 0);
+      console.log('%copenvidu.js line:126 index', 'color: #007acc;', index);
+      if (index >= 0) commit('REMOVE_SUBSCRIBER', index);
+      console.log('%copenvidu.js line:128 state.subscribers', 'color: #007acc;', state.subscribers);
     } else {
       // 세션을 통해 unpublish하지 않은 경우 카메라를 OFF만 하면,
       // 카메라 자원이 여전히 실행 중이게 되므로 카메라 자원을 해제하는 작업을 해주어야 함
-      if (state.publisher) state.publisher.stream.disposeMediaStream();
+      if (state.publisher) await state.publisher.stream.disposeMediaStream();
     }
     commit('SET_PUBLISHED', false);
     commit('SET_PUBLISHER', undefined);

@@ -38,7 +38,9 @@ export default {
       let isExit = confirm(`방을 나가시겠습니까?`);
 
       if (isExit) {
+        // TODO : 로딩중필요
         this.$store.dispatch('LEAVE_SESSION');
+        this.$store.commit('CLEAR_CONNECT');
         this.$router.replace('/');
       }
     },

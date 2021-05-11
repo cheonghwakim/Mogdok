@@ -23,7 +23,7 @@
         :label="btnLabel"
         @onClick="btnClickEvent"
       ></btn-command>
-      <btn-leave-desk class="btnLeaveDesk-wrapper"></btn-leave-desk>
+      <btn-leave-desk class="btnLeaveDesk-wrapper" @click="leaveSeat"></btn-leave-desk>
     </div>
     <div class="img-wrapper">
       <img src="@/assets/img/noteLong.svg" alt="" />
@@ -95,7 +95,8 @@ export default {
     // 푸터 감추기
     hideFooter: function() {
       // console.log('마우스가 범위 밖으로');
-      this.isShowFooter = false;
+      if (this.isCamChecker) this.isShowFooter = true;
+      else this.isShowFooter = false;
     },
 
     scrollListener: function() {
@@ -122,14 +123,15 @@ export default {
     },
 
     // CamChecker에서 진짜 공부 시작
-    doStudy: function() {
+    doStudy: async function() {
       // 휴식상태에서 클릭하면 세션에 캠 퍼블리시 시작
-      this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
-      // this.closeCamChecker(); // 타이머 시작, 캠 처리
+      await this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
+      this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_START);
+      this.isCamChecker = false;
       this.isStudy = true;
     },
 
-    btnClickEvent() {
+    async btnClickEvent() {
       switch (this.userRoomState) {
         case ROOM_STUDY_TYPE_NO_ACTION:
           alert('공부를 시작하려면 자리에 앉아야 합니다. 좌석을 클릭해서 자리에 앉아주세요.');
@@ -139,8 +141,14 @@ export default {
           break;
         case ROOM_STUDY_TYPE_START:
           // 공부를 멈췄을 때
+          await this.closeCamChecker(); // 타이머 시작, 캠 처리
+          this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_PAUSE);
           break;
       }
+    },
+    leaveSeat() {
+      // 자리를 벗어남
+      // openvidu, socket 연결은 끊기면 안됨
     },
   },
 };
