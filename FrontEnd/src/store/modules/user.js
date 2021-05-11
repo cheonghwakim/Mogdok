@@ -9,13 +9,15 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-  GET_AUTH_TOKEN({ commit }, code) {
-    return getAuthToken(
+  async GET_AUTH_TOKEN({ commit }, code) {
+    return await getAuthToken(
       { authorizeCode: code },
       (res) => {
         commit('SET_KAKAO_ID', res.data);
       },
-      () => {}
+      (error) => {
+        alert('카카오아이디를 받아오는데 실패했습니다. ' + error);
+      }
     );
   },
   LOGIN({ state, commit }) {

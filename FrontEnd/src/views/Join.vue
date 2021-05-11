@@ -128,8 +128,8 @@ export default {
   },
   //lifecycle area
   created() {
-    if (!this.$store.state.user.userInfo.authToken && !localStorage.getItem('authToken'))
-      this.$router.push({ name: 'Login' });
+    if (!this.$store.state.user.userInfo.kakaoId && !localStorage.getItem('authToken'))
+      this.$router.replace({ name: 'Login' });
     setTimeout(() => {
       this.first = true;
     }, 500);
@@ -217,7 +217,9 @@ export default {
         this.$store.commit('SET_USERINFO_PROPERTY', { key: 'userName', value: this.userName });
         signup(
           this.userInfo,
-          () => {
+          (res) => {
+            console.log('%cJoin.vue line:221 res', 'color: #007acc;', res.data);
+            this.$store.commit('SET_USER_INFO', res.data);
             alert('회원가입에 성공하였습니다.');
             this.$router.replace('/');
           },
