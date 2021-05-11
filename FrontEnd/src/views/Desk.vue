@@ -49,6 +49,25 @@ export default {
    data() {
       return {
          isFirst: true,
+
+         // Desk.vue 에는 고정된 메모 요소만 삽입
+         moveFixedState: {
+            draggable: false,
+            scalable: false,
+            rotatable: false,
+            resizable: false,
+            pinchable: false,
+            throttleDrag: 0,
+            keepRatio: true,
+            throttleScale: 0,
+            throttleRotate: 0,
+            origin: false,
+            zoom: 1,
+            className: 'moveDisable',
+            snappable: true,
+            bounds: { left: 0, top: 0, right: 1000, bottom: 600 }, // 메모가 움직이는 최대 범위
+            container: null, // 어느 요소 밑으로 넣을지 결정
+         },
       };
    },
    directives: {
@@ -56,37 +75,34 @@ export default {
    },
    computed: {
       ...mapState({
-         deskId: (state) => state.desk.deskId,
-         memoList: (state) => state.deskedit.memoList,
-         ddayList: (state) => state.deskedit.ddayList,
-         boardList: (state) => state.deskedit.boardList,
+         deskId: (state) => state.desk.deskId, // 보고있는 책상의 ID
+         memoList: (state) => state.deskedit.memoList, //  책상의 메모들
+         ddayList: (state) => state.deskedit.ddayList, //  책상의 디데이들
+         boardList: (state) => state.deskedit.boardList, // 책상의 방명록(쪽지)
       }),
    },
-   watch: {},
    //lifecycle area
    mounted() {
-      // n초 뒤 몽실이 안내 화면이 사라짐
+      console.log('> Desk : mounted');
+      // 몽실이 안내 화면 : n초 뒤 화면 사라짐
       setTimeout(() => {
          this.isFirst = false;
       }, 3000);
 
-      // 생성되자마자 데스크 내 메모를 가져와서 VUEX에 셋팅
-      console.log('> Desk : created');
-
-      new Promise((resolve) => {
-         resolve(this.$store.dispatch('GET_DESK_ALL_MEMO'));
-      }).then(() => {
-         console.log('생성 후의 area elem 상황');
-         const elem = document.getElementsByClassName('desk-draw-area')[0];
-         console.log(elem);
-      });
-   },
-   beforeDestroy() {
-      console.log('beforeDestroy');
-      this.$store.commit('SET_MEMO_LIST', []);
-      console.log('memoList 초기화', this.memoList);
+      // 책상 화면 초기 셋팅
+      this.initDesk();
    },
    methods: {
+      // 최초 데스크 셋팅(서버 내 메모 셋팅 등)
+      initDesk: function() {
+         // 컨테이너를 넣을 요소를 객체에 할당
+         const elem = document.getElementsByClassName('desk-draw-area')[0];
+         this.moveFixedState.container = elem;
+
+         // 생성되자마자 서버에서 조회중이 책상의 모든 메모 GET -> VUEX 셋팅
+         this.$store.dispatch('GET_DESK_ALL_MEMO', this.moveFixedState);
+      },
+
       exitDesk: function() {
          let isExit = confirm(`책상을 떠나시겠습니까?`);
 
@@ -94,7 +110,7 @@ export default {
             this.$router.push('/room');
          }
       },
-      clickMemo(index) {
+      clickMemo: function(index) {
          console.log(index + '번째 메모 클릭');
       },
    },

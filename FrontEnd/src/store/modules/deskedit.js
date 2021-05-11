@@ -2,46 +2,6 @@ import { saveMemoList, deleteMemoList } from '../../api/desk';
 
 const MEMO_MAX_SIZE = 10;
 
-// 움직이지 못하는 상태(DeskEdit 페이지 접근 외)
-const moveDisableState = {
-   draggable: false,
-   scalable: false,
-   rotatable: false,
-   resizable: false,
-   pinchable: false,
-   throttleDrag: 0,
-   keepRatio: true,
-   throttleScale: 0,
-   throttleRotate: 0,
-   origin: false,
-   zoom: 1,
-   className: 'movedisable',
-   snappable: true,
-   bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
-   container: null,
-};
-export { moveDisableState };
-
-// 움직일 수 있는 상태(편집 모드 접근 상태)
-const moveableState = {
-   draggable: true,
-   scalable: true,
-   rotatable: true,
-   resizable: false,
-   pinchable: true,
-   throttleDrag: 0,
-   keepRatio: true,
-   throttleScale: 0,
-   throttleRotate: 0,
-   origin: false,
-   zoom: 1,
-   className: 'moveable',
-   snappable: true,
-   bounds: { left: 0, top: 0, right: 1000, bottom: 600 },
-   container: null,
-};
-export { moveableState };
-
 const state = () => ({
    deskId: undefined, // TODO: deskId는 desk에서 받아온다
    promise: '',
@@ -59,14 +19,14 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-   CREATE_MEMO({ state, rootState, commit }) {
+   CREATE_MEMO({ state, rootState, commit }, object) {
       if (state.memoList.length > MEMO_MAX_SIZE) return; // 메모지는 최대갯수를 넘길 수 없음
       const memo = {
          deskId: rootState.desk.deskId,
          memoId: 'tmp' + state.createMemoKeyIndex++,
          content: '',
          zIndex: 1,
-         moveable: { ...moveableState },
+         moveable: { ...object },
          color: 0,
       };
       commit('ADD_MEMO', memo);
@@ -105,33 +65,25 @@ const actions = {
          () => {}
       );
    },
+   // 선택한 메모의 selectedMemoIdx 를 변경함
    UPDATE_SELECTED_MEMO_UI_BY_INDEX({ state, commit }, index) {
       if (state.selectedMemoIdx >= 0 && state.selectedMemoIdx < state.memoList.length) {
+         // 범위 안
          commit('SET_MEMO_CLASSNAME_BY_INDEX', {
             index: state.selectedMemoIdx,
-            className: state.editable ? 'moveable' : 'movedisable',
+            className: state.editable ? 'moveable' : 'moveDisable',
          }); // 이전에 클릭한 메모의 선택이 풀린 UI로 변경
          state.memoList[state.selectedMemoIdx].zIndex = state.zIndexCount;
          commit('ADD_ZINDEX_COUNT');
       }
+
       commit('SET_SELECTED_MEMO_IDX', index); // 클릭된 메모의 index 업데이트
       commit('SET_MEMO_CLASSNAME_BY_INDEX', {
          index: state.selectedMemoIdx,
          className: state.editable ? 'clicked' : 'moveable',
       });
+
       state.memoList[state.selectedMemoIdx].zIndex = state.zIndexCount;
-   },
-
-   //  DeskEdit 페이지일 경우, container를 랜더링된 엘리먼트로 다시 셋팅해줌
-   CHANGE_CONTAINER_EDIT_PAGE({ state, commit }) {
-      const editElem = document.getElementsByClassName('desk-draw-area')[0];
-      console.log('Edit 엘리먼트');
-      console.log(editElem);
-
-      // 기존 desk-draw-area를 desk-edit-area로 교체
-      for (let index = 0; index < state.memoList.length; index++) {
-         commit('CHANG_DRAW_2_EDIT', { index, elem: editElem });
-      }
    },
 };
 
@@ -150,9 +102,6 @@ const mutations = {
    },
    SET_PROMISE(state, payload) {
       state.promise = payload;
-   },
-   ADD_PROPERTY_MOVEABLE_TO_MEMO_LIST(state) {
-      for (let i = 0; i < state.memoList.length; i++) state.memoList[i].moveable = { ...moveDisableState };
    },
    SET_EDIT_STATE(state, payload) {
       state.editable = payload;

@@ -2,7 +2,7 @@
    <div v-dragscroll="true" class="desk">
       <div>
          <button @click="editComplete">편집완료(저장)</button>
-         <button @click="$store.dispatch('CREATE_MEMO')">메모 생성</button>
+         <button @click="$store.dispatch('CREATE_MEMO', moveableState)">메모 생성</button>
          <button v-show="selectedMemoIdx >= 0" @click="$store.commit('REMOVE_MEMO')">
             이 메모 삭제하기
          </button>
@@ -19,12 +19,11 @@
          </div>
          <div-banner></div-banner>
       </div> -->
-      <div class="desk-shader"></div>
       <div class="desk-wrapper">
          <div class="desk-draw-area">
             <vue-moveable
                v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memoList"
-               :key="'memo-edit' + memoId + $store.state.deskedit.editable"
+               :key="'memo' + memoId + index"
                class="moveable-container"
                v-bind="moveable"
                @drag="handleDrag"
@@ -62,42 +61,81 @@ export default {
    components: { SvgDesk, VueMoveable, SvgMemo },
    props: {},
    data() {
-      return {};
+      return {
+         // 움직일 수 있는 상태 (=편집 모드 접근 상태)
+         moveableState: {
+            draggable: true, // changed
+            scalable: true, // changed
+            rotatable: true, // changed
+            resizable: false,
+            pinchable: true, // changed
+            throttleDrag: 0,
+            keepRatio: true,
+            throttleScale: 0,
+            throttleRotate: 0,
+            origin: false,
+            zoom: 1,
+            className: 'moveable', // changed
+            snappable: true,
+            bounds: { left: 0, top: 0, right: 1000, bottom: 600 }, // 메모가 움직이는 최대 범위
+            container: null, // 어느 요소 밑으로 넣을지 결정
+         },
+      };
    },
    directives: {
       dragscroll,
    },
    computed: {
       ...mapState({
-         deskId: (state) => state.desk.deskId,
-         memoList: (state) => state.deskedit.memoList,
-         ddayList: (state) => state.deskedit.ddayList,
-         boardList: (state) => state.deskedit.boardList,
-         selectedMemoIdx: (state) => state.deskedit.selectedMemoIdx,
-         editable: (state) => state.deskedit.editable,
-         dialog: (state) => state.deskedit.memoEditDialog,
-         removedMemoList: (state) => state.deskedit.removedMemoList,
+         deskId: (state) => state.desk.deskId, // 보고있는 책상의 ID
+         memoList: (state) => state.deskedit.memoList, //  책상의 메모들
+         ddayList: (state) => state.deskedit.ddayList, //  책상의 디데이들
+         boardList: (state) => state.deskedit.boardList, // 책상의 방명록(쪽지)
+         selectedMemoIdx: (state) => state.deskedit.selectedMemoIdx, // 현재 선택한 메모의 인덱스
+         editable: (state) => state.deskedit.editable, // 편집 가능한 상태여부
+         dialog: (state) => state.deskedit.memoEditDialog, // 내용 변경을 위한 모달용
+         removedMemoList: (state) => state.deskedit.removedMemoList, //삭제된 메모리스트
       }),
    },
-   watch: {},
    //lifecycle area
    mounted() {
       console.log('> DeskEdit : mounted');
-      this.$store.dispatch('GET_DESK_ALL_MEMO_4_EDIT');
-      this.edit();
 
-      // new Promise((resolve) => {
-      //    resolve(this.$store.dispatch('GET_DESK_ALL_MEMO'));
-      // }).then(() => {
-      //    console.log('생성 후의 area elem 상황');
-      //    const elem = document.getElementsByClassName('desk-draw-area')[0];
-      //    console.log(elem);
-      // });
-   },
-   update() {
-      console.log('> DeskEdit : update');
+      // 책상 편집 화면 초기 셋팅
+      this.initDeskEdit();
    },
    methods: {
+      // 책상 편집 초기 셋팅
+      initDeskEdit: async function() {
+         // 컨테이너를 넣을 요소를 객체에 할당
+         const elem = document.getElementsByClassName('desk-draw-area')[0];
+         this.moveableState.container = elem;
+
+         // 편집하는 책상의 정보들을 VUEX에 셋팅
+         await this.$store.dispatch('GET_DESK_ALL_MEMO_4_EDIT', this.moveableState);
+
+         // #JS : 이 부분은 desk.js action 내에서 동기적으로 처리해도 좋을듯
+         // #JS : (하지만 VUEX를 유지할지 안할지 몰라서 일단 이곳에 작성)
+         this.$store.commit('SET_EDIT_STATE', true); // 편집을 가능 상태로 변경
+         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
+         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
+      },
+      // 편집완료 처리
+      editComplete() {
+         this.saveMemo(); // 메모 저장
+         this.$store.commit('SET_EDIT_STATE', false); // 편집 불가능 상태로 변경
+         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
+         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
+         this.$router.replace({ name: 'Desk' });
+      },
+      saveMemo() {
+         // TODO: 비동기처리 필수
+         this.$store.dispatch('SAVE_MEMO_LIST');
+         this.$store.dispatch('DELETE_MEMO_LIST');
+      },
+
+      // ======================================================
+      // Moveable 제어용 메소드
       handleDrag({ target, transform }) {
          target.style.transform = transform;
       },
@@ -113,53 +151,7 @@ export default {
             transform: event.target.style.transform,
          });
       },
-      // 편집 모드 시작
-      edit() {
-         console.log('> edit() 원래값 \n', this.memoList);
 
-         // const elem = document.getElementsByClassName('desk-edit-area')[0];
-         // console.log('새롭게 할당된 desk-edit-area');
-         // console.log(elem);
-
-         // new Promise((resolve) => {
-         //    resolve(this.$store.dispatch('CHANGE_CONTAINER_EDIT_PAGE'));
-         // }).then(() => {
-         //    this.memoList.forEach((elem) => {
-         //       // console.log(elem);
-         //       elem.on('render', ({ target }) => {
-         //          console.log(target);
-         //       });
-         //    });
-         // });
-
-         this.$store.commit('SET_EDIT_STATE', true); // 편집을 가능 상태로 변경
-         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
-         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
-         // 모든 메모지를 이동가능한 상태로 업데이트
-         for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, true);
-      },
-      editComplete() {
-         this.saveMemo(); // 메모 저장
-         this.$store.commit('SET_EDIT_STATE', false); // 편집 불가능 상태로 변경
-         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
-         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
-         // 모든 메모지를 움직일 수 없는 상태로 업데이트
-         for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, false);
-         this.$router.replace({ name: 'Desk' });
-      },
-      setMemoState(index, state) {
-         // 메모지 상태 업데이트
-         this.$store.commit('SET_MEMO_CLASSNAME_BY_INDEX', {
-            index,
-            className: state ? 'moveable' : 'moveDisable',
-         });
-         this.$store.commit('SET_MEMO_MOVEABLE_STATUS_BY_INDEX', { index, status: state });
-      },
-      saveMemo() {
-         // TODO: 비동기처리 필수
-         this.$store.dispatch('SAVE_MEMO_LIST');
-         this.$store.dispatch('DELETE_MEMO_LIST');
-      },
       exitDesk() {
          console.log('exitDesk?');
       },
@@ -257,15 +249,6 @@ export default {
          }
       }
    }
-
-   /* .desk-shader {
-      position: fixed;
-      bottom: 50px;
-      width: 100vw;
-      height: 50px;
-      background-color: red;
-      background-image: linear-gradient(270deg, var(--white), var(--white) 40%, rgba(var(--white-rgb), 0));
-   } */
 
    .desk-wrapper {
       cursor: grab; // 드래그 영역에선 grap으로 표시

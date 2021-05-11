@@ -1,5 +1,5 @@
 import { getDeskInfo } from '../../api/desk';
-import { moveDisableState, moveableState } from './deskedit';
+// import { moveableState } from './deskedit';
 
 // 컴포넌트 간에 공유할 data
 const state = () => ({
@@ -13,11 +13,12 @@ const getters = {};
 
 // 사용자의 입력에 따라 데이터를 변경하는 methods | 비동기 로직 처리용
 const actions = {
-   // DESK 내의 모든 메모 정보를 LOAD (Desk.vue에서 최초로드)
-   GET_DESK_ALL_MEMO({ commit }) {
+   // DESK 내의 모든 메모 정보를 LOAD [Desk.vue]
+   GET_DESK_ALL_MEMO({ commit }, object) {
+      // 기존 메모리스트 초기화
+      commit('SET_MEMO_LIST', []);
+
       console.log('---------- GET_DESK_ALL_MEMO ----------');
-      // const elem = document.getElementsByClassName('desk-draw-area')[0];
-      // console.log('할당 전 elem은? \n', elem);
 
       getDeskInfo(
          // { nickname },
@@ -27,15 +28,8 @@ const actions = {
             commit(
                'SET_MEMO_LIST',
                res.data.data.memoList.map((e) => {
-                  // 최초엔 움직이지 못하는 상태
-                  e.moveable = { ...moveDisableState };
-
-                  // 컨테이너를 body가 아닌, desk-draw-area 하단으로 설정 Desk.vue
-                  const elem = document.getElementsByClassName('desk-draw-area')[0];
-                  e.moveable.container = elem;
-
-                  // console.log('>> ', e.moveable.container);
-
+                  // moveFixedState 객체를 무버블에 할당 (= 움직이지 못하도록)
+                  e.moveable = { ...object }; // 깊은 복사!!!
                   return e;
                }),
                { root: true }
@@ -50,11 +44,12 @@ const actions = {
       );
    },
 
-   // DESK 내의 모든 메모 정보를 LOAD (Desk.vue에서 최초로드)
-   GET_DESK_ALL_MEMO_4_EDIT({ commit }) {
+   // DESK EDIT 모드용으로 모든 메모 정보를 다시 LOAD [DeskEdit.vue]
+   GET_DESK_ALL_MEMO_4_EDIT({ commit }, object) {
+      // 기존 메모리스트 초기화
+      commit('SET_MEMO_LIST', []);
+
       console.log('---------- GET_DESK_ALL_MEMO_4_EDIT ----------');
-      // const elem = document.getElementsByClassName('desk-draw-area')[0];
-      // console.log('할당 전 elem은? \n', elem);
 
       getDeskInfo(
          // { nickname },
@@ -64,15 +59,8 @@ const actions = {
             commit(
                'SET_MEMO_LIST',
                res.data.data.memoList.map((e) => {
-                  // 최초엔 움직이지 못하는 상태
-                  e.moveable = { ...moveableState };
-
-                  // 컨테이너를 body가 아닌, desk-draw-area 하단으로 설정 Desk.vue
-                  const elem = document.getElementsByClassName('desk-draw-area')[0];
-                  e.moveable.container = elem;
-
-                  // console.log('>> ', e.moveable.container);
-
+                  // moveableState 객체를 무버블에 할당 (= 편집 가능한 요소)
+                  e.moveable = { ...object }; // 깊은 복사!!!
                   return e;
                }),
                { root: true }
