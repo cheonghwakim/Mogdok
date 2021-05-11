@@ -1,11 +1,15 @@
 <template lang="">
-   <div class="header floating">
-      <div class="section">
-         <h2>{{ roomInfo.roomTitle }}</h2>
-         <div-num-person class="NumOfPerson" :current="this.roomCurrent" :limit="roomInfo.roomLimit"></div-num-person>
-      </div>
-      <btn-close class="btnClose" @onClick="exitRoom"></btn-close>
-   </div>
+  <div class="header floating">
+    <div class="section">
+      <h2>{{ roomInfo.name }}</h2>
+      <div-num-person
+        class="NumOfPerson"
+        :current="roomInfo.roomCurrent"
+        :limit="roomInfo.roomLimit"
+      ></div-num-person>
+    </div>
+    <btn-close class="btnClose" @onClick="exitRoom"></btn-close>
+  </div>
 </template>
 <script>
 import DivNumPerson from '@/components/ui/DivNumPerson';
