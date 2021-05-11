@@ -4,6 +4,7 @@ import com.mongdok.websocket.model.RoomMessage;
 import com.mongdok.websocket.service.RoomService;
 import com.mongdok.websocket.util.JWTUtil;
 import io.jsonwebtoken.Claims;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ public class MessageController {
      * 메시지 발행요청처리
      * @param message
      */
+    @ApiOperation(value = "메시지 Publish ✉")
     @MessageMapping("/room/message")
     public void message(RoomMessage message, @Header("token") String token) {
 
