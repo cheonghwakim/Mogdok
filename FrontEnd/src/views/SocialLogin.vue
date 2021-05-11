@@ -17,10 +17,14 @@ export default {
   //lifecycle area
   created() {
     this.GET_AUTH_TOKEN(this.$route.query.code).then(async () => {
-      const status = await this.LOGIN();
       let movePath = 'Login';
-      if (status === 'ok') movePath = 'Enterance';
-      else if (status === 'join') movePath = 'Join';
+      try {
+        const status = await this.LOGIN();
+        if (status === 'ok') movePath = 'Enterance';
+        else if (status === 'join') movePath = 'Join';
+      } catch (e) {
+        alert(e);
+      }
       this.$router.replace({ name: movePath });
     });
   },
