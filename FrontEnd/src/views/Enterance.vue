@@ -28,6 +28,7 @@ export default {
   },
   computed: {
     ...mapState({
+      OV: (state) => state.openvidu.OV,
       roomList: (state) => state.room.roomList,
     }),
   },
@@ -35,10 +36,28 @@ export default {
   //lifecycle area
   created() {
     this.$store.dispatch('GET_ALL_ROOMS');
-    this.sampleData(); // Sample Data 시작하자마 삽입
   },
   methods: {
     enterRoom(room) {
+      // TODO : 입장 전 해당 방의 openvidu session과 room서버 연결 완료하고 페이지 이동
+      try {
+        // --- 오픈바이두 객체 생성 ---
+        if (!this.OV) this.$store.commit('CREATE_OPENVIDU');
+        // 사용 가능한 비디오 소스 확인
+        this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
+        // 최대 이용 인원 수 설정
+        //   this.$store.commit('SET_SUBSCRIBERS', this.roomInfo.roomLimit);
+        this.$store.commit('SET_SUBSCRIBERS', 16);
+        // --- 세션 초기화 ---
+        this.$store.commit('SET_SESSION', this.OV.initSession());
+        // 세션에 이벤트 지정
+        this.$store.dispatch('INIT_OV_SESSION_EVENT');
+        // 세션에 유저 연결
+        this.$store.dispatch('CONNECT_USER_TO_SESSION', this.userInfo);
+      } catch (e) {
+        alert(`${room.name}에 접속을 실패했습니다. ${e}`);
+        return;
+      }
       this.$store.commit('SET_ROOMINFO', room);
       this.$router.replace({ name: 'Room' });
     },

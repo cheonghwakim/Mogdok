@@ -1,3 +1,4 @@
+import { OpenVidu } from 'openvidu-browser';
 import { createSession, createToken } from '../../api/openvidu';
 
 const state = () => ({
@@ -140,8 +141,8 @@ const actions = {
 };
 
 const mutations = {
-  CREATE_OPENVIDU(state, payload) {
-    state.OV = payload;
+  CREATE_OPENVIDU(state) {
+    state.OV = new OpenVidu();
   },
   SET_SESSION(state, payload) {
     state.session = payload;

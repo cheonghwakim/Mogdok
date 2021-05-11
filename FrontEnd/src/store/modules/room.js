@@ -26,12 +26,18 @@ const actions = {
   },
   CONNECT_ROOM_SERVER({ state, rootState, commit }) {
     commit('INIT_CONNECT');
-    state.stomp.connect({ token: rootState.user.authToken }, (frame) => {
-      console.log('소켓 연결 성공', frame);
-      console.log('token', rootState.user.authToken);
-      // 좌석 정보 받기
-      // 서버 구독하기
-    });
+    state.stomp.connect(
+      { token: rootState.user.authToken },
+      (frame) => {
+        console.log('소켓 연결 성공', frame);
+        console.log('token', rootState.user.authToken);
+        // 좌석 정보 받기
+        // 서버 구독하기
+      },
+      (error) => {
+        console.log('%croom.js line:35 error', 'color: #007acc;', error);
+      }
+    );
   },
   GET_SEAT_INFO({ state, commit }) {
     getSeatInfo(
@@ -46,7 +52,7 @@ const actions = {
   },
   SUBSCRIBE_ROOM_SERVER({ state }) {
     state.stomp.subscribe(
-      '/sub/room/' + state.roomInfo.roomId,
+      `/sub/room/${state.roomInfo.roomId}`,
       (message) => {
         console.log(message);
       },
