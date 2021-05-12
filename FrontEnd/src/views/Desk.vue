@@ -1,13 +1,17 @@
 <template lang="">
    <div v-dragscroll="true" class="desk">
       <!-- v-show로 ID 필터링해서 본인 계정일 경우에만 보이도록 -->
-      <button @click="$router.replace({ name: 'DeskEdit' })">편집하기</button>
+      <btn-rounded class="br-wrapper" :label="'Desk Editor'" :color="'yellow'" :type="'floating'" @onClick="goEditPage"></btn-rounded>
+
+      <!-- 몽실이 안내 화면 -->
       <transition name="fade">
          <div v-show="isFirst" class="caution covering">
             <img src="@/assets/img/discover.gif" alt="" />
             <p class="desc kyoboHand">드래그를 하면 책상을 <span>탐닉</span>할 수 있어요!</p>
          </div>
       </transition>
+
+      <!-- 최상단 어떤 책상인지 INFO DISPLAY -->
       <div class="info">
          <div class="info-content">
             <btn-close class="btnClose" @onClick="exitDesk"></btn-close>
@@ -16,6 +20,8 @@
          </div>
          <div-banner></div-banner>
       </div>
+
+      <!-- 메모가 표시는 책상 -->
       <div class="desk-wrapper">
          <div class="desk-draw-area">
             <vue-moveable
@@ -40,11 +46,12 @@ import SvgDesk from '@/components/svg/SvgDesk';
 import SvgMemo from '@/components/svg/SvgMemo';
 import DivBanner from '@/components/ui/DivBanner';
 import BtnClose from '@/components/ui/BtnClose';
+import BtnRounded from '@/components/ui/BtnRounded';
 import { mapState } from 'vuex';
 
 export default {
    name: 'Desk',
-   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo },
+   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo, BtnRounded },
    props: {},
    data() {
       return {
@@ -102,6 +109,12 @@ export default {
          // 생성되자마자 서버에서 조회중이 책상의 모든 메모 GET -> VUEX 셋팅
          this.$store.dispatch('GET_DESK_ALL_MEMO', this.moveFixedState);
       },
+
+      // 편집 화면으로 이동
+      goEditPage: function() {
+         this.$router.replace({ name: 'DeskEdit' });
+      },
+
       exitDesk: function() {
          let isExit = confirm(`책상을 떠나시겠습니까?`);
 
@@ -118,14 +131,8 @@ export default {
 <style scoped lang="scss">
 @import 'src/assets/css/common';
 
-/* $desk-width: 1280px; */
-
 .desk {
-   /* margin-top: $HeaderHeight; */
-   /* margin-bottom: 60px; */
-
    width: 100%;
-   /* height: calc(100% - #{$HeaderHeight}); */
 
    display: flex;
    flex-direction: column;
@@ -166,9 +173,9 @@ export default {
    /* 상단에 표시되는 책상의 이름 안내 요소 */
    .info {
       position: fixed;
-      top: 1vmax;
+      top: -1.3vmax;
       left: 50%;
-      transform: translate(-50%, -2vmax);
+      transform: translateX(-50%);
 
       width: 280px;
 
@@ -229,5 +236,15 @@ export default {
          /* border: 1px solid blue; */
       }
    }
+}
+
+.br-wrapper {
+   position: fixed;
+   top: 120px;
+   left: 50%;
+   transform: translateX(-50%);
+   z-index: 50;
+
+   width: 180px;
 }
 </style>

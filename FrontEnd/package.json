@@ -13,6 +13,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "openvidu-browser": "^2.17.0",
+    "v-wave": "^1.2.8",
     "vue": "^2.6.11",
     "vue-dragscroll": "^3.0.0",
     "vue-lottie-player": "^0.1.9",

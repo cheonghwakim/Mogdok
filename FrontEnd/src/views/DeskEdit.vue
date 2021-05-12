@@ -38,6 +38,7 @@
                @renderEnd="handleRenderEnd(index, ...arguments)"
                @rotate="handleRotate"
                @scale="handleScale"
+               @dblclick.native="toggleModal"
                @mousedown.native="$store.dispatch('UPDATE_SELECTED_MEMO_UI_BY_INDEX', index)"
                :style="{ zIndex, transform }"
             >
@@ -49,12 +50,11 @@
 
       <!-- 글 작성 모달 -->
       <div class="memoInputModal" v-show="isOpenModal">
-         <div v-if="memoList[selectedMemoIdx]" class="memo-Modal-content">
+         <div v-if="memoList[selectedMemoIdx]" class="memo-Modal-content" :style="{ 'background-color': memoColor[memoList[selectedMemoIdx].color].code }">
             <p class="title">POST-IT</p>
-            <!-- <p class="detail">{{ modalDetailInfo }}</p> -->
             <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="kyoboHand" placeholder="메모 내용을 작성해주세요" />
             <p class="desc">메모 내용이 실시간으로 작성됩니다 😛</p>
-            <div class="btn-close" @click="toggleModal">
+            <div v-wave class="btn-close" @click="toggleModal">
                CLOSE
             </div>
          </div>
@@ -66,8 +66,6 @@ import { dragscroll } from 'vue-dragscroll';
 import VueMoveable from 'vue-moveable';
 import SvgDesk from '@/components/svg/SvgDesk';
 import SvgMemo from '@/components/svg/SvgMemo';
-// import DivBanner from '@/components/ui/DivBanner'; DivBanner
-// import BtnClose from '@/components/ui/BtnClose'; BtnClose
 import { mapState } from 'vuex';
 
 export default {
@@ -132,17 +130,6 @@ export default {
          editable: (state) => state.deskedit.editable, // 편집 가능한 상태여부
          removedMemoList: (state) => state.deskedit.removedMemoList, //삭제된 메모리스트
       }),
-
-      modalDetailInfo() {
-         var str = this.memoList[this.selectedMemoIdx].transform;
-
-         if (str) {
-            var ep = str.indexOf(') ');
-            console.log(str.substring(7, ep));
-         }
-
-         return this.memoList[this.selectedMemoIdx].transform;
-      },
    },
    //lifecycle area
    mounted() {
@@ -358,7 +345,7 @@ export default {
       width: 320px;
       height: 480px;
 
-      background-color: #fefefe;
+      background-color: white;
       border-radius: 20px;
       box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
 
@@ -392,6 +379,7 @@ export default {
          border: none;
          border-top: 1px solid rgb(216, 216, 216);
          border-bottom: 1px solid rgb(216, 216, 216);
+         background-color: transparent;
 
          font-size: 16pt;
          line-height: 30px;
@@ -413,7 +401,7 @@ export default {
          height: 60px;
          cursor: pointer;
 
-         background-color: rgb(12, 211, 135);
+         background-color: rgba(0, 0, 0, 0.4);
          border-radius: 0 0 20px 20px;
 
          font-weight: 600;
@@ -425,21 +413,11 @@ export default {
    }
 }
 
-/* The Close Button */
-.close {
-   color: #aaaaaa;
-   float: right;
-   font-size: 20px;
-   font-weight: bold;
+/* 최상단에 떠있는 닫기 버튼 */
+.btn-close-top {
 }
 
-.close:hover,
-.close:focus {
-   color: #000;
-   text-decoration: none;
-   cursor: pointer;
-}
-
+/* 트랜지션 */
 .memo-down-enter-active {
    transition: all 0.5s ease;
 }
