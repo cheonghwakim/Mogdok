@@ -75,19 +75,28 @@ public class StompHandler implements ChannelInterceptor {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = roomRepository.getRoomEnterSessionId(sessionId);
 
+            log.info("[DISCONNECT] sessionId : {}", sessionId);
             // token값을 꺼내온다.
             String token = roomRepository.getTokenBySessionId(sessionId);
+            log.info("[DISCONNECT] token : {}", token);
 
-            String userName = jwtUtil.getUserName(token);
-            String userId = jwtUtil.getUserId(token);
+            String userName = "";
+            String userId = "";
+            int seatNo = 0;
 
-            Seat seat = seatRepository.findSeatByUserId(roomId, userId);
-            
-            // 좌석정보가 있는 경우 ----> 시간 정보 저장
-            if(seat != null) {
-                // TODO: 현재 토큰에 담긴 userId가 실제 id가 아니므로 DB오류 발생시킨다.
-                studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
-                log.info("***** 공부기록 저장 *****");
+            if(token != null) {
+                userName = jwtUtil.getUserName(token);
+                userId = jwtUtil.getUserId(token);
+
+                Seat seat = seatRepository.findSeatByUserId(roomId, userId);
+
+                // 좌석정보가 있는 경우 ----> 시간 정보 저장
+                if (seat != null) {
+                    // TODO: 현재 토큰에 담긴 userId가 실제 id가 아니므로 DB오류 발생시킨다.
+                    seatNo = seat.getSeatNo();
+                    studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
+                    log.info("***** 공부기록 저장 *****");
+                }
             }
 
             // 열람실의 인원 수를 -1한다.
@@ -100,11 +109,6 @@ public class StompHandler implements ChannelInterceptor {
 
             roomRepository.removeToken(sessionId);
             log.info("***** 토큰 삭제 *****");
-
-            int seatNo = 0;
-            if(seat != null) {
-                seatNo = seat.getSeatNo();
-            }
 
             // TODO: 좌석정보 삭제
             seatRepository.removeSeatInfo(roomId, userId);

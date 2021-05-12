@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,7 @@ public class MessageController {
      */
     @ApiOperation(value = "메시지 Publish ✉")
     @MessageMapping("/room/message")
-    public void message(RoomMessage message, @Header("token") String token) {
+    public void message(RoomMessage message, @Nullable @Header("token") String token) {
 
         //TODO: JWT Token을 이용해서 userName 매핑 구현
         if(message.getUserId() == null && token == null) {
@@ -46,9 +47,6 @@ public class MessageController {
             Claims claims = jwtUtil.getClaims(token);
             String userId = claims.get("userId", String.class);
             String userName = claims.get("userName", String.class);
-
-            log.info("userId", userId);
-            log.info("userName", userName);
 
             message.setSender(userName);
             message.setUserId(userId);
