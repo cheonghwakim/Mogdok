@@ -34,6 +34,7 @@
             >
                <svg-memo :text="content" :color="color"></svg-memo>
             </vue-moveable>
+            <div-calendar></div-calendar>
          </div>
          <svg-desk></svg-desk>
       </div>
@@ -47,11 +48,12 @@ import SvgMemo from '@/components/svg/SvgMemo';
 import DivBanner from '@/components/ui/DivBanner';
 import BtnClose from '@/components/ui/BtnClose';
 import BtnRounded from '@/components/ui/BtnRounded';
+import DivCalendar from '@/components/ui/DivCalendar';
 import { mapState } from 'vuex';
 
 export default {
    name: 'Desk',
-   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo, BtnRounded },
+   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo, BtnRounded, DivCalendar },
    props: {},
    data() {
       return {
@@ -90,7 +92,6 @@ export default {
    },
    //lifecycle area
    mounted() {
-      console.log('> Desk : mounted');
       // 몽실이 안내 화면 : n초 뒤 화면 사라짐
       setTimeout(() => {
          this.isFirst = false;

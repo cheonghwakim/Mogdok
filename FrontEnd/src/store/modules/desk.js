@@ -18,8 +18,6 @@ const actions = {
       // 기존 메모리스트 초기화
       commit('SET_MEMO_LIST', []);
 
-      console.log('---------- GET_DESK_ALL_MEMO ----------');
-
       getDeskInfo(
          // { nickname },
          { nickname: 'ssafy' }, // 테스트용
@@ -48,8 +46,6 @@ const actions = {
    GET_DESK_ALL_MEMO_4_EDIT({ commit }, object) {
       // 기존 메모리스트 초기화
       commit('SET_MEMO_LIST', []);
-
-      console.log('---------- GET_DESK_ALL_MEMO_4_EDIT ----------');
 
       getDeskInfo(
          // { nickname },
