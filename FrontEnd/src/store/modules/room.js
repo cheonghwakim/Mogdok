@@ -24,7 +24,6 @@ const state = () => ({
   seatList: undefined,
   selectedSeatInfo: undefined,
   userRoomState: ROOM_STUDY_TYPE_NO_ACTION,
-  userSeatNo: undefined,
 });
 
 const getters = {};
@@ -120,51 +119,45 @@ const actions = {
       commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, undefined });
     }
   },
-  async SEND_SEAT_ALLOCATED({ state, rootState, commit, dispatch }, { seatNo }) {
-    commit('SET_USER_SEAT_NO', seatNo);
+  async SEND_SEAT_ALLOCATED({ state, rootState, dispatch }, { seatNo }) {
     const hasAlreadySeat = await dispatch('HAS_ALREADY_SEAT');
     if (hasAlreadySeat) {
       return Promise.reject('이미 앉아있는 좌석이 있습니다. 자리에서 일어나서 시도해주세요.');
-    }
-    try {
-      state.stomp.send(
-        `/pub/room/message`,
-        JSON.stringify({
-          type: ROOM_MESSAGE_SEAT_ALLOCATED,
-          roomId: state.roomInfo.roomId,
-          seatInfo: {
-            seatNo,
-            studyType: ROOM_STUDY_TYPE_PAUSE,
-          },
-        }),
-        { token: rootState.user.userInfo.authToken }
-      );
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  },
-  async SEND_SEAT_END({ state, rootState, commit, dispatch }) {
-    // 카메라 ON/OFF 끄는 것 비동기로 되도록?
-    await dispatch('CAMERA_OFF', { root: true });
-    return new Promise((resolve, reject) => {
+    } else {
       try {
         state.stomp.send(
           `/pub/room/message`,
           JSON.stringify({
-            type: ROOM_MESSAGE_SEAT_END,
+            type: ROOM_MESSAGE_SEAT_ALLOCATED,
             roomId: state.roomInfo.roomId,
             seatInfo: {
-              seatNo: state.userSeatNo,
+              seatNo,
+              studyType: ROOM_STUDY_TYPE_PAUSE,
             },
           }),
           { token: rootState.user.userInfo.authToken }
         );
-        commit('SET_USER_SEAT_NO', undefined);
-        resolve();
       } catch (error) {
-        reject(error);
+        return Promise.reject(error);
       }
-    });
+    }
+  },
+  async SEND_SEAT_END({ state, rootState, dispatch }) {
+    // 카메라 ON/OFF 끄는 것 비동기로 되도록?
+    await dispatch('CAMERA_OFF', { root: true });
+    try {
+      state.stomp.send(
+        `/pub/room/message`,
+        JSON.stringify({
+          type: ROOM_MESSAGE_SEAT_END,
+          roomId: state.roomInfo.roomId,
+        }),
+        { token: rootState.user.userInfo.authToken }
+      );
+      return Promise.resolve();
+    } catch (error) {
+      return Promise.reject(error);
+    }
   },
   ADD_SUBSCRIBER_INTO_SEAT_LIST({ state, commit }, subscriber) {
     console.log(
@@ -184,11 +177,9 @@ const actions = {
   HAS_ALREADY_SEAT({ state, rootState }) {
     for (let i = 0; i < state.seatList.length; i++) {
       if (state.seatList[i] && state.seatList[i].userName === rootState.user.userInfo.userName) {
-        console.log('%croom.js line:194 true?', 'color: #007acc;');
         return true;
       }
     }
-    console.log('%croom.js line:198 no', 'color: #007acc;');
     return false;
   },
 };
@@ -234,9 +225,6 @@ const mutations = {
   },
   SET_USER_ROOM_STATE(state, payload) {
     state.userRoomState = payload;
-  },
-  SET_USER_SEAT_NO(state, payload) {
-    state.userSeatNo = payload;
   },
   REMOVE_SEAT_INFO(state, { index }) {
     const tmp = [...state.seatList];
