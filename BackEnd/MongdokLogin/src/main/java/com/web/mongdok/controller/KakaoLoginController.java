@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.mongdok.dto.KakaoUserDto;
 import com.web.mongdok.dto.RedisUserDto;
 import com.web.mongdok.dto.SignupDto;
+import com.web.mongdok.dto.UserProfileDto;
 import com.web.mongdok.entity.Desk;
 import com.web.mongdok.entity.User;
 import com.web.mongdok.service.AuthService;
@@ -293,6 +294,17 @@ public class KakaoLoginController {
     		return true;
     	return false;
     }
+    
+    @GetMapping("/profile")
+    @ApiOperation("다른 사람 프로필 가져오기 // 성공 deskId, promise, category 실패 false(boolean)")
+    public ResponseEntity<?> profile(@RequestParam @ApiParam(value = "유저의 닉네임") String userName) {
+    	UserProfileDto user = deskService.findByUserName(userName);
+    	if(user == null) // 찾는 유저가 없으면 false
+    		return new ResponseEntity<>(false, HttpStatus.OK);
+    	
+    	return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+    
     
 //    @GetMapping("/auth")
 //    @ApiOperation("레디스에서 인증하기")
