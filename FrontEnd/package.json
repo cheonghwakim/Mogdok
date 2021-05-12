@@ -8,8 +8,8 @@
     "lint": "vue-cli-service lint",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "production":"vue-cli-service serve --mode production",
-    "development":"vue-cli-service serve --mode development"
+    "production": "vue-cli-service serve --mode production",
+    "development": "vue-cli-service serve --mode development"
   },
   "dependencies": {
     "axios": "^0.21.1",
