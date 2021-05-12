@@ -1,14 +1,18 @@
 <template lang="">
    <div v-dragscroll="true" class="desk">
       <!-- v-show로 ID 필터링해서 본인 계정일 경우에만 보이도록 -->
-      <button @click="$router.replace({ name: 'DeskEdit' })">편집하기</button>
+      <btn-rounded class="br-wrapper" :label="'Desk Editor'" :color="'yellow'" :type="'floating'" @onClick="goEditPage"></btn-rounded>
+
+      <!-- 몽실이 안내 화면 -->
       <transition name="fade">
          <div v-show="isFirst" class="caution covering">
             <img src="@/assets/img/discover.gif" alt="" />
             <p class="desc kyoboHand">드래그를 하면 책상을 <span>탐닉</span>할 수 있어요!</p>
          </div>
       </transition>
-      <div class="info borrow">
+
+      <!-- 최상단 어떤 책상인지 INFO DISPLAY -->
+      <div class="info">
          <div class="info-content">
             <btn-close class="btnClose" @onClick="exitDesk"></btn-close>
             <p class="userName kyoboHand">안양취준생</p>
@@ -16,6 +20,8 @@
          </div>
          <div-banner></div-banner>
       </div>
+
+      <!-- 메모가 표시는 책상 -->
       <div class="desk-wrapper">
          <div class="desk-draw-area">
             <vue-moveable
@@ -40,15 +46,35 @@ import SvgDesk from '@/components/svg/SvgDesk';
 import SvgMemo from '@/components/svg/SvgMemo';
 import DivBanner from '@/components/ui/DivBanner';
 import BtnClose from '@/components/ui/BtnClose';
+import BtnRounded from '@/components/ui/BtnRounded';
 import { mapState } from 'vuex';
 
 export default {
    name: 'Desk',
-   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo },
+   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo, BtnRounded },
    props: {},
    data() {
       return {
          isFirst: true,
+
+         // Desk.vue 에는 고정된 메모 요소만 삽입
+         moveFixedState: {
+            draggable: false,
+            scalable: false,
+            rotatable: false,
+            resizable: false,
+            pinchable: false,
+            throttleDrag: 0,
+            keepRatio: true,
+            throttleScale: 0,
+            throttleRotate: 0,
+            origin: false,
+            zoom: 1,
+            className: 'moveDisable',
+            snappable: true,
+            bounds: { left: 0, top: 0, right: 1000, bottom: 600 }, // 메모가 움직이는 최대 범위
+            container: null, // 어느 요소 밑으로 넣을지 결정
+         },
       };
    },
    directives: {
@@ -56,23 +82,39 @@ export default {
    },
    computed: {
       ...mapState({
-         deskId: (state) => state.desk.deskId,
-         memoList: (state) => state.deskedit.memoList,
-         ddayList: (state) => state.deskedit.ddayList,
-         boardList: (state) => state.deskedit.boardList,
+         deskId: (state) => state.desk.deskId, // 보고있는 책상의 ID
+         memoList: (state) => state.deskedit.memoList, //  책상의 메모들
+         ddayList: (state) => state.deskedit.ddayList, //  책상의 디데이들
+         boardList: (state) => state.deskedit.boardList, // 책상의 방명록(쪽지)
       }),
    },
-   watch: {},
    //lifecycle area
-   created() {
-      // n초 뒤 몽실이 안내 화면이 사라짐
+   mounted() {
+      console.log('> Desk : mounted');
+      // 몽실이 안내 화면 : n초 뒤 화면 사라짐
       setTimeout(() => {
          this.isFirst = false;
       }, 3000);
-      // this.$store.dispatch('GET_DESK_INFO', userName 입력);
-      this.$store.dispatch('GET_DESK_INFO');
+
+      // 책상 화면 초기 셋팅
+      this.initDesk();
    },
    methods: {
+      // 최초 데스크 셋팅(서버 내 메모 셋팅 등)
+      initDesk: function() {
+         // 컨테이너를 넣을 요소를 객체에 할당
+         const elem = document.getElementsByClassName('desk-draw-area')[0];
+         this.moveFixedState.container = elem;
+
+         // 생성되자마자 서버에서 조회중이 책상의 모든 메모 GET -> VUEX 셋팅
+         this.$store.dispatch('GET_DESK_ALL_MEMO', this.moveFixedState);
+      },
+
+      // 편집 화면으로 이동
+      goEditPage: function() {
+         this.$router.replace({ name: 'DeskEdit' });
+      },
+
       exitDesk: function() {
          let isExit = confirm(`책상을 떠나시겠습니까?`);
 
@@ -80,7 +122,7 @@ export default {
             this.$router.push('/room');
          }
       },
-      clickMemo(index) {
+      clickMemo: function(index) {
          console.log(index + '번째 메모 클릭');
       },
    },
@@ -89,14 +131,8 @@ export default {
 <style scoped lang="scss">
 @import 'src/assets/css/common';
 
-/* $desk-width: 1280px; */
-
 .desk {
-   /* margin-top: $HeaderHeight; */
-   /* margin-bottom: 60px; */
-
    width: 100%;
-   /* height: calc(100% - #{$HeaderHeight}); */
 
    display: flex;
    flex-direction: column;
@@ -137,16 +173,14 @@ export default {
    /* 상단에 표시되는 책상의 이름 안내 요소 */
    .info {
       position: fixed;
-      top: 1vmax;
+      top: -1.3vmax;
       left: 50%;
-      transform: translate(-50%, -2vmax);
-
-      transition: transform 1s ease;
-
-      z-index: 11;
+      transform: translateX(-50%);
 
       width: 280px;
 
+      transition: transform 1s ease;
+      z-index: 11;
       text-align: center;
 
       .info-content {
@@ -202,5 +236,15 @@ export default {
          /* border: 1px solid blue; */
       }
    }
+}
+
+.br-wrapper {
+   position: fixed;
+   top: 120px;
+   left: 50%;
+   transform: translateX(-50%);
+   z-index: 50;
+
+   width: 180px;
 }
 </style>

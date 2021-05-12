@@ -1,83 +1,82 @@
-@import "vars";
-@import "animation";
+@import 'vars';
+@import 'animation';
 
 * {
-    font-family: 'Noto Sans KR', sans-serif;
-    box-sizing: border-box;
+   font-family: 'Noto Sans KR', sans-serif;
+   box-sizing: border-box;
 }
 
-.kyoboHand{
-  font-family: 'KyoboHand' !important;
+.kyoboHand {
+   font-family: 'KyoboHand' !important;
 }
-
 
 .f-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
 }
 
 .f-center--vh {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
- }
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+}
 
 h1 {
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 3vmin;
+   font-family: 'Noto Sans KR', sans-serif;
+   font-size: 3vmin;
 }
 
 h2 {
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 2vmin;
-    font-weight: 700;
+   font-family: 'Noto Sans KR', sans-serif;
+   font-size: 2vmin;
+   font-weight: 700;
 }
 
 h3 {
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 1vmin;
-    font-weight: 600;
+   font-family: 'Noto Sans KR', sans-serif;
+   font-size: 1vmin;
+   font-weight: 600;
 }
 
 // 부모가 relative일 때 떠다니도록
 .floating {
-    position: absolute;
-    z-index: 10;
+   position: absolute;
+   z-index: 10;
 }
 
 // 전체 화면을 덮는 형태
 .covering {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    z-index: 20;
+   position: fixed;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   z-index: 20;
 }
 
 @mixin rings($duration, $delay) {
-    opacity: 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: -8px;
-    left: -8px;
-    right: 0;
-    bottom: 0;
-    content: '';
-    height: 100%;
-    width: 100%;
-    border: 8px solid rgba(0,0,0,0.2);
-    border-radius: 100%;
-    animation-name: ripple;
-    animation-duration: $duration;
-    animation-delay: $delay;
-    animation-iteration-count: infinite;
-    animation-timing-function: cubic-bezier(.65,0,.34,1);
-    z-index: -1;
+   opacity: 0;
+   display: flex;
+   flex-direction: row;
+   justify-content: center;
+   align-items: center;
+   position: absolute;
+   top: -8px;
+   left: -8px;
+   right: 0;
+   bottom: 0;
+   content: '';
+   height: 100%;
+   width: 100%;
+   border: 8px solid rgba(0, 0, 0, 0.2);
+   border-radius: 100%;
+   animation-name: ripple;
+   animation-duration: $duration;
+   animation-delay: $delay;
+   animation-iteration-count: infinite;
+   animation-timing-function: cubic-bezier(0.65, 0, 0.34, 1);
+   z-index: -1;
 }
 
 .fade-enter-active,
