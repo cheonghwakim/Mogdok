@@ -4,6 +4,7 @@ import { getSeatList, getAllRooms } from '../../api/room';
 
 const ROOM_MESSAGE_SEAT_ALLOCATED = 'SEAT_ALLOCATED';
 const ROOM_MESSAGE_SEAT_STATUS = 'SEAT_STATUS';
+const ROOM_MESSAGE_SEAT_END = 'END';
 const ROOM_STUDY_TYPE_START = 'START';
 const ROOM_STUDY_TYPE_PAUSE = 'PAUSE';
 const ROOM_STUDY_TYPE_NO_ACTION = 'NO_ACTION';
@@ -23,6 +24,7 @@ const state = () => ({
   seatList: undefined,
   selectedSeatInfo: undefined,
   userRoomState: ROOM_STUDY_TYPE_NO_ACTION,
+  userSeatNo: undefined,
 });
 
 const getters = {};
@@ -82,11 +84,21 @@ const actions = {
           res.seatInfo.userName = res.sender;
           res.seatInfo.userId = res.userId;
           commit('ADD_SEAT_INFO', { index: res.seatInfo.seatNo - 1, seatInfo: res.seatInfo });
-          commit('SET_USER_ROOM_STATE', 'PAUSE');
+          commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_PAUSE);
           commit('UPDATE_ROOM_INFO', { key: 'userCount', value: res.userCount });
         } else if (res.type === 'SEAT_ALLOCATE_FAIL') {
           if (res.sender === rootState.user.userInfo.userName) alert('자리에 앉을 수 없어요!');
           console.log('%croom.js line:88 SEAT_ALLOCATE_FAIL', 'color: #007acc;');
+        } else if (res.type === 'END') {
+          // 자리 떠나기
+          commit('REMOVE_SEAT_INFO', { index: res.seatInfo.seatNo - 1 });
+          commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
+        } else if (res.type === 'QUIT') {
+          // 소켓마저 끊김
+          commit('REMOVE_SEAT_INFO', { index: res.seatInfo.seatNo - 1 });
+          commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
+        } else {
+          alert('알 수 없는 오류가 발생했습니다. 다시 시도해주세요.');
         }
       },
       (error) => {
@@ -115,25 +127,51 @@ const actions = {
       commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, undefined });
     }
   },
-  SEND_SEAT_ALLOCATED({ state, rootState }, { seatNo }) {
+  SEND_SEAT_ALLOCATED({ state, rootState, commit }, { seatNo }) {
+    commit('SET_USER_SEAT_NO', seatNo);
     return new Promise((resolve, reject) => {
       if (state.userRoomState !== ROOM_STUDY_TYPE_NO_ACTION) {
         reject('이미 앉아있는 좌석이 있습니다. 자리에서 일어나서 시도해주세요.');
         return;
       }
-      state.stomp.send(
-        `/pub/room/message`,
-        JSON.stringify({
-          type: ROOM_MESSAGE_SEAT_ALLOCATED,
-          roomId: state.roomInfo.roomId,
-          seatInfo: {
-            seatNo,
-            studyType: ROOM_STUDY_TYPE_PAUSE,
-          },
-        }),
-        { token: rootState.user.userInfo.authToken }
-      );
-      resolve();
+      try {
+        state.stomp.send(
+          `/pub/room/message`,
+          JSON.stringify({
+            type: ROOM_MESSAGE_SEAT_ALLOCATED,
+            roomId: state.roomInfo.roomId,
+            seatInfo: {
+              seatNo,
+              studyType: ROOM_STUDY_TYPE_PAUSE,
+            },
+          }),
+          { token: rootState.user.userInfo.authToken }
+        );
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+  SEND_SEAT_END({ state, rootState, commit }) {
+    return new Promise((resolve, reject) => {
+      try {
+        state.stomp.send(
+          `/pub/room/message`,
+          JSON.stringify({
+            type: ROOM_MESSAGE_SEAT_END,
+            roomId: state.roomInfo.roomId,
+            seatInfo: {
+              seatNo: state.userSeatNo,
+            },
+          }),
+          { token: rootState.user.userInfo.authToken }
+        );
+        commit('SET_USER_SEAT_NO', undefined);
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
     });
   },
   ADD_SUBSCRIBER_INTO_SEAT_LIST({ state, commit }, subscriber) {
@@ -162,6 +200,7 @@ const mutations = {
     state.stomp = Stomp.over(state.socket);
   },
   CLEAR_CONNECT(state) {
+    // TODO : 백엔드와 연동 필요
     state.stomp.disconnect();
     state.socket.close();
     state.stomp = undefined;
@@ -193,6 +232,14 @@ const mutations = {
   },
   SET_USER_ROOM_STATE(state, payload) {
     state.userRoomState = payload;
+  },
+  SET_USER_SEAT_NO(state, payload) {
+    state.userSeatNo = payload;
+  },
+  REMOVE_SEAT_INFO(state, { index }) {
+    const tmp = [...state.seatList];
+    tmp.splice(index, 1, undefined);
+    state.seatList = tmp;
   },
 };
 

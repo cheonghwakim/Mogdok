@@ -44,14 +44,15 @@ const actions = {
 const mutations = {
   SET_DESK: function(state, payload) {
     state.desk = payload;
-    state.isOpenProfile = true;
   },
   CLEAR_DESK: function(state) {
     state.desk = null;
-    state.isOpenProfile = false;
   },
   SET_DESK_ID(state, payload) {
     state.deskId = payload;
+  },
+  TOGGLE_PROFILE(state) {
+    state.isOpenProfile = !state.isOpenProfile;
   },
 };
 

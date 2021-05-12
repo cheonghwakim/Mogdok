@@ -6,7 +6,7 @@
       </div>
     </transition>
     <div class="deskList">
-      <div class="deskItem" v-for="(seat, index) in seatList" :key="seat + index">
+      <div class="deskItem" v-for="(seat, index) in seatList" :key="`${seat}${index}`">
         <room-desk v-if="!seat" @click="clickDesk(seat, index)"></room-desk>
         <room-desk
           v-else
@@ -108,6 +108,7 @@ export default {
         this.$store.commit('SET_SELECTED_SEAT_INFO', seat);
         alert(`${this.selectedSeatInfo.userName} 클릭되었습니다.`);
         // TODO: 신분증 나오도록
+        this.$store.commit('TOGGLE_PROFILE');
       } else {
         if (confirm(`${index + 1}번 좌석에 앉으시겠습니까?`)) {
           // room 서버에 해당 좌석에 앉았음을 알림

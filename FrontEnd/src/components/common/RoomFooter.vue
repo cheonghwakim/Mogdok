@@ -146,9 +146,16 @@ export default {
           break;
       }
     },
-    leaveSeat() {
-      // 자리를 벗어남
-      // openvidu, socket 연결은 끊기면 안됨
+
+    async leaveSeat() {
+      // 자리를 벗어남. openvidu, socket 연결은 끊기지 않음
+      if (confirm('정말 자리를 떠나실건가요?')) {
+        try {
+          await this.$store.dispatch('SEND_SEAT_END');
+        } catch (error) {
+          alert(error);
+        }
+      }
     },
   },
 };
