@@ -2,6 +2,7 @@ package com.mongdok.websocket.service;
 
 import com.mongdok.websocket.model.RoomMessage;
 import com.mongdok.websocket.model.Seat;
+import com.mongdok.websocket.model.SeatInfo;
 import com.mongdok.websocket.model.enums.MessageType;
 import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.repository.SeatRepository;
@@ -91,6 +92,9 @@ public class RoomServiceImpl implements RoomService{
                     log.info("가지고 있는 좌석이 없습니다.");
                     return;
                 }
+                SeatInfo seatInfo = SeatInfo.builder().seatNo(seat.getSeatNo()).build();
+                roomMessage.setSeatInfo(seatInfo);
+
                 // 좌석정보가 있는 경우 ----> 시간 정보 저장
                 log.info("SEAT USER ID : {}", seat.getUserId());
                 studyLogService.saveLog(seat.getUserId(), seat.getTimestampList(), seat.getAllocateTime());
