@@ -3,8 +3,8 @@
     <p>{{ room.name }}</p>
     <div-num-person
       class="NumOfPerson"
-      :current="room.roomCurrent"
-      :limit="room.roomLimit"
+      :current="room.userCount"
+      :limit="room.limitUserCount"
     ></div-num-person>
     <svg
       id="svgDoor"

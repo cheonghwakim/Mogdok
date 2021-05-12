@@ -28,6 +28,7 @@ const actions = {
     state.session.on('streamCreated', ({ stream }) => {
       const subscriber = state.session.subscribe(stream);
       commit('ADD_SUBSCRIBER', subscriber);
+      // TODO : seatList에 subsciber 이 단계에서 집어넣는것은 어떤지?
     });
     state.session.on('streamDestroyed', ({ stream }) => {
       const index = state.subscribers.indexOf(stream.streamManager, 0);
@@ -39,8 +40,7 @@ const actions = {
     // });
   },
   CONNECT_USER_TO_SESSION({ state, rootState, dispatch }, { userId, userName }) {
-    console.log('%copenvidu.js line:40 rootState.roomInfo.sessionId', 'color: #007acc;', rootState);
-    dispatch('GET_TOKEN', rootState.room.roomInfo.sessionId).then((token) => {
+    dispatch('GET_TOKEN', rootState.room.roomInfo.roomId).then((token) => {
       state.session
         .connect(token, `${userId}##${userName}`) // Todo: 현재 로그인 중인 유저이름 (userId##userName)
         .then(() => {
@@ -57,18 +57,18 @@ const actions = {
   CREATE_SESSION({ rootState }) {
     return new Promise((resolve, reject) => {
       createSession(
-        { sessionId: rootState.room.roomInfo.sessionId },
+        { sessionId: rootState.room.roomInfo.roomId },
         (res) => res.data,
         (data) => {
           console.log('세션 생성 성공');
           resolve(data.id);
         },
         (error) => {
-          if (error.response.status === 409) {
-            resolve(rootState.room.roomInfo.sessionId);
+          if (error.response && error.response.status === 409) {
+            resolve(rootState.room.roomInfo.roomId);
           } else {
             // 에러처리
-            alert('createSession ERROR');
+            alert('createSession ERROR' + error);
             reject(error.response);
           }
         }
@@ -78,23 +78,24 @@ const actions = {
   CREATE_TOKEN({ rootState }) {
     return new Promise((resolve, reject) => {
       createToken(
-        { sessionId: rootState.room.roomInfo.sessionId },
+        { sessionId: rootState.room.roomInfo.roomId },
         (res) => res.data,
         (data) => resolve(data.token),
         (error) => reject(error.response)
       );
     });
   },
-  PUBLISH_VIDEO_TO_SESSION({ state, commit }, seatNo) {
+  async PUBLISH_VIDEO_TO_SESSION({ state, commit }) {
     // 현재 접속중인 세션에 영상을 publish 함
     // publish에 성공하면, 내 캠화면을 내가 선택한 element에서 보이도록 함
-    state.session
+    await state.session
       .publish(state.publisher)
       .then(() => {
-        commit('REMOVE_AND_ADD_SUBSCRIBER', seatNo);
+        commit('ADD_SUBSCRIBER', state.publisher);
         commit('SET_PUBLISHED', true);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log('%copenvidu.js line:102 error', 'color: #007acc;', error);
         alert('영상 공유를 실패했습니다');
         commit('SET_PUBLISHED', false);
       });
@@ -114,17 +115,21 @@ const actions = {
     });
     commit('SET_PUBLISHER', publisher);
   },
-  CAMERA_OFF({ state, commit }) {
+  async CAMERA_OFF({ state, commit }) {
     // 카메라 끄기
     // if (this.session && this.isPublished) {
     if (state.session && state.isPublished) {
       // 세션에 들어가있고 "publish 중인 상태"에서는 unpublish 해야 함
       // unpublish는 카메라 자원 해제까지 해주는 메서드 존재
-      state.session.unpublish(state.publisher);
+      await state.session.unpublish(state.publisher);
+      const index = state.subscribers.indexOf(state.publisher, 0);
+      console.log('%copenvidu.js line:126 index', 'color: #007acc;', index);
+      if (index >= 0) commit('REMOVE_SUBSCRIBER', index);
+      console.log('%copenvidu.js line:128 state.subscribers', 'color: #007acc;', state.subscribers);
     } else {
       // 세션을 통해 unpublish하지 않은 경우 카메라를 OFF만 하면,
       // 카메라 자원이 여전히 실행 중이게 되므로 카메라 자원을 해제하는 작업을 해주어야 함
-      if (state.publisher) state.publisher.stream.disposeMediaStream();
+      if (state.publisher) await state.publisher.stream.disposeMediaStream();
     }
     commit('SET_PUBLISHED', false);
     commit('SET_PUBLISHER', undefined);
@@ -154,7 +159,8 @@ const mutations = {
     state.subscribers.push(payload);
   },
   SET_SUBSCRIBERS(state, payload) {
-    state.subscribers = new Array(payload);
+    console.log('%copenvidu.js line:163 payload', 'color: #007acc;', payload);
+    state.subscribers = [];
   },
   REMOVE_SUBSCRIBER(state, payload) {
     state.subscribers.splice(payload, 1);

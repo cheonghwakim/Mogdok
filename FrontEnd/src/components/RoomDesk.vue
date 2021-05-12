@@ -1,8 +1,8 @@
 <template lang="">
   <div class="RoomDesk">
     <!-- 헤더 : 회원 닉네임이 들어감 -->
-    <div class="header">
-      <h3>{{ desk.userName }}</h3>
+    <div class="header" v-if="seat">
+      <h3>{{ seat.userName }}</h3>
     </div>
 
     <!-- 본문 : 화면과 책상이 기록되는 공간 -->
@@ -11,16 +11,16 @@
       <div v-if="streamManager">
         <ov-video class="cam" :stream-manager="streamManager"></ov-video>
       </div>
-      <div class="resting" v-show="!streamManager">
+      <div class="resting" v-show="seat && !streamManager">
         <svg-sleeping class="character"></svg-sleeping>
       </div>
-      <img src="@/assets/img/desk.svg" @click="clickDesk" />
+      <img src="@/assets/img/desk.svg" @click="$emit('click')" />
     </div>
 
     <!-- 푸터 : 하단에 시간이 기록되는 공간 -->
     <div class="footer">
       <p class="mark">🕳</p>
-      <p class="timer">{{ desk.userTimer }}</p>
+      <p class="timer" v-if="seat">{{ seat.timestampList }}</p>
     </div>
   </div>
 </template>
@@ -30,16 +30,11 @@ import OvVideo from '@/components/common/OvVideo';
 export default {
   components: { SvgSleeping, OvVideo },
   props: {
-    desk: Object,
+    seat: Object,
     streamManager: Object,
   },
-  methods: {
-    clickDesk: function() {
-      alert(`${this.desk.userName} 클릭되었습니다.`);
-      this.$store.commit('SET_DESK', this.desk);
-      this.desk = '';
-    },
-  },
+  methods: {},
+  computed: {},
 };
 </script>
 <style scoped lang="scss">

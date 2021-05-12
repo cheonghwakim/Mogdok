@@ -52,58 +52,93 @@ import BtnRounded from '@/components/ui/BtnRounded';
 const expName = /^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]{2,10}$/;
 
 export default {
-   name: 'Join',
-   components: { Logo, BtnRounded },
-   props: {},
-   data() {
-      return {
-         // STEP1 : 닉네임 중복
-         first: false,
-         isShowInfo: false, // 닉네임 필드 하단 안내 표시 여부
-         isCheckNameDup: false, // 닉네임 중복 여부 체크 - 최종적으로 체크하는 역할
-         isValid: false, //유효성 검사 flag - 최종적으로 체크하는 역할
-         isError: false, // 에러일 경우 붉은 info박스
-         userName: '',
-         msg: '닉네임을 입력해주세요',
+  name: 'Join',
+  components: { Logo, BtnRounded },
+  props: {},
+  data() {
+    return {
+      // STEP1 : 닉네임 중복
+      first: false,
+      isShowInfo: false, // 닉네임 필드 하단 안내 표시 여부
+      isCheckNameDup: false, // 닉네임 중복 여부 체크 - 최종적으로 체크하는 역할
+      isValid: false, //유효성 검사 flag - 최종적으로 체크하는 역할
+      isError: false, // 에러일 경우 붉은 info박스
+      userName: '',
+      msg: '닉네임을 입력해주세요',
 
-         // STEP2 : 카테고리 선택
-         second: false,
-         categories: ['초등학생', '중학생', '고등학생', '고3/N수생', '대학생', '대학원', '편입준비생', '공무원', '고시생', '취업준비생', '자격증', '기타'],
-         selectCategory: '',
+      // STEP2 : 카테고리 선택
+      second: false,
+      categories: [
+        '초등학생',
+        '중학생',
+        '고등학생',
+        '고3/N수생',
+        '대학생',
+        '대학원',
+        '편입준비생',
+        '공무원',
+        '고시생',
+        '취업준비생',
+        '자격증',
+        '기타',
+      ],
+      selectCategory: '',
 
-         // STEP3 : 다짐 입력
-         third: false,
-         promise: '',
+      // STEP3 : 다짐 입력
+      third: false,
+      promise: '',
 
-         // STEP4 : 제출 단계
-         last: false,
-      };
-   },
-   computed: {
-      ...mapState({
-         userInfo: (state) => state.user.userInfo,
-      }),
-   },
-   watch: {
-      // userName 작성할 때마다 검사
-      userName: function() {
-         this.isValid = this.validation();
-         this.isCheckNameDup = false; // 새로 작성시, 중복 체크 여부 초기화
-      },
+      // STEP4 : 제출 단계
+      last: false,
+    };
+  },
+  computed: {
+    ...mapState({
+      userInfo: (state) => state.user.userInfo,
+    }),
+  },
+  watch: {
+    // userName 작성할 때마다 검사
+    userName: function() {
+      this.isValid = this.validation();
+      this.isCheckNameDup = false; // 새로 작성시, 중복 체크 여부 초기화
+    },
 
-      // 다짐이 작성되어 있으면, 제출 버튼 활성화
-      promise: function() {
-         if (this.promise.length === 0) {
-            this.last = false;
-         } else {
-            this.last = true;
-         }
-      },
-   },
-   //lifecycle area
-   created() {
-      if (!this.$store.state.user.userInfo.kakaoId || this.$store.state.user.userInfo.authToken || localStorage.getItem('authToken')) {
-         this.$router.replace({ path: '/' });
+    // 다짐이 작성되어 있으면, 제출 버튼 활성화
+    promise: function() {
+      if (this.promise.length === 0) {
+        this.last = false;
+      } else {
+        this.last = true;
+      }
+    },
+  },
+  //lifecycle area
+  created() {
+    if (this.$store.state.user.userInfo.authToken || localStorage.getItem('authToken')) {
+      this.$router.replace({ path: '/' });
+    }
+    setTimeout(() => {
+      this.first = true;
+    }, 500);
+  },
+  methods: {
+    // STEP1 : 닉네임 중복
+    validation: function() {
+      if (this.userName.length == 0) {
+        this.isShowInfo = false;
+        return false;
+      } else if (!expName.test(this.userName.trim())) {
+        //닉네임유효성검사
+        this.msg = '2~10글자 사이의 한글,영문,숫자만 사용가능';
+        this.isError = true;
+        this.isShowInfo = true;
+        return false;
+      } else {
+        //유효성 검사 통과
+        this.msg = '';
+        this.isShowInfo = false;
+        return true;
       }
       setTimeout(() => {
          this.first = true;

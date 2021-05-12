@@ -16,18 +16,22 @@ export default {
   watch: {},
   //lifecycle area
   created() {
-    this.GET_AUTH_TOKEN(this.$route.query.code).then(async () => {
-      try {
-        let movePath = 'Login';
-        const status = await this.LOGIN();
-        if (status === 'ok') movePath = 'Enterance';
-        else if (status === 'join') movePath = 'Join';
-        this.$router.replace({ name: movePath });
-      } catch (e) {
-        alert(e);
-        this.$router.replace({ name: 'Login' });
-      }
-    });
+    this.GET_AUTH_TOKEN(this.$route.query.code)
+      .then(async () => {
+        try {
+          let movePath = 'Login';
+          const status = await this.LOGIN();
+          if (status === 'ok') movePath = 'Enterance';
+          else if (status === 'join') movePath = 'Join';
+          this.$router.replace({ name: movePath });
+        } catch (e) {
+          alert(e);
+          this.$router.replace({ name: 'Login' });
+        }
+      })
+      .catch((error) => {
+        alert('로그인 문제가 발생했어요.' + error);
+      });
   },
   methods: {
     ...mapActions(['GET_AUTH_TOKEN', 'LOGIN']),

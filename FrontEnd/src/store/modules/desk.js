@@ -79,17 +79,18 @@ const actions = {
 // state의 변화를 일으키는 곳, state 조작 수행 | commit으로 호출
 // mutation의 함수는 대문자 , Snake_Case 로 표현하는게 컨벤션
 const mutations = {
-   SET_DESK: function(state, payload) {
-      state.desk = payload;
-      state.isOpenProfile = true;
-   },
-   CLEAR_DESK: function(state) {
-      state.desk = null;
-      state.isOpenProfile = false;
-   },
-   SET_DESK_ID(state, payload) {
-      state.deskId = payload;
-   },
+  SET_DESK: function(state, payload) {
+    state.desk = payload;
+  },
+  CLEAR_DESK: function(state) {
+    state.desk = null;
+  },
+  SET_DESK_ID(state, payload) {
+    state.deskId = payload;
+  },
+  TOGGLE_PROFILE(state) {
+    state.isOpenProfile = !state.isOpenProfile;
+  },
 };
 
 export default {

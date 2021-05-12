@@ -7,11 +7,11 @@ function getAllRooms(success, fail) {
     .catch(fail);
 }
 
-function getSeatInfo({ roomId }, success, fail) {
+function getSeatList({ roomId }, success, fail) {
   roomInstance
     .get(`seats/${roomId}`)
     .then(success)
     .catch(fail);
 }
 
-export { getAllRooms, getSeatInfo };
+export { getAllRooms, getSeatList };
