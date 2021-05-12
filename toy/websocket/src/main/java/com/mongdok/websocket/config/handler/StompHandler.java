@@ -2,6 +2,7 @@ package com.mongdok.websocket.config.handler;
 
 import com.mongdok.websocket.model.RoomMessage;
 import com.mongdok.websocket.model.Seat;
+import com.mongdok.websocket.model.SeatInfo;
 import com.mongdok.websocket.model.enums.MessageType;
 import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.repository.SeatRepository;
@@ -42,18 +43,14 @@ public class StompHandler implements ChannelInterceptor {
 
         if(StompCommand.CONNECT == accessor.getCommand()) {
             String jwtToken = accessor.getFirstNativeHeader("token");
-            log.info("jwt: {}", jwtToken);
-            log.info("sessionId: {}", message.getHeaders().get("simpSessionId"));
             roomRepository.setTokenInfo((String) message.getHeaders().get("simpSessionId"), jwtToken);
         }
         else if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
             // 헤더정보에서 구독 destination정보를 얻고 sessionId를 추출한다.
             String roomId = roomService.getRoomId((String) Optional.ofNullable(message.getHeaders().get("simpDestination")).orElse("InvalidSessionId"));
-            log.info("SUB - roomId : {}", roomId);
 
             // 열람실에 들어온 클라이언트 userId를 sessionId와 맵핑해 놓는다. (추후 특정 클라이언트가 어떤 열람실에 있는지 알기 위함)
             String sessionId = (String) message.getHeaders().get("simpSessionId");
-            log.info("SUB - sessionId : {}", sessionId);
             roomRepository.setRoomEnterInfo(sessionId, roomId);
 
             // 열람실의 인원 수를 +1한다.
@@ -64,8 +61,6 @@ public class StompHandler implements ChannelInterceptor {
 
             String userName = jwtUtil.getUserName(token);
             String userId = jwtUtil.getUserId(token);
-            log.info("userName : {}", userName);
-            log.info("userId : {}", userId);
 
             // 클라이언트 입장 메시지를 채팅방에 발송한다.
             roomService.sendMessage(RoomMessage.builder().type(MessageType.ENTER)
@@ -80,36 +75,56 @@ public class StompHandler implements ChannelInterceptor {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = roomRepository.getRoomEnterSessionId(sessionId);
 
+            log.info("[DISCONNECT] sessionId : {}", sessionId);
+            // token값을 꺼내온다.
+            String token = roomRepository.getTokenBySessionId(sessionId);
+            log.info("[DISCONNECT] token : {}", token);
+
+            String userName = "";
+            String userId = "";
+            int seatNo = 0;
+
+            if(token != null) {
+                userName = jwtUtil.getUserName(token);
+                userId = jwtUtil.getUserId(token);
+
+                Seat seat = seatRepository.findSeatByUserId(roomId, userId);
+
+                // 좌석정보가 있는 경우 ----> 시간 정보 저장
+                if (seat != null) {
+                    // TODO: 현재 토큰에 담긴 userId가 실제 id가 아니므로 DB오류 발생시킨다.
+                    seatNo = seat.getSeatNo();
+                    studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
+                    log.info("***** 공부기록 저장 *****");
+                }
+            }
+
             // 열람실의 인원 수를 -1한다.
             roomRepository.minusUserCount(roomId);
+            log.info("***** 인원 수 -1 *****");
 
             // 퇴장한 클라이언트의 sessionId 매핑 정보를 삭제한다.
             roomRepository.removeRoomEnterInfo(sessionId);
-
-            // token값을 꺼내온다.
-            String token = roomRepository.getTokenBySessionId(sessionId);
-
-            String userName = jwtUtil.getUserName(token);
-            String userId = jwtUtil.getUserId(token);
-            log.info("userName : {}", userName);
-            log.info("userId : {}", userId);
-
-            // 해당 유저의 퇴장 메시지를 열람실에 발송한다.
-            roomService.sendMessage(RoomMessage.builder().type(MessageType.QUIT).roomId(roomId).sender(userName).userId(userId).build());
-            log.info("DISCONNECT {} ----- {}", sessionId, roomId);
-
-            Seat seat = seatRepository.findSeatByUserId(roomId, userId);
-            
-            // 좌석정보가 있는 경우 ----> 시간 정보 저장
-            if(seat != null) {
-                // TODO: 현재 토큰에 담긴 userId가 실제 id가 아니므로 DB오류 발생시킨다.
-                studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
-            }
+            log.info("***** sessionId 매핑 정보를 삭제 *****");
 
             roomRepository.removeToken(sessionId);
+            log.info("***** 토큰 삭제 *****");
 
             // TODO: 좌석정보 삭제
             seatRepository.removeSeatInfo(roomId, userId);
+            log.info("***** 좌석정보 삭제 *****");
+
+            SeatInfo seatInfo = SeatInfo.builder().seatNo(seatNo).build();
+
+            // 해당 유저의 퇴장 메시지를 열람실에 발송한다.
+            roomService.sendMessage(RoomMessage.builder()
+                    .type(MessageType.QUIT)
+                    .roomId(roomId)
+                    .sender(userName)
+                    .userId(userId)
+                    .seatInfo(seatInfo)
+                    .build());
+            log.info("DISCONNECT {} ----- {}", sessionId, roomId);
         }
         return message;
     }

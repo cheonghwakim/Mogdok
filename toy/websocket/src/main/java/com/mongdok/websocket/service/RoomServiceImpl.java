@@ -1,6 +1,7 @@
 package com.mongdok.websocket.service;
 
 import com.mongdok.websocket.model.RoomMessage;
+import com.mongdok.websocket.model.Seat;
 import com.mongdok.websocket.model.enums.MessageType;
 import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.repository.SeatRepository;
@@ -29,6 +30,9 @@ public class RoomServiceImpl implements RoomService{
 
     @Autowired
     private SeatRepository seatRepository;
+
+    @Autowired
+    private StudyLogService studyLogService;
 
     /**
      * destination정보에서 sessionId추출
@@ -77,6 +81,24 @@ public class RoomServiceImpl implements RoomService{
                                               roomMessage.getUserId(),
                                               roomMessage.getSeatInfo());
                 break;
+            case END:
+                // TODO: 좌석반납처리 구현
+                log.info("***** END *****");
+                Seat seat = seatRepository.findSeatByUserId(roomMessage.getRoomId(), roomMessage.getUserId());
+                
+                // 가지고 있는 좌석이 없는 경우
+                if(seat == null) {
+                    log.info("가지고 있는 좌석이 없습니다.");
+                    return;
+                }
+                // 좌석정보가 있는 경우 ----> 시간 정보 저장
+                log.info("SEAT USER ID : {}", seat.getUserId());
+                studyLogService.saveLog(seat.getUserId(), seat.getTimestampList(), seat.getAllocateTime());
+                log.info("***** 공부기록 저장 *****");
+
+                seatRepository.removeSeatInfo(roomMessage.getRoomId(), roomMessage.getUserId());
+                log.info("***** 좌석정보 삭제 *****");
+
         }
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), roomMessage);
