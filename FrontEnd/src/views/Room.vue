@@ -99,9 +99,13 @@ export default {
       }
     },
     leaveSession() {
+      console.log('%cRoom.vue line:102 beforeunload', 'color: #007acc;');
       // 현재 접속 중인 세션을 나간다. (disconnect)
       // TODO: close버튼을 클릭하는게 아니라 이 부분에서도 자원해제를 해야하는지 판단후 적용
+      this.$store.dispatch('LEAVE_SESSION');
+      this.$store.commit('CLEAR_CONNECT');
       window.removeEventListener('beforeunload', this.leaveSession);
+      this.$router.replace('/');
     },
     async clickDesk(seat, index) {
       if (seat) {

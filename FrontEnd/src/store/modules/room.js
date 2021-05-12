@@ -78,6 +78,8 @@ const actions = {
       (message) => {
         console.log(message);
         const res = JSON.parse(message.body);
+        // TODO: sender가 '나'일때 처리 userRoomState 변경
+        // TODO: 각 사용자의 변경된 상태를 적용해야함
         if (res.type === 'SEAT_ALLOCATED') {
           console.log('%croom.js line:81 res', 'color: #007acc;', res);
           // 자리앉기
@@ -97,8 +99,6 @@ const actions = {
           // 소켓마저 끊김
           commit('REMOVE_SEAT_INFO', { index: res.seatInfo.seatNo - 1 });
           commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
-        } else {
-          alert('알 수 없는 오류가 발생했습니다. 다시 시도해주세요.');
         }
       },
       (error) => {
@@ -108,17 +108,10 @@ const actions = {
   },
   CONNECT_ROOM_WITH_OPENVIDU({ state, rootState, commit }) {
     // userName을 이용해서 자리 매칭
-    console.log(
-      '%croom.js line:98 rootState.openvidu.subscribers',
-      'color: #007acc;',
-      rootState.openvidu.subscribers
-    );
     loop: for (let i = 0; i < state.seatList.length; i++) {
       if (!state.seatList[i]) continue;
-      console.log('%croom.js line:106 state.seatList[i]', 'color: #007acc;', state.seatList[i]);
       for (let j = 0; j < rootState.openvidu.subscribers.length; j++) {
         const subscriber = rootState.openvidu.subscribers[j];
-        console.log('%croom.js line:108 subscriber', 'color: #007acc;', subscriber);
         if (state.seatList[i].userName === subscriber.stream.connection.data) {
           commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, subscriber });
           continue loop;
@@ -127,33 +120,32 @@ const actions = {
       commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, undefined });
     }
   },
-  SEND_SEAT_ALLOCATED({ state, rootState, commit }, { seatNo }) {
+  async SEND_SEAT_ALLOCATED({ state, rootState, commit, dispatch }, { seatNo }) {
     commit('SET_USER_SEAT_NO', seatNo);
-    return new Promise((resolve, reject) => {
-      if (state.userRoomState !== ROOM_STUDY_TYPE_NO_ACTION) {
-        reject('이미 앉아있는 좌석이 있습니다. 자리에서 일어나서 시도해주세요.');
-        return;
-      }
-      try {
-        state.stomp.send(
-          `/pub/room/message`,
-          JSON.stringify({
-            type: ROOM_MESSAGE_SEAT_ALLOCATED,
-            roomId: state.roomInfo.roomId,
-            seatInfo: {
-              seatNo,
-              studyType: ROOM_STUDY_TYPE_PAUSE,
-            },
-          }),
-          { token: rootState.user.userInfo.authToken }
-        );
-        resolve();
-      } catch (error) {
-        reject(error);
-      }
-    });
+    const hasAlreadySeat = await dispatch('HAS_ALREADY_SEAT');
+    if (hasAlreadySeat) {
+      return Promise.reject('이미 앉아있는 좌석이 있습니다. 자리에서 일어나서 시도해주세요.');
+    }
+    try {
+      state.stomp.send(
+        `/pub/room/message`,
+        JSON.stringify({
+          type: ROOM_MESSAGE_SEAT_ALLOCATED,
+          roomId: state.roomInfo.roomId,
+          seatInfo: {
+            seatNo,
+            studyType: ROOM_STUDY_TYPE_PAUSE,
+          },
+        }),
+        { token: rootState.user.userInfo.authToken }
+      );
+    } catch (error) {
+      return Promise.reject(error);
+    }
   },
-  SEND_SEAT_END({ state, rootState, commit }) {
+  async SEND_SEAT_END({ state, rootState, commit, dispatch }) {
+    // 카메라 ON/OFF 끄는 것 비동기로 되도록?
+    await dispatch('CAMERA_OFF', { root: true });
     return new Promise((resolve, reject) => {
       try {
         state.stomp.send(
@@ -188,6 +180,16 @@ const actions = {
         break;
       }
     }
+  },
+  HAS_ALREADY_SEAT({ state, rootState }) {
+    for (let i = 0; i < state.seatList.length; i++) {
+      if (state.seatList[i] && state.seatList[i].userName === rootState.user.userInfo.userName) {
+        console.log('%croom.js line:194 true?', 'color: #007acc;');
+        return true;
+      }
+    }
+    console.log('%croom.js line:198 no', 'color: #007acc;');
+    return false;
   },
 };
 

@@ -128,11 +128,7 @@ export default {
   },
   //lifecycle area
   created() {
-    if (
-      !this.$store.state.user.userInfo.kakaoId ||
-      this.$store.state.user.userInfo.authToken ||
-      localStorage.getItem('authToken')
-    ) {
+    if (this.$store.state.user.userInfo.authToken || localStorage.getItem('authToken')) {
       this.$router.replace({ path: '/' });
     }
     setTimeout(() => {
