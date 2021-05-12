@@ -1,36 +1,44 @@
 <template lang="">
    <div v-dragscroll="true" class="desk">
-      <div>
-         <button @click="editComplete">편집완료(저장)</button>
-         <button @click="$store.dispatch('CREATE_MEMO')">메모 생성</button>
-         <button v-show="selectedMemoIdx >= 0" @click="$store.commit('REMOVE_MEMO')">
-            이 메모 삭제하기
-         </button>
-         <button v-show="selectedMemoIdx >= 0" @click="$store.commit('SET_MEMO_EDIT_DIALOG', true)">
-            내용 작성하기
-         </button>
-         <button v-for="index in 5" :key="'color' + index" v-show="editable && selectedMemoIdx >= 0" @click="$store.commit('SET_SELECTED_MEMO_COLOR', index)">색상-{{ index }}로 변경</button>
-      </div>
-      <!-- <div class="info borrow">
-         <div class="info-content">
-            <btn-close class="btnClose" @onClick="exitDesk"></btn-close>
-            <p class="userName kyoboHand">편집화면</p>
-            <p class="cate kyoboHand">#편집</p>
+      <!-- 최상단 에디팅 관련 DIV -->
+      <div class="top-editor-wrapper">
+         <div class="first-row">
+            <!-- 메모 생성 -->
+            <div class="btn btn-add" @click="$store.dispatch('CREATE_MEMO', moveableState)"></div>
+            <span>Desk Editor</span>
+            <!-- 메모 저장 -->
+            <div class="btn btn-save" @click="editComplete"></div>
          </div>
-         <div-banner></div-banner>
-      </div> -->
-      <div class="desk-shader"></div>
+         <transition name="memo-down">
+            <div v-show="selectedMemoIdx >= 0" class="second-row">
+               <!-- 메모 글 작성 -->
+               <div class="btn btn-write" @click="toggleModal"></div>
+               <div
+                  class="btn btn-color"
+                  v-for="(item, index) in memoColor"
+                  :key="'color' + index"
+                  :style="{ 'background-color': item.code }"
+                  @click="$store.commit('SET_SELECTED_MEMO_COLOR', index)"
+               ></div>
+               <!-- 메모 삭제 -->
+               <div class="btn btn-delete" @click="$store.commit('REMOVE_MEMO')"></div>
+            </div>
+         </transition>
+      </div>
+
+      <!-- 메모가 들어가는 영역 -->
       <div class="desk-wrapper">
          <div class="desk-draw-area">
             <vue-moveable
                v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memoList"
-               :key="'memo' + memoId"
+               :key="'memo' + memoId + index"
                class="moveable-container"
                v-bind="moveable"
                @drag="handleDrag"
                @renderEnd="handleRenderEnd(index, ...arguments)"
                @rotate="handleRotate"
                @scale="handleScale"
+               @dblclick.native="toggleModal"
                @mousedown.native="$store.dispatch('UPDATE_SELECTED_MEMO_UI_BY_INDEX', index)"
                :style="{ zIndex, transform }"
             >
@@ -40,10 +48,15 @@
          <svg-desk></svg-desk>
       </div>
 
-      <div class="modal" v-show="dialog">
-         <div v-if="memoList[selectedMemoIdx]" class="modal-content">
-            <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="input-box" />
-            <span class="close" @click="$store.commit('SET_MEMO_EDIT_DIALOG', false)">닫기</span>
+      <!-- 글 작성 모달 -->
+      <div class="memoInputModal" v-show="isOpenModal">
+         <div v-if="memoList[selectedMemoIdx]" class="memo-Modal-content" :style="{ 'background-color': memoColor[memoList[selectedMemoIdx].color].code }">
+            <p class="title">POST-IT</p>
+            <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="kyoboHand" placeholder="메모 내용을 작성해주세요" />
+            <p class="desc">메모 내용이 실시간으로 작성됩니다 😛</p>
+            <div v-wave class="btn-close" @click="toggleModal">
+               CLOSE
+            </div>
          </div>
       </div>
    </div>
@@ -53,8 +66,6 @@ import { dragscroll } from 'vue-dragscroll';
 import VueMoveable from 'vue-moveable';
 import SvgDesk from '@/components/svg/SvgDesk';
 import SvgMemo from '@/components/svg/SvgMemo';
-// import DivBanner from '@/components/ui/DivBanner'; DivBanner
-// import BtnClose from '@/components/ui/BtnClose'; BtnClose
 import { mapState } from 'vuex';
 
 export default {
@@ -62,30 +73,115 @@ export default {
    components: { SvgDesk, VueMoveable, SvgMemo },
    props: {},
    data() {
-      return {};
+      return {
+         // 메모 글 작성을 위한 모달
+         isOpenModal: false,
+
+         // 포스트잇 색상 리스트 (with SvgMemo)
+         memoColor: [
+            {
+               title: 'white',
+               code: '#FFFFFF',
+            },
+            {
+               title: 'yelloe',
+               code: '#FAFFDC',
+            },
+            {
+               title: 'red',
+               code: '#FFE2E2',
+            },
+            {
+               title: 'blue',
+               code: '#DAEBFF',
+            },
+         ],
+
+         // 움직일 수 있는 상태 (=편집 모드 접근 상태)
+         moveableState: {
+            draggable: true, // changed
+            scalable: true, // changed
+            rotatable: true, // changed
+            resizable: false,
+            pinchable: true, // changed
+            throttleDrag: 0,
+            keepRatio: true,
+            throttleScale: 0,
+            throttleRotate: 0,
+            origin: false,
+            zoom: 1,
+            className: 'moveable', // changed
+            snappable: true,
+            bounds: { left: 0, top: 0, right: 1000, bottom: 600 }, // 메모가 움직이는 최대 범위
+            container: null, // 어느 요소 밑으로 넣을지 결정
+         },
+      };
    },
    directives: {
       dragscroll,
    },
    computed: {
       ...mapState({
-         deskId: (state) => state.desk.deskId,
-         memoList: (state) => state.deskedit.memoList,
-         ddayList: (state) => state.deskedit.ddayList,
-         boardList: (state) => state.deskedit.boardList,
-         selectedMemoIdx: (state) => state.deskedit.selectedMemoIdx,
-         editable: (state) => state.deskedit.editable,
-         dialog: (state) => state.deskedit.memoEditDialog,
-         removedMemoList: (state) => state.deskedit.removedMemoList,
+         deskId: (state) => state.desk.deskId, // 보고있는 책상의 ID
+         memoList: (state) => state.deskedit.memoList, //  책상의 메모들
+         ddayList: (state) => state.deskedit.ddayList, //  책상의 디데이들
+         boardList: (state) => state.deskedit.boardList, // 책상의 방명록(쪽지)
+         selectedMemoIdx: (state) => state.deskedit.selectedMemoIdx, // 현재 선택한 메모의 인덱스
+         editable: (state) => state.deskedit.editable, // 편집 가능한 상태여부
+         removedMemoList: (state) => state.deskedit.removedMemoList, //삭제된 메모리스트
       }),
    },
-   watch: {},
    //lifecycle area
-   created() {
-      this.edit();
+   mounted() {
+      console.log('> DeskEdit : mounted');
+
+      // 책상 편집 화면 초기 셋팅
+      this.initDeskEdit();
    },
    methods: {
+      // 책상 편집 초기 셋팅
+      initDeskEdit: async function() {
+         // 컨테이너를 넣을 요소를 객체에 할당
+         const elem = document.getElementsByClassName('desk-draw-area')[0];
+         this.moveableState.container = elem;
+
+         // 편집하는 책상의 정보들을 VUEX에 셋팅
+         await this.$store.dispatch('GET_DESK_ALL_MEMO_4_EDIT', this.moveableState);
+
+         // #JS : 이 부분은 desk.js action 내에서 동기적으로 처리해도 좋을듯
+         // #JS : (하지만 VUEX를 유지할지 안할지 몰라서 일단 이곳에 작성)
+         this.$store.commit('SET_EDIT_STATE', true); // 편집을 가능 상태로 변경
+         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
+         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
+      },
+      // 편집완료 처리
+      editComplete() {
+         this.saveMemo(); // 메모 저장
+         this.$store.commit('SET_EDIT_STATE', false); // 편집 불가능 상태로 변경
+         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
+         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
+         this.$router.replace({ name: 'Desk' });
+      },
+      saveMemo() {
+         // TODO: 비동기처리 필수
+         this.$store.dispatch('SAVE_MEMO_LIST');
+         this.$store.dispatch('DELETE_MEMO_LIST');
+      },
+
+      // 글 작성용 모달
+      toggleModal: function() {
+         this.isOpenModal = !this.isOpenModal;
+      },
+
+      // ======================================================
+      // Moveable 제어용 메소드
       handleDrag({ target, transform }) {
+         target.style.transform = transform;
+      },
+      handleRotate({ target, transform }) {
+         target.style.transform = transform;
+      },
+      handleScale({ target, transform }) {
          target.style.transform = transform;
       },
       handleRenderEnd(index, event) {
@@ -94,41 +190,7 @@ export default {
             transform: event.target.style.transform,
          });
       },
-      handleRotate({ target, transform }) {
-         target.style.transform = transform;
-      },
-      handleScale({ target, transform }) {
-         target.style.transform = transform;
-      },
-      edit() {
-         this.$store.commit('SET_EDIT_STATE', true); // 편집을 가능 상태로 변경
-         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
-         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
-         // 모든 메모지를 이동가능한 상태로 업데이트
-         for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, true);
-      },
-      editComplete() {
-         this.saveMemo(); // 메모 저장
-         this.$store.commit('SET_EDIT_STATE', false); // 편집 불가능 상태로 변경
-         this.$store.commit('SET_REMOVED_MEMO_LIST', []); // 삭제했던 리스트 초기화
-         this.$store.commit('SET_SELECTED_MEMO_IDX', -1); // 클릭된 메모 없음 상태로 변경
-         // 모든 메모지를 움직일 수 없는 상태로 업데이트
-         for (let i = 0; i < this.memoList.length; i++) this.setMemoState(i, false);
-         this.$router.replace({ name: 'Desk' });
-      },
-      setMemoState(index, state) {
-         // 메모지 상태 업데이트
-         this.$store.commit('SET_MEMO_CLASSNAME_BY_INDEX', {
-            index,
-            className: state ? 'moveable' : 'movedisable',
-         });
-         this.$store.commit('SET_MEMO_MOVEABLE_STATUS_BY_INDEX', { index, status: state });
-      },
-      saveMemo() {
-         // TODO: 비동기처리 필수
-         this.$store.dispatch('SAVE_MEMO_LIST');
-         this.$store.dispatch('DELETE_MEMO_LIST');
-      },
+
       exitDesk() {
          console.log('exitDesk?');
       },
@@ -138,104 +200,103 @@ export default {
 <style scoped lang="scss">
 @import 'src/assets/css/common';
 
-/* $desk-width: 1280px; */
-
 .desk {
-   /* margin-top: $HeaderHeight; */
-   /* margin-bottom: 60px; */
-
    width: 100%;
-   /* height: calc(100% - #{$HeaderHeight}); */
 
    display: flex;
    flex-direction: column;
 
    overflow: hidden;
-   /* overflow-x: auto; // hidden으로 해도, npm에서 드래그 제공 */
 
-   // 몽실이가 안내하는 화면
-   .caution {
+   /* 에디팅 관련 영역 */
+   .top-editor-wrapper {
+      position: fixed;
+      top: 1vmax;
+      left: 50%;
+      transform: translate(-50%, 1vmax);
+
       width: 300px;
-      height: 200px;
+      height: 90px;
 
-      background-color: rgb(255, 255, 255);
+      border-radius: 50px;
+      background-color: white;
       box-shadow: 0px 9px 20px 0px #56565629;
-      border-radius: 20px;
+      z-index: 30;
 
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
 
-      img {
-         width: 40%;
-      }
+      padding: 0px 20px;
 
-      .desc {
-         color: rgb(43, 43, 43);
-         font-size: 12pt;
+      .first-row {
+         width: 80%;
+         display: flex;
+         align-items: center;
+         justify-content: space-around;
 
          span {
-            font-family: inherit;
-            color: rgb(247, 85, 85);
-            font-weight: bold;
+            font-size: 10pt;
+            font-weight: 600;
+            margin-bottom: 7px;
          }
       }
-   }
 
-   /* 상단에 표시되는 책상의 이름 안내 요소 */
-   .info {
-      position: fixed;
-      top: 1vmax;
-      left: 50%;
-      transform: translate(-50%, -2vmax);
-
-      transition: transform 1s ease;
-
-      z-index: 11;
-
-      width: 280px;
-
-      text-align: center;
-
-      .info-content {
-         position: absolute;
-         top: 50%;
-         left: 50%;
-         transform: translate(-50%);
-
+      .second-row {
          width: 90%;
+         display: flex;
+         align-items: center;
+         justify-content: space-around;
+         margin-top: 10px;
 
-         .btnClose {
-            position: absolute;
-            top: 20%;
-            right: 10px;
+         background-color: rgba(227, 227, 227, 0.495);
+         border-radius: 30px;
+         padding: 5px;
+      }
 
+      .btn {
+         width: 25px;
+         height: 25px;
+         cursor: pointer;
+
+         &.btn-add {
+            background-image: url('../assets/img/emoji/pencil.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+         }
+         &.btn-delete {
+            background-image: url('../assets/img/emoji/wastebasket.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+         }
+         &.btn-write {
+            background-image: url('../assets/img/emoji/write.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+         }
+         &.btn-color {
             width: 20px;
-            height: auto;
+            height: 20px;
+            border: 1px solid rgb(159, 159, 159);
+            border-radius: 50%;
+            margin: 3px;
          }
-
-         .userName {
-            font-size: 18pt;
-         }
-
-         .cate {
-            font-size: 14pt;
-            margin-top: 5px;
-            color: rgb(150, 150, 150);
+         &.btn-save {
+            background-image: url('../assets/img/emoji/save.png');
+            background-repeat: no-repeat;
+            background-size: cover;
          }
       }
+
+      /* .color-box {
+         width: 70px;
+         display: flex;
+         flex-wrap: wrap;
+      } */
    }
 
-   /* .desk-shader {
-      position: fixed;
-      bottom: 50px;
-      width: 100vw;
-      height: 50px;
-      background-color: red;
-      background-image: linear-gradient(270deg, var(--white), var(--white) 40%, rgba(var(--white-rgb), 0));
-   } */
-
+   /* 메모 들어가는 영역 */
    .desk-wrapper {
       cursor: grab; // 드래그 영역에선 grap으로 표시
 
@@ -262,57 +323,110 @@ export default {
    }
 }
 
-.fade-enter-active,
-.fade-leave-active {
-   transition: all 1s ease;
-}
-.fade-enter,
-.fade-leave-to {
-   opacity: 0;
-}
-
-/* The Modal (background) */
-.modal {
+/* 메모 입력 모달 */
+.memoInputModal {
    position: fixed; /* Stay in place */
-   z-index: 10000; /* Sit on top */
-   padding-top: 100px; /* Location of the box */
-   left: 0;
-   top: 0;
-   width: 100%; /* Full width */
-   height: 100%; /* Full height */
+   z-index: 100; /* Sit on top */
+
+   width: 100vw; /* Full width */
+   height: 100vh; /* Full height */
    overflow: auto; /* Enable scroll if needed */
+
    background-color: rgb(0, 0, 0); /* Fallback color */
-   background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
+   background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+
+   /* 본 CONTENTS */
+   .memo-Modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      width: 320px;
+      height: 480px;
+
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      p.title {
+         font-weight: 600;
+         font-size: 12pt;
+         margin-top: 30px;
+         margin-bottom: 20px;
+      }
+      p.detail {
+         font-size: 6pt;
+         color: gray;
+      }
+      p.desc {
+         margin-top: 10px;
+         font-size: 8pt;
+         color: rgb(84, 84, 84);
+      }
+
+      textarea {
+         width: 100%;
+         height: 300px;
+         padding: 16px;
+
+         resize: none;
+         outline: none;
+         border: none;
+         border-top: 1px solid rgb(216, 216, 216);
+         border-bottom: 1px solid rgb(216, 216, 216);
+         background-color: transparent;
+
+         font-size: 16pt;
+         line-height: 30px;
+         letter-spacing: 1.5px;
+
+         &:focus {
+            outline: none;
+         }
+         &::placeholder {
+            color: #2d2d2d;
+         }
+      }
+
+      .btn-close {
+         position: absolute;
+         bottom: 0;
+
+         width: 100%;
+         height: 60px;
+         cursor: pointer;
+
+         background-color: rgba(0, 0, 0, 0.4);
+         border-radius: 0 0 20px 20px;
+
+         font-weight: 600;
+         color: white;
+         letter-spacing: 8px;
+         line-height: 60px;
+         text-align: center;
+      }
+   }
 }
 
-/* Modal Content */
-.modal-content {
-   background-color: #fefefe;
-   margin: auto;
-   padding: 30px;
-   border: 1px solid #888;
-   width: 80%;
+/* 최상단에 떠있는 닫기 버튼 */
+.btn-close-top {
 }
 
-/* The Close Button */
-.close {
-   color: #aaaaaa;
-   float: right;
-   font-size: 20px;
-   font-weight: bold;
+/* 트랜지션 */
+.memo-down-enter-active {
+   transition: all 0.5s ease;
 }
-
-.close:hover,
-.close:focus {
-   color: #000;
-   text-decoration: none;
-   cursor: pointer;
+.memo-down-leave-active {
+   transition: all 0.2s ease;
 }
-
-textarea {
-   border: 2px solid;
-   border-radius: 5px;
-   width: 100%;
-   min-height: 10vh;
+.memo-down-enter,
+.memo-down-leave-to {
+   transform: translateY(10px);
+   opacity: 0;
 }
 </style>
