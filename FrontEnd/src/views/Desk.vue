@@ -102,7 +102,6 @@ export default {
          // 생성되자마자 서버에서 조회중이 책상의 모든 메모 GET -> VUEX 셋팅
          this.$store.dispatch('GET_DESK_ALL_MEMO', this.moveFixedState);
       },
-
       exitDesk: function() {
          let isExit = confirm(`책상을 떠나시겠습니까?`);
 

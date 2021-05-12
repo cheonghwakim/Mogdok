@@ -11,7 +11,6 @@ const state = () => ({
    selectedMemoIdx: -1,
    editable: false,
    removedMemoList: [],
-   memoEditDialog: false,
    createMemoKeyIndex: 0,
    zIndexCount: 0,
 });
@@ -134,9 +133,6 @@ const mutations = {
    SET_SELECTED_MEMO_CONTENT(state, payload) {
       if (state.selectedMemoIdx < 0) return;
       state.memoList[state.selectedMemoIdx].content = payload;
-   },
-   SET_MEMO_EDIT_DIALOG(state, payload) {
-      state.memoEditDialog = payload;
    },
    SET_SELECTED_MEMO_COLOR(state, payload) {
       if (state.selectedMemoIdx < 0) return;

@@ -12,7 +12,7 @@
          <transition name="memo-down">
             <div v-show="selectedMemoIdx >= 0" class="second-row">
                <!-- 메모 글 작성 -->
-               <div class="btn btn-write" @click="$store.commit('SET_MEMO_EDIT_DIALOG', true)"></div>
+               <div class="btn btn-write" @click="toggleModal"></div>
                <div
                   class="btn btn-color"
                   v-for="(item, index) in memoColor"
@@ -48,10 +48,15 @@
       </div>
 
       <!-- 글 작성 모달 -->
-      <div class="modal" v-show="dialog">
-         <div v-if="memoList[selectedMemoIdx]" class="modal-content">
-            <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="input-box" />
-            <span class="close" @click="$store.commit('SET_MEMO_EDIT_DIALOG', false)">닫기</span>
+      <div class="memoInputModal" v-show="isOpenModal">
+         <div v-if="memoList[selectedMemoIdx]" class="memo-Modal-content">
+            <p class="title">POST-IT</p>
+            <!-- <p class="detail">{{ modalDetailInfo }}</p> -->
+            <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="kyoboHand" placeholder="메모 내용을 작성해주세요" />
+            <p class="desc">메모 내용이 실시간으로 작성됩니다 😛</p>
+            <div class="btn-close" @click="toggleModal">
+               CLOSE
+            </div>
          </div>
       </div>
    </div>
@@ -71,6 +76,9 @@ export default {
    props: {},
    data() {
       return {
+         // 메모 글 작성을 위한 모달
+         isOpenModal: false,
+
          // 포스트잇 색상 리스트 (with SvgMemo)
          memoColor: [
             {
@@ -122,9 +130,19 @@ export default {
          boardList: (state) => state.deskedit.boardList, // 책상의 방명록(쪽지)
          selectedMemoIdx: (state) => state.deskedit.selectedMemoIdx, // 현재 선택한 메모의 인덱스
          editable: (state) => state.deskedit.editable, // 편집 가능한 상태여부
-         dialog: (state) => state.deskedit.memoEditDialog, // 내용 변경을 위한 모달용
          removedMemoList: (state) => state.deskedit.removedMemoList, //삭제된 메모리스트
       }),
+
+      modalDetailInfo() {
+         var str = this.memoList[this.selectedMemoIdx].transform;
+
+         if (str) {
+            var ep = str.indexOf(') ');
+            console.log(str.substring(7, ep));
+         }
+
+         return this.memoList[this.selectedMemoIdx].transform;
+      },
    },
    //lifecycle area
    mounted() {
@@ -161,6 +179,11 @@ export default {
          // TODO: 비동기처리 필수
          this.$store.dispatch('SAVE_MEMO_LIST');
          this.$store.dispatch('DELETE_MEMO_LIST');
+      },
+
+      // 글 작성용 모달
+      toggleModal: function() {
+         this.isOpenModal = !this.isOpenModal;
       },
 
       // ======================================================
@@ -313,36 +336,93 @@ export default {
    }
 }
 
-.fade-enter-active,
-.fade-leave-active {
-   transition: all 1s ease;
-}
-.fade-enter,
-.fade-leave-to {
-   opacity: 0;
-}
-
-/* The Modal (background) */
-.modal {
+/* 메모 입력 모달 */
+.memoInputModal {
    position: fixed; /* Stay in place */
-   z-index: 10000; /* Sit on top */
-   padding-top: 100px; /* Location of the box */
-   left: 0;
-   top: 0;
-   width: 100%; /* Full width */
-   height: 100%; /* Full height */
-   overflow: auto; /* Enable scroll if needed */
-   background-color: rgb(0, 0, 0); /* Fallback color */
-   background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
-}
+   z-index: 100; /* Sit on top */
 
-/* Modal Content */
-.modal-content {
-   background-color: #fefefe;
-   margin: auto;
-   padding: 30px;
-   border: 1px solid #888;
-   width: 80%;
+   width: 100vw; /* Full width */
+   height: 100vh; /* Full height */
+   overflow: auto; /* Enable scroll if needed */
+
+   background-color: rgb(0, 0, 0); /* Fallback color */
+   background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+
+   /* 본 CONTENTS */
+   .memo-Modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      width: 320px;
+      height: 480px;
+
+      background-color: #fefefe;
+      border-radius: 20px;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      p.title {
+         font-weight: 600;
+         font-size: 12pt;
+         margin-top: 30px;
+         margin-bottom: 20px;
+      }
+      p.detail {
+         font-size: 6pt;
+         color: gray;
+      }
+      p.desc {
+         margin-top: 10px;
+         font-size: 8pt;
+         color: rgb(84, 84, 84);
+      }
+
+      textarea {
+         width: 100%;
+         height: 300px;
+         padding: 16px;
+
+         resize: none;
+         outline: none;
+         border: none;
+         border-top: 1px solid rgb(216, 216, 216);
+         border-bottom: 1px solid rgb(216, 216, 216);
+
+         font-size: 16pt;
+         line-height: 30px;
+         letter-spacing: 1.5px;
+
+         &:focus {
+            outline: none;
+         }
+         &::placeholder {
+            color: #2d2d2d;
+         }
+      }
+
+      .btn-close {
+         position: absolute;
+         bottom: 0;
+
+         width: 100%;
+         height: 60px;
+         cursor: pointer;
+
+         background-color: rgb(12, 211, 135);
+         border-radius: 0 0 20px 20px;
+
+         font-weight: 600;
+         color: white;
+         letter-spacing: 8px;
+         line-height: 60px;
+         text-align: center;
+      }
+   }
 }
 
 /* The Close Button */
@@ -358,13 +438,6 @@ export default {
    color: #000;
    text-decoration: none;
    cursor: pointer;
-}
-
-textarea {
-   border: 2px solid;
-   border-radius: 5px;
-   width: 100%;
-   min-height: 10vh;
 }
 
 .memo-down-enter-active {
