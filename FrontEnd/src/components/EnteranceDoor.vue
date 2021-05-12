@@ -1,10 +1,10 @@
 <template lang="">
   <div class="door" @click="$emit('click')">
-    <p>{{ this.room.roomTitle }}</p>
+    <p>{{ room.name }}</p>
     <div-num-person
       class="NumOfPerson"
-      :current="this.room.roomCurrent"
-      :limit="this.room.roomLimit"
+      :current="room.userCount"
+      :limit="room.limitUserCount"
     ></div-num-person>
     <svg
       id="svgDoor"

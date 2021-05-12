@@ -1,27 +1,27 @@
 .moveable-container {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 200px;
-  height: 200px;
+   position: absolute;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 200px;
+   height: 200px;
 }
 .moveable .moveable-line {
-  background: black !important;
+   background: black !important;
 }
 .moveable .moveable-control {
-  display: none;
+   display: none;
 }
 .moveable .moveable-rotation-line {
-  display: none;
+   display: none;
 }
 
-.movedisable .moveable-line,
+.moveDisable .moveable-line,
 .moveable-control {
-  display: none;
+   display: none;
 }
 .clicked .moveable-control,
 .moveable-line,
 .moveable-rotation-line {
-  display: block;
+   display: block;
 }

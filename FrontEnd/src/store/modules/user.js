@@ -1,4 +1,4 @@
-import { getAuthToken, login } from '../../api/user';
+import { getAuthToken, login, loginByAuthToken } from '../../api/user';
 
 const state = () => ({
   userInfo: {},
@@ -9,13 +9,15 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-  GET_AUTH_TOKEN({ commit }, code) {
-    return getAuthToken(
+  async GET_AUTH_TOKEN({ commit }, code) {
+    return await getAuthToken(
       { authorizeCode: code },
       (res) => {
         commit('SET_KAKAO_ID', res.data);
       },
-      () => {}
+      (error) => {
+        alert('카카오아이디를 받아오는데 실패했습니다. ' + error);
+      }
     );
   },
   LOGIN({ state, commit }) {
@@ -31,11 +33,22 @@ const actions = {
             resolve('join');
           }
         },
-        () => {
-          reject();
+        (error) => {
+          reject(error);
         }
       );
     });
+  },
+  async LOGIN_BY_AUTH_TOKEN({ commit }, token) {
+    commit('SET_AUTH_TOKEN', token);
+    await loginByAuthToken(
+      (res) => {
+        commit('SET_USER_INFO', res.data);
+      },
+      (error) => {
+        alert(error);
+      }
+    );
   },
 };
 
@@ -54,6 +67,9 @@ const mutations = {
   },
   SET_VIDEO_SOURCE(state, payload) {
     state.videoSource = payload;
+  },
+  SET_AUTH_TOKEN(state, payload) {
+    state.userInfo.authToken = payload;
   },
 };
 

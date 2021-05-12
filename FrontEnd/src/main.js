@@ -5,10 +5,12 @@ import VueDragscroll from 'vue-dragscroll';
 import VueLottiePlayer from 'vue-lottie-player';
 import store from './store';
 import './utils/filters';
+import VWave from 'v-wave';
 
 Vue.config.productionTip = false;
 Vue.use(VueDragscroll);
 Vue.use(VueLottiePlayer);
+Vue.use(VWave);
 
 new Vue({
    router,

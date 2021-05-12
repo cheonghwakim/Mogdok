@@ -7,19 +7,24 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "production":"vue-cli-service serve --mode production",
+    "development":"vue-cli-service serve --mode development"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "openvidu-browser": "^2.17.0",
+    "sockjs-client": "^1.5.1",
+    "v-wave": "^1.2.8",
     "vue": "^2.6.11",
     "vue-dragscroll": "^3.0.0",
     "vue-lottie-player": "^0.1.9",
     "vue-moveable": "^1.8.10",
     "vue-router": "^3.5.1",
     "vuex": "^3.6.2",
-    "vuex-persistedstate": "^4.0.0-beta.3"
+    "vuex-persistedstate": "^4.0.0-beta.3",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
