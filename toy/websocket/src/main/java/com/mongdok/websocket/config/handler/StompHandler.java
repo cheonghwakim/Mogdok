@@ -2,6 +2,7 @@ package com.mongdok.websocket.config.handler;
 
 import com.mongdok.websocket.model.RoomMessage;
 import com.mongdok.websocket.model.Seat;
+import com.mongdok.websocket.model.SeatInfo;
 import com.mongdok.websocket.model.enums.MessageType;
 import com.mongdok.websocket.repository.RoomRepository;
 import com.mongdok.websocket.repository.SeatRepository;
@@ -100,12 +101,25 @@ public class StompHandler implements ChannelInterceptor {
             roomRepository.removeToken(sessionId);
             log.info("***** 토큰 삭제 *****");
 
+            int seatNo = 0;
+            if(seat != null) {
+                seatNo = seat.getSeatNo();
+            }
+
             // TODO: 좌석정보 삭제
             seatRepository.removeSeatInfo(roomId, userId);
             log.info("***** 좌석정보 삭제 *****");
 
+            SeatInfo seatInfo = SeatInfo.builder().seatNo(seatNo).build();
+
             // 해당 유저의 퇴장 메시지를 열람실에 발송한다.
-            roomService.sendMessage(RoomMessage.builder().type(MessageType.QUIT).roomId(roomId).sender(userName).userId(userId).build());
+            roomService.sendMessage(RoomMessage.builder()
+                    .type(MessageType.QUIT)
+                    .roomId(roomId)
+                    .sender(userName)
+                    .userId(userId)
+                    .seatInfo(seatInfo)
+                    .build());
             log.info("DISCONNECT {} ----- {}", sessionId, roomId);
         }
         return message;

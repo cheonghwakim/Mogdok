@@ -1,6 +1,7 @@
 package com.mongdok.websocket.model;
 
 import com.mongdok.websocket.model.enums.StudyType;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
  */
 
 @Data
+@Builder
 public class SeatInfo {
 
     private int seatNo;

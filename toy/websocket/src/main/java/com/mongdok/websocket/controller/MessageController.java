@@ -38,14 +38,21 @@ public class MessageController {
     public void message(RoomMessage message, @Header("token") String token) {
 
         //TODO: JWT Token을 이용해서 userName 매핑 구현
-        if(token == null) { return; } // token이 없으면 발송하지 않음
+        if(message.getUserId() == null && token == null) {
+            return;
+        }
 
-        Claims claims = jwtUtil.getClaims(token);
-        String userId = claims.get("userId", String.class);
-        String userName = claims.get("userName", String.class);
+        if(token != null) {
+            Claims claims = jwtUtil.getClaims(token);
+            String userId = claims.get("userId", String.class);
+            String userName = claims.get("userName", String.class);
 
-        message.setSender(userName);
-        message.setUserId(userId);
+            log.info("userId", userId);
+            log.info("userName", userName);
+
+            message.setSender(userName);
+            message.setUserId(userId);
+        }
         
         roomService.sendMessage(message);
     }
