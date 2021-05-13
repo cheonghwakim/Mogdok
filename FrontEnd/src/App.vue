@@ -15,12 +15,6 @@ export default {
     return {};
   },
   computed: {},
-  created() {
-    console.log(process.env);
-    if (window.location.protocol !== "https:"&& process.env.NODE_ENV=="production") {
-      window.location.href = "https://www.mongdok.com";
-    }
-  },
   watch: {},
   //lifecycle area
   methods: {},
