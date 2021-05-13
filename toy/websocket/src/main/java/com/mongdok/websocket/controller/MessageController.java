@@ -1,6 +1,7 @@
 package com.mongdok.websocket.controller;
 
 import com.mongdok.websocket.model.RoomMessage;
+import com.mongdok.websocket.model.enums.MessageType;
 import com.mongdok.websocket.service.RoomService;
 import com.mongdok.websocket.util.JWTUtil;
 import io.jsonwebtoken.Claims;
@@ -50,6 +51,10 @@ public class MessageController {
 
             message.setSender(userName);
             message.setUserId(userId);
+        }
+
+        if(message.getType().equals(MessageType.SEAT_STATUS)) {
+            log.info("[study type] : {}", message.getSeatInfo().getStudyType());
         }
         
         roomService.sendMessage(message);
