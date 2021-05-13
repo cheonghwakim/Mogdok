@@ -2,7 +2,14 @@
   <div class="room">
     <transition name="slide-left">
       <div v-show="$store.state.desk.isOpenProfile" class="profile-wrapper">
-        <div-profile :clickedDesk="$store.state.desk.desk"></div-profile>
+        <div-profile
+          :seat="selectedSeatInfo"
+          :stream-manager="
+            selectedSeatIdx >= 0 && seatList[selectedSeatIdx]
+              ? seatList[selectedSeatIdx].subscriber
+              : undefined
+          "
+        ></div-profile>
       </div>
     </transition>
     <div class="deskList">
@@ -35,7 +42,9 @@ export default {
   },
   props: {},
   data() {
-    return {};
+    return {
+      selectedSeatIdx: -1,
+    };
   },
   computed: {
     ...mapState({
@@ -109,9 +118,14 @@ export default {
     },
     async clickDesk(seat, index) {
       if (seat) {
-        this.$store.commit('SET_SELECTED_SEAT_INFO', seat);
-        alert(`${this.selectedSeatInfo.userName} 클릭되었습니다.`);
-        // TODO: 신분증 나오도록
+        try {
+          this.selectedSeatIdx = index;
+          await this.$store.dispatch('GET_SELECTED_SEAT_USER_INFO', seat);
+        } catch (error) {
+          alert('유저 정보를 불러오는데 실패했어요.' + error);
+          this.selectedSeatIdx = -1;
+          return;
+        }
         this.$store.commit('TOGGLE_PROFILE');
       } else {
         if (confirm(`${index + 1}번 좌석에 앉으시겠습니까?`)) {

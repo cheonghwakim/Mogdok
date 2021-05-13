@@ -1,6 +1,7 @@
 import Stomp from 'webstomp-client';
 import SockJS from 'sockjs-client';
 import { getSeatList, getAllRooms } from '../../api/room';
+import { getProfileByUserName } from '../../api/user';
 
 const ROOM_MESSAGE_SEAT_ALLOCATED = 'SEAT_ALLOCATED';
 const ROOM_MESSAGE_SEAT_STATUS = 'SEAT_STATUS';
@@ -181,6 +182,21 @@ const actions = {
       }
     }
     return false;
+  },
+  async GET_SELECTED_SEAT_USER_INFO({ commit }, seat) {
+    await getProfileByUserName(
+      { userName: seat.userName },
+      (res) => {
+        seat.promise = res.data.promise;
+        seat.category = res.data.category;
+        seat.deskId = res.data.deskId;
+        commit('SET_SELECTED_SEAT_INFO', seat);
+        return Promise.resolve();
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
   },
 };
 

@@ -5,14 +5,19 @@
       <!-- 닫기 버튼 -->
       <!-- 캠화면 -->
       <div class="cam-wrapper">
-        <div-tape></div-tape>
-        <div class="cam"></div>
+        <div v-if="streamManager">
+          <div-tape></div-tape>
+          <ov-video class="cam" :stream-manager="streamManager"></ov-video>
+        </div>
+        <div v-else>
+          쉬는 중이어서 캠을 볼 수 없음을 알리는 UI
+        </div>
 
         <!-- 사람 이름 -->
         <div class="info-wrapper">
-          <h1 class="kyoboHand">{{ userName }}</h1>
-          <h2 class="kyoboHand">#취업준비생</h2>
-          <p>취업 가자! 아자아자!</p>
+          <h1 class="kyoboHand">{{ seat.userName }}</h1>
+          <h2 class="kyoboHand">{{ seat.category }}</h2>
+          <p>{{ seat.promise }}</p>
         </div>
       </div>
 
@@ -143,12 +148,14 @@
 import BtnClose from './BtnClose';
 import BtnCommand from '@/components/ui/BtnCommand';
 import DivTape from '@/components/ui/DivTape';
+import OvVideo from '@/components/common/OvVideo';
 
 export default {
   props: {
-    clickedDesk: Object,
+    seat: Object,
+    streamManager: Object,
   },
-  components: { BtnClose, BtnCommand, DivTape },
+  components: { BtnClose, BtnCommand, DivTape, OvVideo },
   methods: {
     closeProfile: function() {
       console.log('closeProfile 닫기');
@@ -158,7 +165,7 @@ export default {
   },
   computed: {
     userName() {
-      if (this.clickedDesk != null) return this.clickedDesk.userName;
+      if (this.userInfo != null) return this.clickedDesk.userName;
       else return '-';
     },
   },
