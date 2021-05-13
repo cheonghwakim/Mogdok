@@ -1,6 +1,5 @@
 package com.web.mongdok.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -81,6 +80,7 @@ public class KakaoLoginController {
 	        // 여기서 담겨줘야 되는 것들 생각해보기 (지금: accessToken, refreshToken, kakaoId)
 //	        jwtRefreshToken = jwtUtil.doGenerateToken(kakaoUser, JwtUtil.TOKEN_VALIDATION_SECOND);
 
+	        System.out.println("klogin kakaoId: " + userInfo.get("id"));
 //	        System.out.println("klogin jwt: " + jwtRefreshToken);
 	        return new ResponseEntity<>(userInfo.get("id"), HttpStatus.OK);
     	
@@ -173,8 +173,6 @@ public class KakaoLoginController {
 
     	return new ResponseEntity<>(redisUser, HttpStatus.OK);
     }
-
-    
     
     @GetMapping("/nickname")
     @ApiOperation(value = "닉네임 중복 처리 // 실패 false 성공 true (boolean)")
@@ -306,8 +304,7 @@ public class KakaoLoginController {
     	
     	return new ResponseEntity<>(user, HttpStatus.OK);
     }
-    
-    
+     
 //    @GetMapping("/auth")
 //    @ApiOperation("레디스에서 인증하기")
 //    public ResponseEntity<?> auth(@RequestParam @ApiParam(value = "유저가 가진 refreshToken") String jwtRefreshToken) {
