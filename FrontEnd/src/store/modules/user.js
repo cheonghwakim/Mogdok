@@ -29,8 +29,10 @@ const actions = {
             commit('SET_USER_INFO', res.data);
             localStorage.setItem('authToken', state.userInfo.authToken);
             resolve('ok');
-          } else {
+          } else if (res.data === undefined) {
             resolve('join');
+          } else {
+            reject('로그인에 실패했어요');
           }
         },
         (error) => {
