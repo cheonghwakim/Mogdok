@@ -8,13 +8,19 @@
 
 <script>
 export default {
-  name: 'App',
+  name: "App",
   components: {},
   props: {},
   data() {
     return {};
   },
   computed: {},
+  created() {
+    console.log(process.env);
+    if (window.location.protocol !== "https:"&& process.env.NODE_ENV=="production") {
+      window.location.href = "https://www.mongdok.com";
+    }
+  },
   watch: {},
   //lifecycle area
   methods: {},
@@ -22,8 +28,8 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'src/assets/css/common';
-@import 'src/assets/css/moveable';
+@import "src/assets/css/common";
+@import "src/assets/css/moveable";
 
 #app {
   width: 100vw;
