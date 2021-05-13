@@ -16,9 +16,9 @@ export default {
   },
   computed: {},
   created() {
-    console.log(window.location.href);
+    console.log(window.location.hostname );
     console.log(process.env);
-    if (window.location.protocol !== "https:"&& process.env.NODE_ENV=="production" && window.location.href!=="http://www.mongdok.com/") {//k4a401.p.ssafy.io일경우
+    if (process.env.NODE_ENV=="production"&&(window.location.protocol !== "https:" || window.location.hostname !=="www.mongdok.com") ) {//k4a401.p.ssafy.io일경우
       window.location.href = "https://www.mongdok.com";
     }
   },
