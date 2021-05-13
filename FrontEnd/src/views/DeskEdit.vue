@@ -52,7 +52,7 @@
       <div class="memoInputModal" v-show="isOpenModal">
          <div v-if="memoList[selectedMemoIdx]" class="memo-Modal-content" :style="{ 'background-color': memoColor[memoList[selectedMemoIdx].color].code }">
             <p class="title">POST-IT</p>
-            <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="kyoboHand" placeholder="메모 내용을 작성해주세요" />
+            <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="kyoboHand" />
             <p class="desc">메모 내용이 실시간으로 작성됩니다 😛</p>
             <div v-wave class="btn-close" @click="toggleModal">
                CLOSE
