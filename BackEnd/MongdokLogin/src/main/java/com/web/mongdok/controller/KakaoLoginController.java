@@ -91,8 +91,11 @@ public class KakaoLoginController {
     }
     
     @GetMapping("/login")
-    @ApiOperation(value = "로그인 요청 (객체가 있다면 user return, 없다면 null)")
+    @ApiOperation(value = "로그인 요청 (객체가 있다면 user return, 없다면 null, 비어있으면 false)")
     public ResponseEntity<?> login(@RequestParam @ApiParam(value = "유저 kakaoId") String kakaoId) {
+    	
+    	if(kakaoId == "")
+    		return new ResponseEntity<>(false, HttpStatus.OK);
     	
     	ObjectMapper objectMapper = new ObjectMapper();
     	
@@ -102,7 +105,6 @@ public class KakaoLoginController {
     	Optional<User> user = authService.findByKakaoId(kakaoId);
 		if(user.isPresent()) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
 			
-			System.out.println("asfsd");
 			Desk desk = deskService.findByUserId(user.get().getUserId()); 
 	    	redisUser = new RedisUserDto();
 	    	redisUser.setDeskId(desk.getDeskId());
