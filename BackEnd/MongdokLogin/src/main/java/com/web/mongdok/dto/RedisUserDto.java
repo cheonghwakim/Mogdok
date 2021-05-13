@@ -23,7 +23,7 @@ public class RedisUserDto implements Serializable {
 	
 	private String userId;
 	
-	private String email;
+//	private String email;
 	
 	private String kakaoId;
 	
