@@ -12,19 +12,18 @@ const state = () => ({
 const actions = {
    // 데이터 API 요청 및 러닝 달력 변환 동기 처리
    async GET_CALENDAR({ dispatch, state }, payload) {
+      console.log('📆 GET_CALENDAR', payload);
       console.log('Promise 1');
       await dispatch('GET_MONTH_STUDY_CALENDAR', payload);
       console.log('Promise 2');
       await dispatch('CONVERT_STUDY_2_RUNNING');
 
-      console.log('result : ', state.runningTimeCalendar);
+      console.log('👀 GET_CALENDAR result : ', state.runningTimeCalendar);
       return Promise.resolve();
    },
 
    // 년,월,닉네임을 기준으로 선택한 달의 전체 데이터를 LOAD
    async GET_MONTH_STUDY_CALENDAR({ commit }, payload) {
-      // console.log('Promise 1-1', payload);
-
       commit('SET_STUDY_CALENDAR_MONTH', null);
 
       await getCalendarMonth(
@@ -34,7 +33,7 @@ const actions = {
             return Promise.resolve();
          },
          (error) => {
-            console.log(error);
+            alert(error);
             return Promise.reject(error);
          }
       );

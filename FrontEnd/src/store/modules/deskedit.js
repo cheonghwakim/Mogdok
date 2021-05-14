@@ -89,6 +89,7 @@ const actions = {
 const mutations = {
    SET_MEMO_LIST(state, payload) {
       state.memoList = payload;
+      console.log('👀 SET_MEMO_LIST ->', state.memoList);
    },
    ADD_MEMO(state, payload) {
       state.memoList.push(payload);

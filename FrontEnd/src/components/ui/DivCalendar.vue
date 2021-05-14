@@ -26,7 +26,7 @@
                         'day--pre': idx === 0 && day >= lastMonthStart,
                         'day--next': dates.length - 1 === idx && nextMonthStart > day,
                      },
-                     `level-${convertLevel(day)}`,
+                     `level--${convertLevel(day)}`,
                   ]"
                >
                   {{ day }}
@@ -70,21 +70,21 @@ export default {
    watch: {
       month: {
          // immediate: true,
-         handler() {
-            console.log('watch');
-            // this.apiGetData('ssafy', 2021, 5);
-            // const param = {
-            //    userName: 'ssafy',
-            //    month: value,
-            //    year: this.year,
-            // };
+         handler(value) {
+            console.log('📅 watch');
 
-            // this.$store.dispatch('GET_CALENDAR', param);
+            const param = {
+               userName: 'ssafy',
+               month: value,
+               year: this.year,
+            };
+
+            this.$store.dispatch('GET_CALENDAR', param);
          },
       },
    },
    // beforeCreate() {
-   //    console.log('beforeCreate');
+   //    console.log('📅 beforeCreate');
    //    console.log(this.days);
    // },
    created() {
@@ -93,7 +93,7 @@ export default {
    methods: {
       // 달력 초기 셋팅
       initCal: function() {
-         console.log('initCal');
+         console.log('📅 initCal');
          const date = new Date();
 
          this.currentYear = date.getFullYear();
@@ -105,7 +105,6 @@ export default {
          this.month = this.currentMonth;
 
          this.calendarData();
-         // await this.apiGetData('ssafy', this.year, this.month);
       },
 
       // 달력 생성
@@ -184,27 +183,51 @@ export default {
          return dates;
       },
 
-      apiGetData: async function(name, year, month) {
-         console.log('apiGetData 시작');
-         const param = {
-            userName: name,
-            month: month,
-            year: year,
-         };
-
-         await this.$store.dispatch('GET_CALENDAR', param);
-         console.log('apiGetData 끝!!!');
-         return Promise.resolve();
-      },
-
       // ===================================================
       // 현재 날짜의 러닝타임을 5단계 스탭으로 변환하여 표시
       convertLevel: function(day) {
-         console.log(day);
-         // if (this.runningTimeCalendar[day].runningTime) {
+         // console.log(this.runningTimeCalendar);
+
+         if (!this.runningTimeCalendar) {
+            return 0;
+         } else {
+            var runningTime = this.runningTimeCalendar[day].runningTime;
+            if (runningTime == 0) return 0;
+
+            var convertHour = parseInt(runningTime / 3600000);
+
+            console.log(this.runningTimeCalendar[day], convertHour);
+
+            var step;
+            switch (convertHour) {
+               case 0:
+               case 1:
+                  step = 1;
+                  break;
+               case 2:
+               case 3:
+                  step = 2;
+                  break;
+               case 4:
+               case 5:
+                  step = 3;
+                  break;
+               case 6:
+               case 7:
+                  step = 4;
+                  break;
+               default:
+                  step = 5;
+                  break;
+            }
+
+            return step;
+         }
+         // if (!this.runningTimeCalendar) {
          // console.log(this.runningTimeCalendar[day].runningTime);
          // }
-         return 1;
+         // if (this.runningTimeCalendar[day].runningTime) {
+         // }
       },
 
       // TEST용 데이터
@@ -218,11 +241,11 @@ export default {
 </script>
 <style scoped lang="scss">
 * {
-   border: 1px dashed red;
+   /* border: 1px dashed red; */
 }
 
 /* 테이블 day의 높이(이걸 기준으로 전체 캘린더 높이가 결정됨) */
-$cell_h: 25px;
+$cell_h: 27px;
 
 .study-calendar {
    width: 200px;
@@ -273,6 +296,8 @@ tbody.day-section {
       height: $cell_h;
       line-height: $cell_h;
 
+      box-shadow: 0 0 0 1px rgb(255, 255, 255) inset;
+
       color: rgb(157, 157, 157);
 
       &--today {
@@ -285,6 +310,31 @@ tbody.day-section {
          color: rgb(206, 206, 206);
          background-color: rgb(238, 238, 238);
          pointer-events: none;
+      }
+
+      /* 레벨 단계 */
+      &.level--0 {
+         background-color: transparent;
+      }
+      &.level--1 {
+         color: white;
+         background-color: #a8ffa8;
+      }
+      &.level--2 {
+         color: white;
+         background-color: #37d337;
+      }
+      &.level--3 {
+         color: white;
+         background-color: #0dae0d;
+      }
+      &.level--4 {
+         color: white;
+         background-color: #0b740b;
+      }
+      &.level--5 {
+         color: white;
+         background-color: #045904;
       }
    }
 }

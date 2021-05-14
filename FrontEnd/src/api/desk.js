@@ -1,7 +1,7 @@
 import { deskInstance } from './index.js';
 
-function getDeskInfo(params, success, fail) {
-   deskInstance
+async function getDeskInfo(params, success, fail) {
+   await deskInstance
       .get(`desk/all`, { params })
       .then(success)
       .catch(fail);

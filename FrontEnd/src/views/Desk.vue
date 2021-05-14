@@ -1,7 +1,7 @@
 <template lang="">
    <div v-dragscroll="true" class="desk">
       <!-- 로딩 화면 -->
-      <div-loading></div-loading>
+      <div-loading v-if="!isLoadedDesk"></div-loading>
 
       <!-- v-show로 ID 필터링해서 본인 계정일 경우에만 보이도록 -->
       <btn-rounded class="br-wrapper" :label="'Desk Editor'" :color="'yellow'" :type="'floating'" @onClick="goEditPage"></btn-rounded>
@@ -26,7 +26,7 @@
 
       <!-- 메모가 표시는 책상 -->
       <div class="desk-wrapper">
-         <div class="desk-draw-area">
+         <div v-if="isLoadedDesk" class="desk-draw-area">
             <vue-moveable
                v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memoList"
                :key="'memo' + index + memoId"
@@ -62,6 +62,7 @@ export default {
    data() {
       return {
          isFirst: true,
+         isLoadedDesk: false,
 
          // Desk.vue 에는 고정된 메모 요소만 삽입
          moveFixedState: {
@@ -106,13 +107,27 @@ export default {
    },
    methods: {
       // 최초 데스크 셋팅(서버 내 메모 셋팅 등)
-      initDesk: function() {
+      initDesk: async function() {
+         console.log('initDesk');
          // 컨테이너를 넣을 요소를 객체에 할당
          const elem = document.getElementsByClassName('desk-draw-area')[0];
          this.moveFixedState.container = elem;
 
-         // 생성되자마자 서버에서 조회중이 책상의 모든 메모 GET -> VUEX 셋팅
-         this.$store.dispatch('GET_DESK_ALL_MEMO', this.moveFixedState);
+         var now = new Date();
+
+         const calParam = {
+            userName: 'ssafy',
+            year: now.getFullYear(),
+            month: now.getMonth() + 1,
+         };
+
+         // 생성시 비동기 로직 처리
+         // #JS : 해당 함수의 return 값을 TRUE, FALSE 처리해서 -> API 못 받아오면, 로딩 막도록..
+         await this.$store.dispatch('GET_DESK_ALL_MEMO', this.moveFixedState);
+         await this.$store.dispatch('GET_CALENDAR', calParam);
+
+         console.log('--------- initDesk FIN. ---------');
+         this.isLoadedDesk = true;
       },
 
       // 편집 화면으로 이동
