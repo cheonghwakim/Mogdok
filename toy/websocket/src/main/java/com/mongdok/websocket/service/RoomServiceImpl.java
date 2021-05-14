@@ -86,7 +86,7 @@ public class RoomServiceImpl implements RoomService{
 
                 seatRepository.updateSeatInfo(roomMessage.getRoomId(),
                                               roomMessage.getUserId(),
-                                              seat.getStudyType());
+                                              roomMessage.getSeatInfo().getStudyType());
 
                 seatInfo = SeatInfo.builder()
                         .seatNo(seat.getSeatNo())
