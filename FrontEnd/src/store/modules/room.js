@@ -113,7 +113,7 @@ const actions = {
       );
     });
   },
-  GET_SEAT_INFO({ state, commit }) {
+  GET_SEAT_INFO({ state, commit, dispatch }) {
     return new Promise((resolve, reject) => {
       getSeatList(
         { roomId: state.roomInfo.roomId },
@@ -121,13 +121,14 @@ const actions = {
           console.log('%croom.js line:107 res', 'color: #007acc;', res);
           res.data.forEach((seatInfo) => {
             seatInfo.isRunning = false;
-            seatInfo.time = getCurTime(seatInfo);
             seatInfo.timer = null;
             seatInfo.timeBegan = new Date(seatInfo.timestampList[0].time).getTime(); // 시작시간 세팅;
             seatInfo.timeStopped = null;
             seatInfo.stoppedDuration = getStoppedDuration(seatInfo);
+            state.timeList[seatInfo.seatNo - 1] = getCurTime(seatInfo);
             const index = seatInfo.seatNo - 1;
             commit('ADD_SEAT_INFO', { index, seatInfo });
+            dispatch('INIT_SEAT_INFO_BY_STATUS', seatInfo);
           });
           resolve();
         },
@@ -180,10 +181,12 @@ const actions = {
             commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
         } else if (res.type === ROOM_MESSAGE_SEAT_QUIT) {
           // 소켓마저 끊김
+          // TODO : QUIT오나 확인
           const index = res.seatInfo.seatNo - 1;
           dispatch('PAUSE_TIMER_BY_INDEX', index);
           commit('STOP_SEAT_INFO_TIMER', { index });
           commit('REMOVE_SEAT_INFO', { index });
+          commit('REMOVE_TIMER_BY_INDEX', { index });
           if (res.sender === rootState.user.userInfo.userName)
             commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
         }
@@ -196,7 +199,7 @@ const actions = {
   CONNECT_ROOM_WITH_OPENVIDU({ state, rootState, commit }) {
     // userName을 이용해서 자리 매칭
     loop: for (let i = 0; i < state.seatList.length; i++) {
-      if (!state.seatList[i]) continue;
+      if (!state.seatList[i] || !rootState.openvidu.subscribers) continue;
       for (let j = 0; j < rootState.openvidu.subscribers.length; j++) {
         const subscriber = rootState.openvidu.subscribers[j];
         if (state.seatList[i].userName === subscriber.stream.connection.data) {
@@ -284,6 +287,21 @@ const actions = {
         return Promise.reject(error);
       }
     );
+  },
+  INIT_SEAT_INFO_BY_STATUS({ commit, dispatch }, seat) {
+    const index = seat.seatNo - 1;
+    const value = seat.studyType;
+    console.log('%croom.js line:293 index,value', 'color: #007acc;', index, value);
+    commit('UPDATE_SEAT_INFO', {
+      index,
+      key: 'studyType',
+      value,
+    });
+    if (value === ROOM_STUDY_TYPE_START) {
+      dispatch('START_TIMER_BY_INDEX', index);
+    } else if (value === ROOM_STUDY_TYPE_PAUSE) {
+      dispatch('PAUSE_TIMER_BY_INDEX', index);
+    }
   },
   UPDATE_SEAT_INFO_BY_STATUS({ commit, dispatch }, seat) {
     console.log('%croom.js line:280 seat', 'color: #007acc;', seat);
@@ -451,6 +469,12 @@ const mutations = {
   },
   CLEAR_CONNECT(state) {
     // TODO : 백엔드와 연동 필요
+    for (let i = 0; i < state.seatList.length; i++) {
+      if (state.seatList[i]) {
+        clearInterval(state.seatList[i].timer);
+        state.seatList[i].timer = undefined;
+      }
+    }
     state.stomp.disconnect();
     state.socket.close();
     state.stomp = undefined;
@@ -506,7 +530,13 @@ const mutations = {
     // state.timeList[index] = time;
   },
   STOP_SEAT_INFO_TIMER(state, { index }) {
-    state.seatList[index].timer = null;
+    clearInterval(state.seatList[index].timer);
+    state.seatList[index].timer = undefined;
+  },
+  CLEAR_ALL_TIMER(state) {
+    state.seatList.forEach((e) => {
+      e.timer = undefined;
+    });
   },
   ADD_TIMER_BY_INDEX(state, { index }) {
     state.timeList[index] = '00:00:00';
