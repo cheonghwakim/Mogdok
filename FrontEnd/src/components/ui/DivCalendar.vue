@@ -4,9 +4,9 @@
       <div class="calendar-warpper">
          <!-- 최상단 : 년월 이동 버튼 존재 -->
          <div class="top-wrapper">
-            <button @click="calendarData(-1)">&lt;</button>
+            <div v-wave class="btn" @click="calendarData(-1)"><i class="fas fa-caret-left"></i></div>
             {{ year }} / {{ month }}
-            <button @click="calendarData(1)">&gt;</button>
+            <div v-wave class="btn" @click="calendarData(1)"><i class="fas fa-caret-right"></i></div>
          </div>
          <!-- 달력 부분이 들어감 -->
          <table class="calendar">
@@ -19,6 +19,7 @@
             <tbody class="day-section">
                <tr v-for="(week, idx) in dates" :key="idx">
                   <td
+                     v-wave
                      v-for="(day, jdx) in week"
                      :key="jdx"
                      class="day"
@@ -38,7 +39,10 @@
             </tbody>
          </table>
          <div class="desc">
-            여기엔 짧막한 설명이 들어갑니다.
+            <div v-for="(item, idx) in levelDesc" :key="'desc-' + idx" class="col">
+               <div class="color-box" :style="{ 'background-color': item.color }"></div>
+               <div class="color-desc">{{ item.desc }}</div>
+            </div>
          </div>
       </div>
 
@@ -90,6 +94,24 @@ export default {
          dayRunningTable: [7, 8, 9, 10, 11, 12, 13, 14],
          noonRunningTable: [15, 16, 17, 18, 19, 20, 21, 22],
          nightRunningTable: [23, 24, 1, 2, 3, 4, 5, 6],
+         levelDesc: [
+            {
+               desc: '0~3H',
+               color: '#a9ffa9',
+            },
+            {
+               desc: '3~6H',
+               color: '#5cdf5c',
+            },
+            {
+               desc: '6~9H',
+               color: '#10a410',
+            },
+            {
+               desc: '9H▴',
+               color: '#073a07',
+            },
+         ],
       };
    },
    computed: {
@@ -161,6 +183,7 @@ export default {
          }
 
          const [monthFirstDay, monthLastDate, lastMonthLastDate] = this.getFirstDayLastDate(this.year, this.month);
+         this.isOpenDetail = false;
 
          // getMonthOfDays를 통해 받은 날짜 배열을 dates 배열에 할당
          this.dates = this.getMonthOfDays(monthFirstDay, monthLastDate, lastMonthLastDate);
@@ -304,20 +327,43 @@ $cell_h: 27px;
 
 .study-calendar {
    width: 240px;
-   height: 500px;
-   border: 1px dashed red;
+   height: 460px;
+   /* border: 1px dashed red; */
 
    .calendar-warpper {
       width: 100%;
       height: auto;
       padding: 12px;
-      padding-bottom: 50px;
+      padding-bottom: 30px;
 
       background-color: white;
       border-radius: 20px;
       box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 
-      border: 1px solid red;
+      /* border: 1px solid red; */
+
+      /* 버튼, 날짜 등 */
+      .top-wrapper {
+         display: flex;
+         align-items: center;
+         justify-content: space-around;
+         margin-bottom: 10px;
+
+         color: rgb(31, 31, 31);
+         font-weight: 600;
+         font-size: 9pt;
+         letter-spacing: 5px;
+
+         .btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+
+            line-height: 30px;
+            text-align: center;
+            cursor: pointer;
+         }
+      }
 
       table.calendar {
          width: 92%;
@@ -343,6 +389,32 @@ $cell_h: 27px;
             th:nth-child(7) {
                color: rgb(49, 17, 255);
             }
+         }
+      }
+
+      /* 하단 설명 부분 */
+      .desc {
+         /* width: 100%; */
+         display: flex;
+         justify-content: center;
+
+         margin-top: 20px;
+
+         .col {
+            margin: 0 2px;
+            width: 30px;
+         }
+
+         .color-box {
+            width: 100%;
+            height: 4px;
+         }
+
+         .color-desc {
+            color: rgb(92, 92, 92);
+            margin-top: 5px;
+            font-size: 4pt;
+            text-align: center;
          }
       }
    }

@@ -37,7 +37,7 @@
             >
                <svg-memo :text="content" :color="color"></svg-memo>
             </vue-moveable>
-            <div-calendar></div-calendar>
+            <div-calendar class="calendar"></div-calendar>
          </div>
          <svg-desk></svg-desk>
       </div>
@@ -254,6 +254,13 @@ export default {
          width: 1000px;
          height: 600px;
          /* border: 1px solid blue; */
+      }
+
+      .calendar {
+         position: absolute;
+
+         top: 25px;
+         left: 15px;
       }
    }
 }
