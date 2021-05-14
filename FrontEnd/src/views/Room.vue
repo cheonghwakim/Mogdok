@@ -14,11 +14,16 @@
     </transition>
     <div class="deskList">
       <div class="deskItem" v-for="(seat, index) in seatList" :key="`${seat}${index}`">
-        <room-desk v-if="!seat" @click="clickDesk(seat, index)"></room-desk>
+        <room-desk
+          v-if="!seat"
+          :timer="timeList[index]"
+          @click="clickDesk(seat, index)"
+        ></room-desk>
         <room-desk
           v-else
           :seat="seat"
           :stream-manager="seat.subscriber"
+          :timer="timeList[index]"
           @click="clickDesk(seat, index)"
         ></room-desk>
       </div>
@@ -44,12 +49,14 @@ export default {
   data() {
     return {
       selectedSeatIdx: -1,
+      time: [],
     };
   },
   computed: {
     ...mapState({
       roomInfo: (state) => state.room.roomInfo,
       seatList: (state) => state.room.seatList,
+      timeList: (state) => state.room.timeList,
       selectedSeatInfo: (state) => state.room.selectedSeatInfo,
       userInfo: (state) => state.user.userInfo,
       videoSourceList: (state) => state.user.videoSourceList,
@@ -68,6 +75,13 @@ export default {
         this.$store.dispatch('CONNECT_ROOM_WITH_OPENVIDU');
       },
     },
+    // seatList: {
+    //   handler(newValue, oldValue) {
+    //     console.log('%cRoom.vue line:74 newValue!!!!!!!!!!!!!!!!!!!!', 'color: #007acc;', newValue);
+    //     console.log('%cRoom.vue line:75 oldValue!!!!!!!!!!!!!!!!!!!!', 'color: #007acc;', oldValue);
+    //   },
+    //   deep: true,
+    // },
   },
   //lifecycle area
   created() {

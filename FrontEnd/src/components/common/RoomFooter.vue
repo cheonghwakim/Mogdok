@@ -124,11 +124,15 @@ export default {
 
     // CamChecker에서 진짜 공부 시작
     doStudy: async function() {
-      // 휴식상태에서 클릭하면 세션에 캠 퍼블리시 시작
-      await this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
-      this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_START);
-      this.isCamChecker = false;
-      this.isStudy = true;
+      try {
+        await this.$store.dispatch('SEND_STUDY_START');
+        await this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
+        this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_START);
+        this.isCamChecker = false;
+        this.isStudy = true;
+      } catch (error) {
+        alert('공부를 시작하지 못했어요. ' + error);
+      }
     },
 
     async btnClickEvent() {
@@ -141,8 +145,13 @@ export default {
           break;
         case ROOM_STUDY_TYPE_START:
           // 공부를 멈췄을 때
-          await this.closeCamChecker(); // 타이머 시작, 캠 처리
-          this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_PAUSE);
+          try {
+            await this.$store.dispatch('SEND_STUDY_PAUSE');
+            await this.closeCamChecker();
+          } catch (error) {
+            alert('휴식모드로 돌아가지 못했어요. 다시 시도해주세요.' + error);
+          }
+          // 타이머 시작, 캠 처리
           break;
       }
     },
