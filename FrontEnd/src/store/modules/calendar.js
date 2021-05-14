@@ -3,22 +3,21 @@ import { getCalendarMonth } from '../../api/desk';
 const state = () => ({
    // 서버로 받은 RAW DATA
    studyCalendarMonth: null, // 선택한 달의 전체 공부 시간 [{},{},{}, ...]
-   studyCalendarDay: null, // 선택한 날의 전체 공부 시간
 
    // 공부한 시간(Running)이 담긴 달력
    runningTimeCalendar: null,
+   runnungTimeDayDetail: null, // 선택한 날의 시간대별 공부 시간
 });
 
 const actions = {
    // 데이터 API 요청 및 러닝 달력 변환 동기 처리
-   async GET_CALENDAR({ dispatch, state }, payload) {
+   async GET_CALENDAR({ dispatch }, payload) {
       console.log('📆 GET_CALENDAR', payload);
       console.log('Promise 1');
       await dispatch('GET_MONTH_STUDY_CALENDAR', payload);
       console.log('Promise 2');
       await dispatch('CONVERT_STUDY_2_RUNNING');
 
-      console.log('👀 GET_CALENDAR result : ', state.runningTimeCalendar);
       return Promise.resolve();
    },
 
@@ -76,8 +75,11 @@ const actions = {
          if (!log) {
             result.push(undefined);
          } else {
+            const res = convertDay2RunningTime(log);
+
             result.push({
-               runningTime: calculateTotalRunningTime(convertDay2RunningTime(log)),
+               runningTime: calculateTotalRunningTime(res),
+               runningDetail: res,
                log,
             });
          }
@@ -95,6 +97,9 @@ const mutations = {
    },
    SET_RUNNING_TIME_CALENDAR: function(state, payload) {
       state.runningTimeCalendar = payload;
+   },
+   SET_RUNNING_TIME_DAY_DETAIL: function(state, payload) {
+      state.runnungTimeDayDetail = payload;
    },
 };
 
@@ -136,6 +141,7 @@ function convertDay2RunningTime(param) {
       }
    }
 
+   // console.log('💎 convertDay2RunningTime : ', studyRunningTimeList);
    return studyRunningTimeList;
 }
 

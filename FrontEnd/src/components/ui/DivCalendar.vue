@@ -1,40 +1,67 @@
 <template lang="">
    <div class="study-calendar">
-      <!-- 최상단 : 년월 이동 버튼 존재 -->
-      <div class="top-wrapper">
-         <button @click="calendarData(-1)">&lt;</button>
-         {{ year }} / {{ month }}
-         <button @click="calendarData(1)">&gt;</button>
-      </div>
-      <!-- 달력 부분이 들어감 -->
-      <table class="calendar">
-         <!-- 월화수목금토일 -->
-         <thead class="head-section">
-            <th v-for="day in days" :key="day">{{ day }}</th>
-         </thead>
+      <!-- 달력 관련 부분 -->
+      <div class="calendar-warpper">
+         <!-- 최상단 : 년월 이동 버튼 존재 -->
+         <div class="top-wrapper">
+            <button @click="calendarData(-1)">&lt;</button>
+            {{ year }} / {{ month }}
+            <button @click="calendarData(1)">&gt;</button>
+         </div>
+         <!-- 달력 부분이 들어감 -->
+         <table class="calendar">
+            <!-- 월화수목금토일 -->
+            <thead class="head-section">
+               <th v-for="day in days" :key="day">{{ day }}</th>
+            </thead>
 
-         <!-- 달력부분 -->
-         <tbody class="day-section">
-            <tr v-for="(week, idx) in dates" :key="idx">
-               <td
-                  v-for="(day, jdx) in week"
-                  :key="jdx"
-                  class="day"
-                  :class="[
-                     {
-                        'day--today': day === today && month === currentMonth && year === currentYear,
-                        'day--pre': idx === 0 && day >= lastMonthStart,
-                        'day--next': dates.length - 1 === idx && nextMonthStart > day,
-                     },
-                     `level--${convertLevel(day)}`,
-                  ]"
-               >
-                  {{ day }}
-               </td>
-            </tr>
-         </tbody>
-      </table>
-      <button @click="getData">데이터 얻기</button>
+            <!-- 달력부분 -->
+            <tbody class="day-section">
+               <tr v-for="(week, idx) in dates" :key="idx">
+                  <td
+                     v-for="(day, jdx) in week"
+                     :key="jdx"
+                     class="day"
+                     :class="[
+                        {
+                           'day--today': day === today && month === currentMonth && year === currentYear,
+                           'day--pre': idx === 0 && day >= lastMonthStart,
+                           'day--next': dates.length - 1 === idx && nextMonthStart > day,
+                        },
+                        `level--${convertLevel(day)}`,
+                     ]"
+                     @click="openDayDetail(day)"
+                  >
+                     {{ day }}
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <div class="desc">
+            여기엔 짧막한 설명이 들어갑니다.
+         </div>
+      </div>
+
+      <!-- 달력 디테일 부분 -->
+      <transition name="detail-down">
+         <div v-if="isOpenDetail" class="detail-wrapper">
+            <p class="title">DAY STUDY TIME</p>
+            <table class="running-table">
+               <tr class="day">
+                  <td class="head"><img src="@/assets/img/emoji/day.png" alt="" /></td>
+                  <td class="time" v-for="time in dayRunningTable" :key="'day-' + time" :class="{ 'study-hour': selectedDayDetail[time] }">{{ time }}</td>
+               </tr>
+               <tr class="noon">
+                  <td class="head"><img src="@/assets/img/emoji/noon.png" alt="" /></td>
+                  <td class="time" v-for="time in noonRunningTable" :key="'noon-' + time" :class="{ 'study-hour': selectedDayDetail[time] }">{{ time }}</td>
+               </tr>
+               <tr class="night">
+                  <td class="head"><img src="@/assets/img/emoji/night.png" alt="" /></td>
+                  <td class="time" v-for="time in nightRunningTable" :key="'night-' + time" :class="{ 'study-hour': selectedDayDetail[time] }">{{ time }}</td>
+               </tr>
+            </table>
+         </div>
+      </transition>
    </div>
 </template>
 <script>
@@ -43,8 +70,6 @@ import { mapState } from 'vuex';
 export default {
    data() {
       return {
-         isLoaded: false,
-
          days: ['일', '월', '화', '수', '목', '금', '토'],
          dates: [],
 
@@ -58,6 +83,13 @@ export default {
          // 달력에서 회색으로 표기하기 위한 변수
          lastMonthStart: 0,
          nextMonthStart: 0,
+
+         // 선택한 날의 상세 러닝타임
+         isOpenDetail: false,
+         selectedDayDetail: [],
+         dayRunningTable: [7, 8, 9, 10, 11, 12, 13, 14],
+         noonRunningTable: [15, 16, 17, 18, 19, 20, 21, 22],
+         nightRunningTable: [23, 24, 1, 2, 3, 4, 5, 6],
       };
    },
    computed: {
@@ -186,8 +218,6 @@ export default {
       // ===================================================
       // 현재 날짜의 러닝타임을 5단계 스탭으로 변환하여 표시
       convertLevel: function(day) {
-         // console.log(this.runningTimeCalendar);
-
          if (!this.runningTimeCalendar) {
             return 0;
          } else {
@@ -196,38 +226,63 @@ export default {
 
             var convertHour = parseInt(runningTime / 3600000);
 
-            console.log(this.runningTimeCalendar[day], convertHour);
+            // 4단계 기준
+            // 1: 0~3시간
+            // 2: 3~6시간
+            // 3: 6~9시간
+            // 4: 9시간 이상
 
             var step;
             switch (convertHour) {
                case 0:
                case 1:
+               case 2:
                   step = 1;
                   break;
-               case 2:
                case 3:
-                  step = 2;
-                  break;
                case 4:
                case 5:
-                  step = 3;
+                  step = 2;
                   break;
                case 6:
                case 7:
-                  step = 4;
+               case 8:
+                  step = 3;
                   break;
                default:
-                  step = 5;
+                  step = 4;
                   break;
             }
 
             return step;
          }
-         // if (!this.runningTimeCalendar) {
-         // console.log(this.runningTimeCalendar[day].runningTime);
-         // }
-         // if (this.runningTimeCalendar[day].runningTime) {
-         // }
+      },
+
+      // 현재 클릭한 날짜의 상세 데이터 출력
+      openDayDetail: function(day) {
+         const selectedDay = this.runningTimeCalendar[day].runningDetail;
+
+         if (selectedDay.length == 0) {
+            // 상세 데이터 없는 경우
+            this.isOpenDetail = false;
+            return;
+         }
+
+         this.selectedDayDetail = new Array(24);
+
+         for (let i = 0; i < selectedDay.length; i++) {
+            const { startTime, runningTime } = selectedDay[i];
+
+            const _startTime = new Date(startTime);
+            const startHour = _startTime.getHours();
+            const runningHour = runningTime / (1000 * 60 * 60);
+            // array splice 기능 이용해서 해당 시간에 true 삽입
+            for (let j = 0; j < runningHour; j++) {
+               this.selectedDayDetail.splice(startHour + j, 1, true); // 시작시간부터 공부시간만큼 제거
+            }
+         }
+
+         this.isOpenDetail = true;
       },
 
       // TEST용 데이터
@@ -248,37 +303,107 @@ export default {
 $cell_h: 27px;
 
 .study-calendar {
-   width: 200px;
+   width: 240px;
    height: 500px;
+   border: 1px dashed red;
 
-   background-color: white;
-   border-radius: 20px;
-   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+   .calendar-warpper {
+      width: 100%;
+      height: auto;
+      padding: 12px;
+      padding-bottom: 50px;
 
-   border: 1px solid red;
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 
-   table.calendar {
-      width: inherit;
-      border: 1px solid blue;
+      border: 1px solid red;
 
-      border-spacing: 0px; // cell 사이 여백을 없앰
+      table.calendar {
+         width: 92%;
+         margin: 0 auto;
+         /* border: 1px solid blue; */
 
-      /* 월화수목금토일 */
-      thead.head-section {
-         color: gray;
-         font-size: 8pt;
+         border-spacing: 0px; // cell 사이 여백을 없앰
 
-         th {
-            height: 20px;
-            line-height: 20px;
+         /* 월화수목금토일 */
+         thead.head-section {
+            color: gray;
+            font-size: 8pt;
+
+            th {
+               height: 20px;
+               line-height: 20px;
+            }
+            /* 일요일 */
+            th:nth-child(1) {
+               color: rgb(247, 53, 53);
+            }
+            /* 토요일 */
+            th:nth-child(7) {
+               color: rgb(49, 17, 255);
+            }
          }
-         /* 일요일 */
-         th:nth-child(1) {
-            color: rgb(247, 53, 53);
+      }
+   }
+
+   .detail-wrapper {
+      width: 90%;
+      height: 120px;
+
+      margin: 0 auto;
+      margin-top: 10px;
+
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .title {
+         font-weight: 600;
+         letter-spacing: 4px;
+         font-size: 5pt;
+         margin-bottom: 10px;
+      }
+
+      .running-table {
+         border-spacing: 2px 2px;
+         border-collapse: separate;
+
+         tr.day {
+            margin: 10px;
          }
-         /* 토요일 */
-         th:nth-child(7) {
-            color: rgb(49, 17, 255);
+
+         td {
+            font-size: 7pt;
+            width: 18px;
+            vertical-align: middle;
+            text-align: center;
+
+            border: 1px solid rgb(189, 189, 189);
+            color: rgb(109, 109, 109);
+
+            &.time {
+               border-radius: 3px;
+            }
+
+            &.study-hour {
+               color: white;
+               background-color: rgb(34, 150, 16);
+            }
+
+            &.head {
+               border: none;
+               background-color: transparent;
+               width: 26px;
+               img {
+                  width: 60%;
+               }
+            }
          }
       }
    }
@@ -293,22 +418,25 @@ tbody.day-section {
       text-align: center;
       font-size: 8pt;
 
+      width: 18px;
       height: $cell_h;
       line-height: $cell_h;
 
-      box-shadow: 0 0 0 1px rgb(255, 255, 255) inset;
+      box-shadow: 0 0 0 0.5px rgb(255, 255, 255) inset;
+      cursor: pointer;
 
       color: rgb(157, 157, 157);
 
       &--today {
-         color: rgb(255, 77, 0);
+         color: rgb(255, 77, 0) !important;
+         font-weight: 600;
       }
 
       /* 이전달, 다음달 */
       &--pre,
       &--next {
-         color: rgb(206, 206, 206);
-         background-color: rgb(238, 238, 238);
+         color: rgb(206, 206, 206) !important;
+         background-color: rgb(238, 238, 238) !important;
          pointer-events: none;
       }
 
@@ -318,24 +446,33 @@ tbody.day-section {
       }
       &.level--1 {
          color: white;
-         background-color: #a8ffa8;
+         background-color: #a9ffa9;
       }
       &.level--2 {
          color: white;
-         background-color: #37d337;
+         background-color: #5cdf5c;
       }
       &.level--3 {
          color: white;
-         background-color: #0dae0d;
+         background-color: #10a410;
       }
       &.level--4 {
          color: white;
-         background-color: #0b740b;
-      }
-      &.level--5 {
-         color: white;
-         background-color: #045904;
+         background-color: #073a07;
       }
    }
+}
+
+/* 트랜지션 */
+.detail-down-enter-active {
+   transition: all 0.5s ease;
+}
+.detail-down-leave-active {
+   transition: all 0.2s ease;
+}
+.detail-down-enter,
+.detail-down-leave-to {
+   transform: translateY(-50px);
+   opacity: 0;
 }
 </style>
