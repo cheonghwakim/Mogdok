@@ -1,5 +1,4 @@
 import { getDeskInfo } from '../../api/desk';
-// import { moveableState } from './deskedit';
 
 // 컴포넌트 간에 공유할 data
 const state = () => ({

@@ -1,5 +1,8 @@
 <template lang="">
    <div v-dragscroll="true" class="desk">
+      <!-- 로딩 화면 -->
+      <div-loading></div-loading>
+
       <!-- v-show로 ID 필터링해서 본인 계정일 경우에만 보이도록 -->
       <btn-rounded class="br-wrapper" :label="'Desk Editor'" :color="'yellow'" :type="'floating'" @onClick="goEditPage"></btn-rounded>
 
@@ -49,11 +52,12 @@ import DivBanner from '@/components/ui/DivBanner';
 import BtnClose from '@/components/ui/BtnClose';
 import BtnRounded from '@/components/ui/BtnRounded';
 import DivCalendar from '@/components/ui/DivCalendar';
+import DivLoading from '@/components/ui/DivLoading';
 import { mapState } from 'vuex';
 
 export default {
    name: 'Desk',
-   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo, BtnRounded, DivCalendar },
+   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo, BtnRounded, DivCalendar, DivLoading },
    props: {},
    data() {
       return {

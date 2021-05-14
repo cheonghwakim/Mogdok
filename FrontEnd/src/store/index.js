@@ -8,22 +8,24 @@ import user from './modules/user';
 import room from './modules/room';
 import openvidu from './modules/openvidu';
 import deskedit from './modules/deskedit';
+import calendar from './modules/calendar';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
-  modules: {
-    desk,
-    user,
-    room,
-    openvidu,
-    deskedit,
-  },
-  plugins: [
-    createPersistedState({
-      paths: ['user'],
-    }),
-  ],
+   modules: {
+      desk,
+      user,
+      room,
+      openvidu,
+      deskedit,
+      calendar,
+   },
+   plugins: [
+      createPersistedState({
+         paths: ['user'],
+      }),
+   ],
 });
 
 export default store;

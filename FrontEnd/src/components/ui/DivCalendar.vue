@@ -26,6 +26,7 @@
                         'day--pre': idx === 0 && day >= lastMonthStart,
                         'day--next': dates.length - 1 === idx && nextMonthStart > day,
                      },
+                     `level-${convertLevel(day)}`,
                   ]"
                >
                   {{ day }}
@@ -33,12 +34,17 @@
             </tr>
          </tbody>
       </table>
+      <button @click="getData">데이터 얻기</button>
    </div>
 </template>
 <script>
+import { mapState } from 'vuex';
+
 export default {
    data() {
       return {
+         isLoaded: false,
+
          days: ['일', '월', '화', '수', '목', '금', '토'],
          dates: [],
 
@@ -52,42 +58,42 @@ export default {
          // 달력에서 회색으로 표기하기 위한 변수
          lastMonthStart: 0,
          nextMonthStart: 0,
-
-         // VUEX 이동용
-         showDetailStudyTime: false,
-         selectedDate: '',
-         selectedDateStudyHourList: new Array(24),
-         studyTimeCalendar: undefined,
-
-         // 테스트데이터
-         sample: [
-            {
-               studyId: 1,
-               studyTime: '2021-04-28T00:00:00.000',
-               startTime: '2021-04-28T00:00:00.000',
-               status: 'PAUSE',
-            },
-            {
-               studyId: 2,
-               studyTime: '2021-04-28T01:00:00.000',
-               startTime: '2021-04-28T00:00:00.000',
-               status: 'START',
-            },
-            {
-               studyId: 3,
-               studyTime: '2021-04-28T04:00:00.000',
-               startTime: '2021-04-28T00:00:00.000',
-               status: 'END',
-            },
-         ],
       };
    },
+   computed: {
+      ...mapState({
+         studyCalendarMonth: (state) => state.calendar.studyCalendarMonth, // 보고있는 책상의 ID
+         studyCalendarDay: (state) => state.calendar.studyCalendarDay, //  책상의 메모들
+         runningTimeCalendar: (state) => state.calendar.runningTimeCalendar, //  책상의 디데이들
+      }),
+   },
+   watch: {
+      month: {
+         // immediate: true,
+         handler() {
+            console.log('watch');
+            // this.apiGetData('ssafy', 2021, 5);
+            // const param = {
+            //    userName: 'ssafy',
+            //    month: value,
+            //    year: this.year,
+            // };
+
+            // this.$store.dispatch('GET_CALENDAR', param);
+         },
+      },
+   },
+   // beforeCreate() {
+   //    console.log('beforeCreate');
+   //    console.log(this.days);
+   // },
    created() {
       this.initCal();
    },
    methods: {
       // 달력 초기 셋팅
       initCal: function() {
+         console.log('initCal');
          const date = new Date();
 
          this.currentYear = date.getFullYear();
@@ -99,10 +105,11 @@ export default {
          this.month = this.currentMonth;
 
          this.calendarData();
+         // await this.apiGetData('ssafy', this.year, this.month);
       },
 
-      // 달력 제어
-      calendarData(arg) {
+      // 달력 생성
+      calendarData: function(arg) {
          // 인자가 있을 경우
          if (arg < 0) {
             // -1이 들어오면 지난 달 달력으로 이동
@@ -129,7 +136,7 @@ export default {
       },
 
       // 지난 달의 마지막 날짜 가져오기
-      getFirstDayLastDate(year, month) {
+      getFirstDayLastDate: function(year, month) {
          const firstDay = new Date(year, month - 1, 1).getDay(); // 이번 달 시작 요일
          const lastDate = new Date(year, month, 0).getDate(); // 이번 달 마지막 날짜
          let lastYear = year;
@@ -143,7 +150,7 @@ export default {
       },
 
       // 현재 달의 날짜들을 배열로 반환
-      getMonthOfDays(monthFirstDay, monthLastDate, prevMonthLastDate) {
+      getMonthOfDays: function(monthFirstDay, monthLastDate, prevMonthLastDate) {
          let day = 1;
          let prevDay = prevMonthLastDate - monthFirstDay + 1;
          const dates = [];
@@ -176,6 +183,36 @@ export default {
          this.nextMonthStart = weekOfDays[0]; // 이번 달 마지막 주에서 제일 작은 날짜
          return dates;
       },
+
+      apiGetData: async function(name, year, month) {
+         console.log('apiGetData 시작');
+         const param = {
+            userName: name,
+            month: month,
+            year: year,
+         };
+
+         await this.$store.dispatch('GET_CALENDAR', param);
+         console.log('apiGetData 끝!!!');
+         return Promise.resolve();
+      },
+
+      // ===================================================
+      // 현재 날짜의 러닝타임을 5단계 스탭으로 변환하여 표시
+      convertLevel: function(day) {
+         console.log(day);
+         // if (this.runningTimeCalendar[day].runningTime) {
+         // console.log(this.runningTimeCalendar[day].runningTime);
+         // }
+         return 1;
+      },
+
+      // TEST용 데이터
+      getData: function() {
+         // 선택한 달의 전체 공부 달력을 가져옴
+         console.log(this.studyCalendarMonth);
+         console.log(this.runningTimeCalendar);
+      },
    },
 };
 </script>
@@ -184,8 +221,11 @@ export default {
    border: 1px dashed red;
 }
 
+/* 테이블 day의 높이(이걸 기준으로 전체 캘린더 높이가 결정됨) */
+$cell_h: 25px;
+
 .study-calendar {
-   width: 300px;
+   width: 200px;
    height: 500px;
 
    background-color: white;
@@ -195,7 +235,7 @@ export default {
    border: 1px solid red;
 
    table.calendar {
-      width: 300px;
+      width: inherit;
       border: 1px solid blue;
 
       border-spacing: 0px; // cell 사이 여백을 없앰
@@ -203,7 +243,7 @@ export default {
       /* 월화수목금토일 */
       thead.head-section {
          color: gray;
-         font-size: 10pt;
+         font-size: 8pt;
 
          th {
             height: 20px;
@@ -228,8 +268,10 @@ tbody.day-section {
 
    .day {
       text-align: center;
-      font-size: 10pt;
-      line-height: 35px;
+      font-size: 8pt;
+
+      height: $cell_h;
+      line-height: $cell_h;
 
       color: rgb(157, 157, 157);
 
@@ -241,7 +283,7 @@ tbody.day-section {
       &--pre,
       &--next {
          color: rgb(206, 206, 206);
-         background-color: rgb(228, 228, 228);
+         background-color: rgb(238, 238, 238);
          pointer-events: none;
       }
    }

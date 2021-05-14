@@ -68,7 +68,7 @@ export default {
          selectedDateStudyHourList: new Array(24),
          studyTimeCalendar: undefined,
          // 테스트데이터
-         studyTimestamp: [
+         sampleData: [
             {
                studyId: 1,
                studyTime: '2021-04-28T00:00:00.000',
@@ -177,14 +177,14 @@ export default {
          this.nextMonthStart = weekOfDays[0]; // 이번 달 마지막 주에서 제일 작은 날짜
          return dates;
       }, //==================================================================================================================================
-      parseStudyTimeOfDay(studyTimestamp) {
-         const size = studyTimestamp.length;
+      parseStudyTimeOfDay(sampleData) {
+         const size = sampleData.length;
          const studyRunningTimeList = [];
          let flag = false;
          let curStartTime = null;
          let runningTime = 0;
          for (let i = 0; i < size; i++) {
-            const { studyTime, status, startTime } = studyTimestamp[i];
+            const { studyTime, status, startTime } = sampleData[i];
             if (status === 'START') {
                // 공부 시작
                flag = true;
@@ -203,6 +203,8 @@ export default {
                }
             }
          }
+         console.log(studyRunningTimeList);
+
          return studyRunningTimeList;
       },
       getDetailStudyTimeOfSelectedDate(day) {
@@ -228,7 +230,7 @@ export default {
       getStudyTimeMonth(year, month) {
          // Todo : 해당 년,월의 공부기록 axios 요청
          console.log('API', year + ',' + month);
-         return this.studyTimestamp;
+         return this.sampleData;
       },
       convertStudyTimeMonthToCalendar(array) {
          // Todo : 캘린더와 인덱스를 맞춰야 함
@@ -253,13 +255,13 @@ export default {
                continue;
             }
             result.push({
-               runningTime: this.getRunningTimeByStudyTimestamp(this.parseStudyTimeOfDay(log)),
+               runningTime: this.getRunningTimeBysampleData(this.parseStudyTimeOfDay(log)),
                log,
             });
          }
          return result;
       },
-      getRunningTimeByStudyTimestamp(timestamp) {
+      getRunningTimeBysampleData(timestamp) {
          let sum = 0;
          for (let i = 0; i < timestamp.length; i++) {
             sum += timestamp[i].runningTime;
