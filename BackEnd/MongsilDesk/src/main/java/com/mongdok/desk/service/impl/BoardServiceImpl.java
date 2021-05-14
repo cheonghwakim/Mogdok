@@ -28,7 +28,7 @@ import com.mongdok.desk.service.BoardService;
 @Service
 public class BoardServiceImpl implements BoardService {
 	@Autowired
-	BoardDao boardDao;
+	private BoardDao boardDao;
 	@Autowired
 	private UserDao userDao;
 
@@ -61,21 +61,21 @@ public class BoardServiceImpl implements BoardService {
 
 	// 방명록 작성
 	@Override
-	public ResponseEntity<? extends BasicResponse> createBoard(BoardCreateRequest request) {
+	public ResponseEntity<? extends BasicResponse> createBoard(BoardCreateRequest request, String userId) {
 		BoardResponse response = new BoardResponse();
 
 		try {
 			Board board = new Board();
 			board.setContent(request.getContent());
 			board.setDeskId(request.getDeskId());
-			board.setUserId(userDao.findUserIdByUserName(request.getUserName()));// nickname을 userid 찾아옴
+			board.setUserId(userId);// nickname을 userid 찾아옴
 			board.setRead(false);// nickname을 userid 찾아옴
 			boardDao.save(board);
 
 			response.setBoardId(board.getBoardId());
 			response.setContent(board.getContent());
 			response.setWriteDate(board.getWriteDate());
-			response.setUserName(request.getUserName());
+			response.setUserName(userDao.findUserNameByUserId(userId));
 			response.setRead(board.isRead());
 
 		} catch (Exception e) {
@@ -87,7 +87,7 @@ public class BoardServiceImpl implements BoardService {
 
 	// 방명록 업데이트
 	@Override
-	public ResponseEntity<? extends BasicResponse> updateBoard(BoardUpdateRequest request) {
+	public ResponseEntity<? extends BasicResponse> updateBoard(BoardUpdateRequest request, String userId) {
 		BoardResponse response = new BoardResponse();
 
 		try {
@@ -101,7 +101,7 @@ public class BoardServiceImpl implements BoardService {
 				response.setBoardId(board.getBoardId());
 				response.setContent(board.getContent());
 				response.setWriteDate(board.getWriteDate());
-				response.setUserName(userDao.findUserNameByUserId(board.getUserId()));
+				response.setUserName(userDao.findUserNameByUserId(userId));
 			} else {
 				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 boardId"));
 			}

@@ -6,5 +6,4 @@ import lombok.Data;
 public class BoardCreateRequest {
 	private String content;
 	private long deskId;
-	private String userName;
 }

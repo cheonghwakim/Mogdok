@@ -16,7 +16,6 @@ import com.mongdok.desk.common.response.BasicResponse;
 import com.mongdok.desk.common.response.CommonResponse;
 import com.mongdok.desk.common.response.ErrorResponse;
 import com.mongdok.desk.dao.DeskDao;
-import com.mongdok.desk.dao.UserDao;
 import com.mongdok.desk.exception.ErrorCode;
 import com.mongdok.desk.model.Dday;
 import com.mongdok.desk.model.Desk;
@@ -34,21 +33,20 @@ import com.mongdok.desk.service.DeskService;
 public class DeskServiceImpl implements DeskService {
 	@Autowired
 	private DeskDao deskDao;
-	@Autowired
-	private UserDao userDao;
+
 
 	public static final Logger logger = LoggerFactory.getLogger(DeskServiceImpl.class);
 
 	// 다짐 불러오기
 	@Override
-	public ResponseEntity<? extends BasicResponse> getPromiseByUserEmail(String nickname) {
+	public ResponseEntity<? extends BasicResponse> getPromise(String userId) {
 		DeskResponse response = new DeskResponse();
 		try {
-			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByUserName(nickname));
+			Optional<Desk> optional = deskDao.findByUserId(userId);
 			if (optional.isPresent()) {
 				response.setPromise(optional.get().getPromise());
 			} else {
-				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 닉네임"));
+				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 userId"));
 			}
 		} catch (Exception e) {
 			logger.error("내 책상 조회 실패 : {}", e);
@@ -59,10 +57,10 @@ public class DeskServiceImpl implements DeskService {
 
 	// 다짐 수정
 	@Override
-	public ResponseEntity<? extends BasicResponse> updatePromiseByUserId(DeskRequest deskRequest) {
+	public ResponseEntity<? extends BasicResponse> updatePromiseByUserId(DeskRequest deskRequest,String userId) {
 		DeskResponse response = new DeskResponse();
 		try {
-			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByUserName(deskRequest.getUserName()));
+			Optional<Desk> optional = deskDao.findByUserId(userId);
 			if (optional.isPresent()) {
 				Desk desk = optional.get();
 				desk.setPromise(deskRequest.getPromise());// 다짐 수정
@@ -70,7 +68,7 @@ public class DeskServiceImpl implements DeskService {
 
 				response.setPromise(optional.get().getPromise());
 			} else {
-				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 닉네임"));
+				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 userId"));
 			}
 		} catch (Exception e) {
 			logger.error("내 책상 조회 실패 : {}", e);
@@ -83,11 +81,11 @@ public class DeskServiceImpl implements DeskService {
 
 	// 내 책상 모든 것 불러오기(메모, 다짐, 방명록, 디데이)
 	@Override
-	public ResponseEntity<? extends BasicResponse> getAllInfoDesk(String nickname) {
+	public ResponseEntity<? extends BasicResponse> getAllInfoDesk(String userId) {
 		DeskAllResponse response = new DeskAllResponse();
 
 		try {
-			Optional<Desk> optional = deskDao.findByUserId(userDao.findUserIdByUserName(nickname));
+			Optional<Desk> optional = deskDao.findByUserId(userId);
 			if (optional.isPresent()) {
 				Desk desk = optional.get();
 				// 엔티티-> dto 변환
@@ -122,7 +120,7 @@ public class DeskServiceImpl implements DeskService {
 				response.setBoardList(boardList);
 
 			} else {
-				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 닉네임"));
+				return ResponseEntity.ok().body(new CommonResponse<String>("존재하지 않는 userId"));
 			}
 		} catch (Exception e) {
 			logger.error("내 책상 조회 실패 : {}", e);

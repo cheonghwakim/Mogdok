@@ -17,7 +17,8 @@ public enum ErrorCode {
 	FAIL_CREATE_MEMO(4100, "FAIL_CREATE_MEMO", "메모 생성 실패"),
 	FAIL_UPDATE_MEMO(4200, "FAIL_UPDATE_MEMO", "메모 수정 실패"), 
 	FAIL_GET_CALENDAR_MONTH(5000, "FAIL_GET_CALENDAR_MONTH", "해당 년,월 달력 불러오기 실패"),
-	FAIL_GET_CALENDAR_DAY(5100, "FAIL_GET_CALENDAR_DAY", "해당 날짜 달력 불러오기 실패");
+	FAIL_GET_CALENDAR_DAY(5100, "FAIL_GET_CALENDAR_DAY", "해당 날짜 달력 불러오기 실패"),
+	FAIL_GET_TOKEN(5200,"FAIL_GET_TOKEN","토큰 값이 존재하지 않음");
 
 	private final int code;
 	private final String name;

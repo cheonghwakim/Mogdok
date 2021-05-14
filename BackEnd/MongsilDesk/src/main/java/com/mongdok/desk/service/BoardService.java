@@ -12,9 +12,9 @@ public interface BoardService {
 
 	ResponseEntity<? extends BasicResponse> getBoardById(long boardId);
 
-	ResponseEntity<? extends BasicResponse> createBoard(BoardCreateRequest request);
+	ResponseEntity<? extends BasicResponse> createBoard(BoardCreateRequest request, String userId);
 
-	ResponseEntity<? extends BasicResponse> updateBoard(BoardUpdateRequest request);
+	ResponseEntity<? extends BasicResponse> updateBoard(BoardUpdateRequest request, String userId);
 
 	ResponseEntity<? extends BasicResponse> deleteBoard(long boardId);
 

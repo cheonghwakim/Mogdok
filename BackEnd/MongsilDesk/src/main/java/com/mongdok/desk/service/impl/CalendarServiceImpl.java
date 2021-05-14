@@ -25,19 +25,15 @@ import com.mongdok.desk.service.CalendarService;
 public class CalendarServiceImpl implements CalendarService {
 
 	@Autowired
-	StudyDao studyDao;
-	@Autowired
-	private UserDao userDao;
+	private StudyDao studyDao;
 
 	public static final Logger logger = LoggerFactory.getLogger(DeskServiceImpl.class);
 
 	@Override
-	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String userName) {
+	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month, String userId) {
 		List<StudyResponse> response = new ArrayList<StudyResponse>();
 
 		try {
-			String userId = userDao.findUserIdByUserName(userName);
-
 			LocalDate date=LocalDate.of(year, month, 1);
 			List<Study> list = studyDao.findAllInThisMonth(date, userId);
 
@@ -58,12 +54,10 @@ public class CalendarServiceImpl implements CalendarService {
 	}
 
 	@Override
-	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String userName) {
+	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day, String userId) {
 		List<StudyResponse> response = new ArrayList<StudyResponse>();
 
 		try {
-			String userId = userDao.findUserIdByUserName(userName);
-
 			LocalDate date=LocalDate.of(year, month, day);
 			List<Study> list = studyDao.findAllInToday(date, userId);
 
