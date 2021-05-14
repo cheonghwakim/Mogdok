@@ -254,13 +254,13 @@ export default {
          width: 1000px;
          height: 600px;
          /* border: 1px solid blue; */
-      }
 
-      .calendar {
-         position: absolute;
+         .calendar {
+            position: absolute;
 
-         top: 25px;
-         left: 15px;
+            top: 25px;
+            left: 15px;
+         }
       }
    }
 }
