@@ -30,7 +30,7 @@ public class CalendarController {
 	
 	@GetMapping("/month")
 	@ApiOperation(value = "커밋 달력 년,월로 불러오기")
-	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month,@RequestHeader ("token") String token) {
+	public ResponseEntity<? extends BasicResponse> getCalendarInMonth(int year, int month,@RequestHeader ("auth-token") String token) {
 		if(token==null)
 			ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_PROMISE));
 		Claims claims = jwtUtil.getClaims(token);
@@ -40,7 +40,7 @@ public class CalendarController {
 
 	@GetMapping("/day")
 	@ApiOperation(value = "커밋 달력 년,월,일로 불러오기")
-	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day,@RequestHeader ("token") String token) {
+	public ResponseEntity<? extends BasicResponse> getCalendarInDay(int year, int month, int day,@RequestHeader ("auth-token") String token) {
 		if(token==null)
 			ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_PROMISE));
 		Claims claims = jwtUtil.getClaims(token);

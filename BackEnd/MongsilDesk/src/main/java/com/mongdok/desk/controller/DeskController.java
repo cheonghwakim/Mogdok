@@ -34,7 +34,7 @@ public class DeskController {
 	
 	@GetMapping
 	@ApiOperation(value = "나의 다짐 불러오기")
-	public ResponseEntity<? extends BasicResponse> getPromiseByUserId(@RequestHeader ("token") String token){
+	public ResponseEntity<? extends BasicResponse> getPromiseByUserId(@RequestHeader ("auth-token") String token){
 		if(token==null)
 			ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_PROMISE));
 		Claims claims = jwtUtil.getClaims(token);
@@ -45,7 +45,7 @@ public class DeskController {
 	
 	@PutMapping
 	@ApiOperation(value = "나의 다짐 수정")
-	public ResponseEntity<? extends BasicResponse> updatePromiseByUserId(@RequestBody DeskRequest desk,@RequestHeader ("token") String token){
+	public ResponseEntity<? extends BasicResponse> updatePromiseByUserId(@RequestBody DeskRequest desk,@RequestHeader ("auth-token") String token){
 		if(token==null)
 			ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_PROMISE));
 		Claims claims = jwtUtil.getClaims(token);
@@ -55,7 +55,7 @@ public class DeskController {
 	
 	@GetMapping("/all")
 	@ApiOperation(value = "나의 책상 모든 것 불러오기(메모, 디데이, 방명록, ..)")
-	public ResponseEntity<? extends BasicResponse> getAllInfoDesk(@RequestHeader ("token") String token){
+	public ResponseEntity<? extends BasicResponse> getAllInfoDesk(@RequestHeader ("auth-token") String token){
 		if(token==null)
 			ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_PROMISE));
 		Claims claims = jwtUtil.getClaims(token);

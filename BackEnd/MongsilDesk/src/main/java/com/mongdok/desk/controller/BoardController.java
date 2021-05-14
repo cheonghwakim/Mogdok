@@ -50,7 +50,7 @@ public class BoardController {
 	
 	@PostMapping
 	@ApiOperation(value = "쪽지 생성")
-	public ResponseEntity<? extends BasicResponse> createBoard(@RequestBody BoardCreateRequest request,@RequestHeader ("token") String token){
+	public ResponseEntity<? extends BasicResponse> createBoard(@RequestBody BoardCreateRequest request,@RequestHeader ("auth-token") String token){
 		if(token==null)
 			ResponseEntity.ok().body(new ErrorResponse(ErrorCode.FAIL_GET_PROMISE));
 		Claims claims = jwtUtil.getClaims(token);
