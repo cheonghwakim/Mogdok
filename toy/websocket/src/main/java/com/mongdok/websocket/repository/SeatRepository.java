@@ -76,8 +76,8 @@ public class SeatRepository {
     }
 
     // 좌석정보 수정
-    public void updateSeatInfo(String roomId, String userId, SeatInfo info) {
-        log.info("seatInfo : {}", info.toString());
+    public void updateSeatInfo(String roomId, String userId, StudyType type) {
+        log.info("type : {}", type);
 
         if(hashOpsSeatInfo.hasKey(SEAT_INFO+DELIMITER+roomId, userId)) {
             Seat seat = findSeatByUserId(roomId, userId);
@@ -91,9 +91,9 @@ public class SeatRepository {
             timestampList.add(Timestamp
                     .builder()
                     .time(LocalDateTime.now(ZoneOffset.UTC))
-                    .type(info.getStudyType())
+                    .type(type)
                     .build());
-            seat.setStudyType(info.getStudyType());
+            seat.setStudyType(type);
             hashOpsSeatInfo.put(SEAT_INFO+DELIMITER+roomId, userId, seat);
         }
     }
