@@ -55,6 +55,8 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public void sendMessage(RoomMessage roomMessage) {
         roomMessage.setUserCount(roomRepository.getUserCount(roomMessage.getRoomId()));
+        Seat seat = null;
+        SeatInfo seatInfo = null;
 
         switch (roomMessage.getType()) {
             case ENTER:
@@ -78,21 +80,31 @@ public class RoomServiceImpl implements RoomService{
                 break;
             case SEAT_STATUS:
                 // TODO: 공부시작, 휴식시작시간 저장 호출
+                log.info("[STUDY TYPE] : {}", roomMessage.getSeatInfo().getStudyType());
+                seat = seatRepository.findSeatByUserId(roomMessage.getRoomId(), roomMessage.getUserId());
+                log.info("[SEAT NO] : {}", seat.getSeatNo());
+
                 seatRepository.updateSeatInfo(roomMessage.getRoomId(),
                                               roomMessage.getUserId(),
-                                              roomMessage.getSeatInfo());
+                                              seat.getStudyType());
+
+                seatInfo = SeatInfo.builder()
+                        .seatNo(seat.getSeatNo())
+                        .studyType(roomMessage.getSeatInfo().getStudyType())
+                        .build();
+                roomMessage.setSeatInfo(seatInfo);
                 break;
             case END:
                 // TODO: 좌석반납처리 구현
                 log.info("***** END *****");
-                Seat seat = seatRepository.findSeatByUserId(roomMessage.getRoomId(), roomMessage.getUserId());
+                seat = seatRepository.findSeatByUserId(roomMessage.getRoomId(), roomMessage.getUserId());
                 
                 // 가지고 있는 좌석이 없는 경우
                 if(seat == null) {
                     log.info("가지고 있는 좌석이 없습니다.");
                     return;
                 }
-                SeatInfo seatInfo = SeatInfo.builder().seatNo(seat.getSeatNo()).build();
+                seatInfo = SeatInfo.builder().seatNo(seat.getSeatNo()).build();
                 roomMessage.setSeatInfo(seatInfo);
 
                 // 좌석정보가 있는 경우 ----> 시간 정보 저장
