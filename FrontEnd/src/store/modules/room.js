@@ -320,21 +320,6 @@ const actions = {
       console.log('%croom.js line:293 PAUSE!!', 'color: #007acc;');
       dispatch('PAUSE_TIMER_BY_INDEX', index);
     }
-    // for (let i = 0; i < state.seatList.length; ++i) {
-    //   // commit('UPDATE_SEAT_INFO', { index: i, key: 'studyType', value: recv.seatInfo.studyType });
-    //   if (state.seatList[i].userName === recv.userName) {
-    //     //  state.seatList[i].studyType = recv.seatInfo.studyType; // 상태 변경
-    //     if (recv.seatInfo.studyType === 'START') {
-    //       dispatch('START_TIMER_BY_INDEX', i);
-    //       // this.start(i);
-    //     }
-    //     if (recv.seatInfo.studyType === 'PAUSE') {
-    //       dispatch('PAUSE_TIMER_BY_INDEX', i);
-    //       // this.pause(i);
-    //     }
-    //     break;
-    //   }
-    // }
   },
   START_TIMER_BY_INDEX({ state, commit }, index) {
     if (state.seatList[index].isRunning) {
@@ -349,9 +334,6 @@ const actions = {
           currentTime.getTime() + currentTime.getTimezoneOffset() * 60 * 1000
         ).getTime(),
       });
-      // state.seatList[index].timeBegan = new Date(
-      //   currentTime.getTime() + currentTime.getTimezoneOffset() * 60 * 1000
-      // ).getTime();
     }
     if (state.seatList[index].timeStopped !== null) {
       commit('UPDATE_SEAT_INFO', {
@@ -362,9 +344,6 @@ const actions = {
           new Date(currentTime.getTime() + currentTime.getTimezoneOffset() * 60 * 1000).getTime() -
           state.seatList[index].timeStopped,
       });
-      // state.seatList[index].stoppedDuration +=
-      //   new Date(currentTime.getTime() + currentTime.getTimezoneOffset() * 60 * 1000).getTime() -
-      //   state.seatList[index].timeStopped;
     }
 
     commit('SET_SEAT_INFO_TIMER', {
@@ -386,8 +365,6 @@ const actions = {
           'color: #007acc;',
           zeroPrefix(hour, 2) + ':' + zeroPrefix(min, 2) + ':' + zeroPrefix(sec, 2)
         );
-        // state.timeList[index] =
-        //   zeroPrefix(hour, 2) + ':' + zeroPrefix(min, 2) + ':' + zeroPrefix(sec, 2);
         commit('RUN_SEAT_INFO_TIMER', {
           index,
           time: zeroPrefix(hour, 2) + ':' + zeroPrefix(min, 2) + ':' + zeroPrefix(sec, 2),
@@ -403,7 +380,6 @@ const actions = {
       key: 'isRunning',
       value: false,
     });
-    // state.seatList[index].isRunning = false;
 
     const currentTime = new Date();
     const currentUTCTime = new Date(
@@ -414,7 +390,6 @@ const actions = {
       key: 'timeStopped',
       value: currentUTCTime,
     });
-    // state.seatList[index].timeStopped = currentUTCTime;
     if (state.seatList[index].timer != null) {
       clearInterval(state.seatList[index].timer);
       commit('STOP_SEAT_INFO_TIMER', { index });
