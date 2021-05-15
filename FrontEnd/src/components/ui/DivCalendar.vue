@@ -64,6 +64,11 @@
                   <td class="time" v-for="time in nightRunningTable" :key="'night-' + time" :class="{ 'study-hour': selectedDayDetail[time] }">{{ time }}</td>
                </tr>
             </table>
+
+            <div class="statistics">
+               <p class="title">오늘 공부한 시간</p>
+               <p class="num">{{ convertMs2Time(this.selectedDayTotal) }}</p>
+            </div>
          </div>
       </transition>
    </div>
@@ -89,8 +94,9 @@ export default {
          nextMonthStart: 0,
 
          // 선택한 날의 상세 러닝타임
-         isOpenDetail: false,
-         selectedDayDetail: [],
+         isOpenDetail: false, // 상세 공부 시간 모달 제어
+         selectedDayDetail: [], // 선택한 날의 공부시간 배열(24H)
+         selectedDayTotal: 0, // 선택한 날의 전체 공부 시간
          dayRunningTable: [7, 8, 9, 10, 11, 12, 13, 14],
          noonRunningTable: [15, 16, 17, 18, 19, 20, 21, 22],
          nightRunningTable: [23, 24, 1, 2, 3, 4, 5, 6],
@@ -291,10 +297,13 @@ export default {
             return;
          }
 
+         var sumTime = 0;
          this.selectedDayDetail = new Array(24);
 
          for (let i = 0; i < selectedDay.length; i++) {
             const { startTime, runningTime } = selectedDay[i];
+
+            sumTime += runningTime;
 
             const _startTime = new Date(startTime);
             const startHour = _startTime.getHours();
@@ -305,14 +314,18 @@ export default {
             }
          }
 
+         this.selectedDayTotal = sumTime;
+
+         // 상세정보 열기
          this.isOpenDetail = true;
       },
 
-      // TEST용 데이터
-      getData: function() {
-         // 선택한 달의 전체 공부 달력을 가져옴
-         console.log(this.studyCalendarMonth);
-         console.log(this.runningTimeCalendar);
+      // 밀리세턴드를 시간 형태로 변환
+      convertMs2Time(ms) {
+         var min = parseInt((ms / (1000 * 60)) % 60);
+         var hours = parseInt((ms / (1000 * 60 * 60)) % 24);
+
+         return `${hours}시간 ${min}분`;
       },
    },
 };
@@ -421,7 +434,7 @@ $cell_h: 27px;
 
    .detail-wrapper {
       width: 90%;
-      height: 120px;
+      height: 150px;
 
       margin: 0 auto;
       margin-top: 10px;
@@ -476,6 +489,25 @@ $cell_h: 27px;
                   width: 60%;
                }
             }
+         }
+      }
+
+      .statistics {
+         margin-top: 10px;
+
+         p.title {
+            letter-spacing: 2px;
+            font-weight: 200;
+            color: rgb(101, 101, 101);
+            margin-bottom: 5px;
+         }
+
+         .num {
+            font-size: 8pt;
+            margin: 0 auto;
+            text-align: center;
+            font-weight: 600;
+            color: rgb(4, 101, 4);
          }
       }
    }
