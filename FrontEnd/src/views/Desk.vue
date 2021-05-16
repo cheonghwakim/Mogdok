@@ -6,9 +6,9 @@
       <!-- v-show로 ID 필터링해서 본인 계정일 경우에만 보이도록 -->
       <btn-rounded class="br-wrapper" :label="'Desk Editor'" :color="'yellow'" :type="'floating'" @onClick="goEditPage"></btn-rounded>
 
-      <!-- 몽실이 안내 화면 -->
+      <!-- 작은 화면에선 드래그하라는 안내 -->
       <transition name="fade">
-         <div v-show="isFirst" class="caution covering">
+         <div v-show="isDragable" class="caution covering">
             <img src="@/assets/img/discover.gif" alt="" />
             <p class="desc kyoboHand">드래그를 하면 책상을 <span>탐닉</span>할 수 있어요!</p>
          </div>
@@ -61,7 +61,7 @@ export default {
    props: {},
    data() {
       return {
-         isFirst: true,
+         isDragable: false,
          isLoadedDesk: false,
 
          // Desk.vue 에는 고정된 메모 요소만 삽입
@@ -97,13 +97,14 @@ export default {
    },
    //lifecycle area
    mounted() {
-      // 몽실이 안내 화면 : n초 뒤 화면 사라짐
-      setTimeout(() => {
-         this.isFirst = false;
-      }, 3000);
-
       // 책상 화면 초기 셋팅
       this.initDesk();
+      window.addEventListener('load', this.handleResize);
+      window.addEventListener('resize', this.handleResize);
+   },
+   beforeDestroy() {
+      window.removeEventListener('load', this.handleResize);
+      window.removeEventListener('resize', this.handleResize);
    },
    methods: {
       // 최초 데스크 셋팅(서버 내 메모 셋팅 등)
@@ -144,6 +145,18 @@ export default {
       },
       clickMemo: function(index) {
          console.log(index + '번째 메모 클릭');
+      },
+
+      handleResize() {
+         // var width = window.innerWidth;
+         // console.log(width);
+         // if (width <= 1280) {
+         //    this.isDragable = true;
+         //    // 몽실이 안내 화면 : n초 뒤 화면 사라짐
+         //    setTimeout(() => {
+         //       this.isDragable = false;
+         //    }, 3000);
+         // }
       },
    },
 };
