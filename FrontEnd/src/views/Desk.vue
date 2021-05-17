@@ -22,8 +22,8 @@
     <div class="info">
       <div class="info-content">
         <btn-close class="btnClose" @onClick="exitDesk"></btn-close>
-        <p class="userName kyoboHand">안양취준생</p>
-        <p class="cate kyoboHand">#취업준비생</p>
+        <p class="userName kyoboHand">{{ profileUserName }}</p>
+        <p class="cate kyoboHand">#{{ profile.category }}</p>
       </div>
       <div-banner></div-banner>
     </div>
@@ -63,7 +63,7 @@ export default {
   data() {
     return {
       isFirst: true,
-
+      profileUserName: '',
       // Desk.vue 에는 고정된 메모 요소만 삽입
       moveFixedState: {
         draggable: false,
@@ -94,18 +94,27 @@ export default {
       memoList: (state) => state.deskedit.memoList, //  책상의 메모들
       ddayList: (state) => state.deskedit.ddayList, //  책상의 디데이들
       boardList: (state) => state.deskedit.boardList, // 책상의 방명록(쪽지)
+      profile: (state) => state.room.selectedSeatInfo,
     }),
     isUserDesk() {
       return this.userInfo.userName === this.$route.params.userName;
     },
   },
   //lifecycle area
-  created() {
+  async created() {
     // 생성되자마자 서버에서 조회중인 책상의 모든 메모 GET -> VUEX 셋팅
-    this.$store.dispatch('GET_DESK_INFO', {
-      nickname: this.$route.params.userName,
-      objectState: this.moveFixedState,
-    });
+    this.profileUserName = this.$route.params.userName;
+    try {
+      await this.$store.dispatch('GET_SELECTED_SEAT_USER_INFO', {
+        userName: this.profileUserName,
+      });
+      await this.$store.dispatch('GET_DESK_INFO', {
+        nickname: this.profileUserName,
+        objectState: this.moveFixedState,
+      });
+    } catch (error) {
+      alert('사용자 정보를 불러오는데 실패했어요. ' + error);
+    }
   },
   mounted() {
     console.log('> Desk : mounted');

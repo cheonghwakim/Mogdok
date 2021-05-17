@@ -1,7 +1,7 @@
 <template lang="">
   <div class="divProfile">
     <!-- 내용들이 들어가는 내부 공간 -->
-    <div class="content">
+    <div class="content" v-if="seat">
       <!-- 닫기 버튼 -->
       <!-- 캠화면 -->
       <div class="cam-wrapper">
@@ -162,6 +162,7 @@ export default {
       this.$store.commit('CLEAR_DESK');
     },
     openDesk() {
+      this.closeProfile();
       this.$router.replace({ path: `/desk/${this.seat.userName}` });
     },
   },
