@@ -7,7 +7,7 @@
       <div class="cam-wrapper">
         <div v-if="streamManager">
           <div-tape></div-tape>
-          <ov-video class="cam" :stream-manager="streamManager"></ov-video>
+          <ov-video class="cam" :key="seat.userName" :stream-manager="streamManager"></ov-video>
         </div>
         <div v-else>
           쉬는 중이어서 캠을 볼 수 없음을 알리는 UI
@@ -158,7 +158,6 @@ export default {
   components: { BtnClose, BtnCommand, DivTape, OvVideo },
   methods: {
     closeProfile: function() {
-      console.log('closeProfile 닫기');
       this.$store.commit('TOGGLE_PROFILE');
       this.$store.commit('CLEAR_DESK');
     },

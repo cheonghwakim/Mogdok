@@ -4,11 +4,7 @@
       <div v-show="$store.state.desk.isOpenProfile" class="profile-wrapper">
         <div-profile
           :seat="selectedSeatInfo"
-          :stream-manager="
-            selectedSeatIdx >= 0 && seatList[selectedSeatIdx]
-              ? seatList[selectedSeatIdx].subscriber
-              : undefined
-          "
+          :stream-manager="selectedSeatInfo ? selectedSeatInfo.subscriber : undefined"
         ></div-profile>
       </div>
     </transition>
