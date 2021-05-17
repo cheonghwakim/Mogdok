@@ -44,6 +44,7 @@
             >
                <svg-memo :text="content" :color="color"></svg-memo>
             </vue-moveable>
+            <div class="calendar-box">STUDY CALENDAR</div>
          </div>
          <svg-desk></svg-desk>
       </div>
@@ -52,7 +53,7 @@
       <div class="memoInputModal" v-show="isOpenModal">
          <div v-if="memoList[selectedMemoIdx]" class="memo-Modal-content" :style="{ 'background-color': memoColor[memoList[selectedMemoIdx].color].code }">
             <p class="title">POST-IT</p>
-            <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="kyoboHand" placeholder="메모 내용을 작성해주세요" />
+            <textarea v-model="memoList[selectedMemoIdx].content" type="text" class="kyoboHand" />
             <p class="desc">메모 내용이 실시간으로 작성됩니다 😛</p>
             <div v-wave class="btn-close" @click="toggleModal">
                CLOSE
@@ -318,7 +319,30 @@ export default {
 
          width: 1000px;
          height: 600px;
-         /* border: 1px solid blue; */
+
+         .calendar-box {
+            position: absolute;
+
+            top: 25px;
+            left: 15px;
+
+            color: rgb(58, 58, 58);
+            font-size: 10pt;
+            font-weight: 600;
+            letter-spacing: 5px;
+            text-align: center;
+            line-height: 300px;
+
+            width: 240px;
+            height: 300px;
+
+            border-radius: 20px;
+            border: 1px solid #707070;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQUlEQVQoU2NkIAIUFBTMZCSkDqRowoQJ6QQVwgzCqRBmEl6F6IpAijFMxKYIq0JcnoObiMskFDcSUgS2mhhFIIUA1IId9JIePAcAAAAASUVORK5CYII=)
+               repeat;
+
+            z-index: -1;
+         }
       }
    }
 }
@@ -411,10 +435,6 @@ export default {
          text-align: center;
       }
    }
-}
-
-/* 최상단에 떠있는 닫기 버튼 */
-.btn-close-top {
 }
 
 /* 트랜지션 */

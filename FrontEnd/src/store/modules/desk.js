@@ -1,5 +1,4 @@
 import { getDeskInfo } from '../../api/desk';
-// import { moveableState } from './deskedit';
 
 // 컴포넌트 간에 공유할 data
 const state = () => ({
@@ -14,13 +13,11 @@ const getters = {};
 // 사용자의 입력에 따라 데이터를 변경하는 methods | 비동기 로직 처리용
 const actions = {
    // DESK 내의 모든 메모 정보를 LOAD [Desk.vue]
-   GET_DESK_ALL_MEMO({ commit }, object) {
+   async GET_DESK_ALL_MEMO({ commit }, object) {
       // 기존 메모리스트 초기화
       commit('SET_MEMO_LIST', []);
 
-      console.log('---------- GET_DESK_ALL_MEMO ----------');
-
-      getDeskInfo(
+      await getDeskInfo(
          // { nickname },
          { nickname: 'ssafy' }, // 테스트용
          (res) => {
@@ -37,9 +34,13 @@ const actions = {
             commit('SET_DDAY_LIST', res.data.data.ddayList, { root: true });
             commit('SET_BOARD_LIST', res.data.data.boardList, { root: true });
             commit('SET_PROMISE', res.data.data.promise, { root: true });
+
+            console.log('👀 GET_DESK_ALL_MEMO');
+            return Promise.resolve();
          },
          (error) => {
             alert(error);
+            return Promise.reject(error);
          }
       );
    },
@@ -48,8 +49,6 @@ const actions = {
    GET_DESK_ALL_MEMO_4_EDIT({ commit }, object) {
       // 기존 메모리스트 초기화
       commit('SET_MEMO_LIST', []);
-
-      console.log('---------- GET_DESK_ALL_MEMO_4_EDIT ----------');
 
       getDeskInfo(
          // { nickname },

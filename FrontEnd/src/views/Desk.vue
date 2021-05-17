@@ -1,11 +1,14 @@
 <template lang="">
    <div v-dragscroll="true" class="desk">
+      <!-- 로딩 화면 -->
+      <div-loading v-if="!isLoadedDesk"></div-loading>
+
       <!-- v-show로 ID 필터링해서 본인 계정일 경우에만 보이도록 -->
       <btn-rounded class="br-wrapper" :label="'Desk Editor'" :color="'yellow'" :type="'floating'" @onClick="goEditPage"></btn-rounded>
 
-      <!-- 몽실이 안내 화면 -->
+      <!-- 작은 화면에선 드래그하라는 안내 -->
       <transition name="fade">
-         <div v-show="isFirst" class="caution covering">
+         <div v-show="isDragable" class="caution covering">
             <img src="@/assets/img/discover.gif" alt="" />
             <p class="desc kyoboHand">드래그를 하면 책상을 <span>탐닉</span>할 수 있어요!</p>
          </div>
@@ -23,7 +26,7 @@
 
       <!-- 메모가 표시는 책상 -->
       <div class="desk-wrapper">
-         <div class="desk-draw-area">
+         <div v-if="isLoadedDesk" class="desk-draw-area">
             <vue-moveable
                v-for="({ memoId, content, zIndex, moveable, transform, color }, index) in memoList"
                :key="'memo' + index + memoId"
@@ -34,6 +37,7 @@
             >
                <svg-memo :text="content" :color="color"></svg-memo>
             </vue-moveable>
+            <div-calendar class="calendar"></div-calendar>
          </div>
          <svg-desk></svg-desk>
       </div>
@@ -47,15 +51,18 @@ import SvgMemo from '@/components/svg/SvgMemo';
 import DivBanner from '@/components/ui/DivBanner';
 import BtnClose from '@/components/ui/BtnClose';
 import BtnRounded from '@/components/ui/BtnRounded';
+import DivCalendar from '@/components/ui/DivCalendar';
+import DivLoading from '@/components/ui/DivLoading';
 import { mapState } from 'vuex';
 
 export default {
    name: 'Desk',
-   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo, BtnRounded },
+   components: { SvgDesk, DivBanner, BtnClose, VueMoveable, SvgMemo, BtnRounded, DivCalendar, DivLoading },
    props: {},
    data() {
       return {
-         isFirst: true,
+         isDragable: false,
+         isLoadedDesk: false,
 
          // Desk.vue 에는 고정된 메모 요소만 삽입
          moveFixedState: {
@@ -90,24 +97,38 @@ export default {
    },
    //lifecycle area
    mounted() {
-      console.log('> Desk : mounted');
-      // 몽실이 안내 화면 : n초 뒤 화면 사라짐
-      setTimeout(() => {
-         this.isFirst = false;
-      }, 3000);
-
       // 책상 화면 초기 셋팅
       this.initDesk();
+      window.addEventListener('load', this.handleResize);
+      window.addEventListener('resize', this.handleResize);
+   },
+   beforeDestroy() {
+      window.removeEventListener('load', this.handleResize);
+      window.removeEventListener('resize', this.handleResize);
    },
    methods: {
       // 최초 데스크 셋팅(서버 내 메모 셋팅 등)
-      initDesk: function() {
+      initDesk: async function() {
+         console.log('initDesk');
          // 컨테이너를 넣을 요소를 객체에 할당
          const elem = document.getElementsByClassName('desk-draw-area')[0];
          this.moveFixedState.container = elem;
 
-         // 생성되자마자 서버에서 조회중이 책상의 모든 메모 GET -> VUEX 셋팅
-         this.$store.dispatch('GET_DESK_ALL_MEMO', this.moveFixedState);
+         var now = new Date();
+
+         const calParam = {
+            userName: 'ssafy',
+            year: now.getFullYear(),
+            month: now.getMonth() + 1,
+         };
+
+         // 생성시 비동기 로직 처리
+         // #JS : 해당 함수의 return 값을 TRUE, FALSE 처리해서 -> API 못 받아오면, 로딩 막도록..
+         await this.$store.dispatch('GET_DESK_ALL_MEMO', this.moveFixedState);
+         await this.$store.dispatch('GET_CALENDAR', calParam);
+
+         console.log('--------- initDesk FIN. ---------');
+         this.isLoadedDesk = true;
       },
 
       // 편집 화면으로 이동
@@ -124,6 +145,18 @@ export default {
       },
       clickMemo: function(index) {
          console.log(index + '번째 메모 클릭');
+      },
+
+      handleResize() {
+         // var width = window.innerWidth;
+         // console.log(width);
+         // if (width <= 1280) {
+         //    this.isDragable = true;
+         //    // 몽실이 안내 화면 : n초 뒤 화면 사라짐
+         //    setTimeout(() => {
+         //       this.isDragable = false;
+         //    }, 3000);
+         // }
       },
    },
 };
@@ -234,6 +267,13 @@ export default {
          width: 1000px;
          height: 600px;
          /* border: 1px solid blue; */
+
+         .calendar {
+            position: absolute;
+
+            top: 25px;
+            left: 15px;
+         }
       }
    }
 }
