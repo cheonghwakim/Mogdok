@@ -142,12 +142,20 @@ export default {
   },
   //lifecycle area
   mounted() {
-    console.log('> DeskEdit : mounted');
-
-    // 책상 편집 화면 초기 셋팅
+    window.addEventListener('beforeunload', this.leaveSession);
     this.initDeskEdit();
   },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.leaveSession);
+  },
   methods: {
+    leaveSession(e) {
+      e = e || window.event;
+      if (e) {
+        e.returnValue = '자리에서 떠나시겠습니까?'; //old browsers
+      }
+      return '자리에서 떠나시겠습니까?'; //safari, chrome(chrome ignores text)
+    },
     // 책상 편집 초기 셋팅
     initDeskEdit: async function() {
       // 컨테이너를 넣을 요소를 객체에 할당

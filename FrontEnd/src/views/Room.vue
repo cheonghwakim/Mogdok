@@ -84,6 +84,9 @@ export default {
   mounted() {
     window.addEventListener('beforeunload', this.leaveSession);
   },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.leaveSession);
+  },
   methods: {
     // 세선 참여
     async joinSession() {
@@ -122,7 +125,6 @@ export default {
       if (e) {
         e.returnValue = '자리에서 떠나시겠습니까?'; //old browsers
       }
-      window.removeEventListener('beforeunload', this.leaveSession);
       return '자리에서 떠나시겠습니까?'; //safari, chrome(chrome ignores text)
     },
     async clickDesk(seat, index) {

@@ -100,33 +100,49 @@ export default {
       return this.userInfo.userName === this.$route.params.userName;
     },
   },
-  //lifecycle area
-  async created() {
-    // 생성되자마자 서버에서 조회중인 책상의 모든 메모 GET -> VUEX 셋팅
-    this.profileUserName = this.$route.params.userName;
-    try {
-      await this.$store.dispatch('GET_SELECTED_SEAT_USER_INFO', {
-        userName: this.profileUserName,
-      });
-      await this.$store.dispatch('GET_DESK_INFO', {
-        nickname: this.profileUserName,
-        objectState: this.moveFixedState,
-      });
-    } catch (error) {
-      alert('사용자 정보를 불러오는데 실패했어요. ' + error);
-    }
+  watch: {
+    '$route.params.userName': {
+      immediate: true,
+      async handler() {
+        await this.getDeskInfo();
+      },
+    },
   },
+  //lifecycle area
   mounted() {
-    console.log('> Desk : mounted');
+    window.addEventListener('beforeunload', this.leaveSession);
     // 몽실이 안내 화면 : n초 뒤 화면 사라짐
     setTimeout(() => {
       this.isFirst = false;
     }, 3000);
-
     // 책상 화면 초기 셋팅
     this.initDesk();
   },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.leaveSession);
+  },
   methods: {
+    leaveSession(e) {
+      e = e || window.event;
+      if (e) {
+        e.returnValue = '자리에서 떠나시겠습니까?'; //old browsers
+      }
+      return '자리에서 떠나시겠습니까?'; //safari, chrome(chrome ignores text)
+    },
+    async getDeskInfo() {
+      try {
+        await this.$store.dispatch('GET_SELECTED_SEAT_USER_INFO', {
+          userName: this.$route.params.userName,
+        });
+        this.profileUserName = this.$route.params.userName;
+        await this.$store.dispatch('GET_DESK_INFO', {
+          nickname: this.profileUserName,
+          objectState: this.moveFixedState,
+        });
+      } catch (error) {
+        alert('사용자 정보를 불러오는데 실패했어요. ' + error);
+      }
+    },
     // 최초 데스크 셋팅(서버 내 메모 셋팅 등)
     initDesk: function() {
       // 컨테이너를 넣을 요소를 객체에 할당
