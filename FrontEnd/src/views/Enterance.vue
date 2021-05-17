@@ -8,6 +8,8 @@
                   <enterance-door :room="room" @click="enterRoom(room)"></enterance-door>
                </div>
             </div>
+            <p class="btnFAQ" @click="toggleModalFAQ"><i class="fas fa-question-circle"></i> 몽실이네 독서실이 궁금하세요?</p>
+            <modal-faq :isOpenFAQ="isOpenFAQ" @onClick="toggleModalFAQ"></modal-faq>
          </div>
          <logo></logo>
       </div>
@@ -16,15 +18,19 @@
 <script>
 import SvgSagam from '@/components/svg/SvgSagam';
 import Logo from '@/components/ui/Logo';
+import ModalFaq from '@/components/ui/ModalFaq';
 import EnteranceDoor from '@/components/EnteranceDoor';
 import { mapState } from 'vuex';
 
 export default {
    name: 'Enterance',
-   components: { SvgSagam, Logo, EnteranceDoor },
+   components: { SvgSagam, Logo, EnteranceDoor, ModalFaq },
    props: {},
    data() {
-      return {};
+      return {
+         // isOpenAbout: false,
+         isOpenFAQ: false,
+      };
    },
    computed: {
       ...mapState({
@@ -44,6 +50,9 @@ export default {
          // TODO : 입장 전 해당 방의 openvidu session과 room서버 연결 완료하고 페이지 이동
          this.$store.commit('SET_ROOM_INFO', room);
          this.$router.replace({ name: 'Room' });
+      },
+      toggleModalFAQ() {
+         this.isOpenFAQ = !this.isOpenFAQ;
       },
    },
 };
@@ -99,6 +108,16 @@ export default {
             .roomItem {
                margin: 0px 5px;
             }
+         }
+
+         .btnFAQ {
+            cursor: pointer;
+            font-size: 10pt;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: rgb(176, 176, 176);
+
+            margin-top: 12px;
          }
       }
    }

@@ -25,14 +25,14 @@ function deleteMemoList(params, success, fail) {
 // #JS : 오타 수정해야함 calender
 async function getCalendarDay(params, success, fail) {
    await deskInstance
-      .get(`calender/day`, { params })
+      .get(`calendar/day`, { params })
       .then(success)
       .catch(fail);
 }
 
 async function getCalendarMonth(params, success, fail) {
    await deskInstance
-      .get(`calender/month`, { params })
+      .get(`calendar/month`, { params })
       .then(success)
       .catch(fail);
 }
