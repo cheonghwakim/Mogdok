@@ -23,7 +23,7 @@
 
       <!-- 책상 구경 버튼 -->
       <div class="btn-wrapper">
-        <btn-command :label="'책상 구경하기'" class="btnCommand"></btn-command>
+        <btn-command :label="'책상 구경하기'" class="btnCommand" @click="openDesk"></btn-command>
         <btn-close class="btnClose" @onClick="closeProfile"></btn-close>
       </div>
     </div>
@@ -157,9 +157,12 @@ export default {
   },
   components: { BtnClose, BtnCommand, DivTape, OvVideo },
   methods: {
-    closeProfile: function() {
+    closeProfile() {
       this.$store.commit('TOGGLE_PROFILE');
       this.$store.commit('CLEAR_DESK');
+    },
+    openDesk() {
+      this.$router.replace({ path: `/desk/${this.seat.userName}` });
     },
   },
   computed: {

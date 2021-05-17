@@ -17,7 +17,7 @@
       <div-timer-paper :type="studyType" :timer="studyTimer"></div-timer-paper>
     </div>
     <div class="content">
-      <btn-my-desk class="btnMyDesk-wrapper"></btn-my-desk>
+      <btn-my-desk class="btnMyDesk-wrapper" @click="goToMyDesk"></btn-my-desk>
       <btn-command
         class="btnCommand-wrapper"
         :label="btnLabel"
@@ -42,6 +42,7 @@ import {
   ROOM_STUDY_TYPE_PAUSE,
   ROOM_STUDY_TYPE_START,
 } from '../../store/modules/room';
+// import from 'vue-editor-bridge';
 
 export default {
   name: 'Footer',
@@ -57,6 +58,7 @@ export default {
   },
   computed: {
     ...mapState({
+      userInfo: (state) => state.user.userInfo,
       userRoomState: (state) => state.room.userRoomState,
       timeList: (state) => state.room.timeList,
       userSeatIndex: (state) => state.room.userSeatIndex,
@@ -151,6 +153,10 @@ export default {
       } catch (error) {
         alert('공부를 시작하지 못했어요. ' + error);
       }
+    },
+
+    goToMyDesk: function() {
+      this.$router.replace({ path: `/desk/${this.userInfo.userName}` });
     },
 
     async btnClickEvent() {

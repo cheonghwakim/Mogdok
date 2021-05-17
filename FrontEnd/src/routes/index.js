@@ -91,7 +91,7 @@ const routes = [
     },
   },
   {
-    path: '/desk',
+    path: '/desk/:userName',
     name: 'Desk',
     beforeEnter: requireAuth(),
     components: {
@@ -100,7 +100,7 @@ const routes = [
     },
   },
   {
-    path: '/desk',
+    path: '/desk/:userName',
     name: 'DeskEdit',
     beforeEnter: requireAuth(),
     components: {
