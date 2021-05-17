@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "커밋 달력", description = "커밋 달력 불러오기")
 @CrossOrigin
 @RestController
-@RequestMapping("/calender")
+@RequestMapping("/calendar")
 public class CalendarController {
 	@Autowired
 	CalendarService calendarService;
