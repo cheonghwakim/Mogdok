@@ -2,8 +2,9 @@
    <div class="div-bgm-player">
       <!-- <img src="@/assets/img/bgm-player/music_tape.svg" alt="" /> -->
       <!-- 음악 플레이어 버튼 위치 -->
-      <div class="btn-player-wrapper" @click="togglePlayer">
-         <img src="@/assets/img/bgm-player/music.svg" alt="" />
+      <div v-wave class="btn-player-wrapper" @click="togglePlayer">
+         <img v-show="!isOpenPlayer" src="@/assets/img/bgm-player/music.svg" alt="" />
+         <btn-close class="btnClose" v-show="isOpenPlayer"></btn-close>
       </div>
       <!-- 컨트롤러 화면이 위치함 -->
       <transition name="player-open">
@@ -13,13 +14,12 @@
                <svg-pause v-show="isPlaying"></svg-pause>
             </div>
             <div class="select-wrapper">
-               <div v-for="(item, key) in bgmList" :key="key" class="bgm-select" @click="playBGM(key)">
-                  <img :class="{ selected: key === nowPlayIdx }" :src="require(`@/assets/img/emoji/${item.imgSrc}.png`)" alt="" />
+               <div v-for="(item, key) in bgmList" :key="key" class="bgm-select" @click="playBGM(key)" :class="{ selected: key === nowPlayIdx }">
+                  <img :src="require(`@/assets/img/emoji/${item.imgSrc}.png`)" alt="" />
                </div>
             </div>
             <div class="volumn-wrapper">
                <input type="range" min="0" max="1" step="0.1" v-model="volume" />
-               <btn-close @onClick="togglePlayer"></btn-close>
             </div>
          </div>
       </transition>
@@ -139,11 +139,15 @@ export default {
       width: 50%;
       height: 50%;
    }
+
+   .btnClose {
+      width: 18px;
+   }
 }
 
 /* 음악 재생 컨트롤러 */
 .controller-wrapper {
-   width: 300px;
+   width: 250px;
    height: 60px;
    border-radius: 40px;
    background-color: rgb(255, 255, 255);
@@ -151,7 +155,7 @@ export default {
 
    position: absolute;
    top: 0px;
-   right: 0px;
+   right: 70px;
 
    padding: 0px 20px;
 
@@ -183,10 +187,22 @@ export default {
 
          img {
             width: 100%;
-
             -webkit-filter: grayscale(100%);
+         }
 
-            &.selected {
+         &.selected {
+            /* background-color: red; */
+            &::after {
+               content: '';
+               display: block;
+               width: 5px;
+               height: 5px;
+               margin-top: 5px;
+               margin-left: 8px;
+               background-color: rgb(99, 99, 99);
+               border-radius: 50%;
+            }
+            img {
                -webkit-filter: grayscale(0%);
             }
          }
@@ -195,7 +211,7 @@ export default {
 
    /* 마지막 : 볼륨 조절 */
    .volumn-wrapper {
-      width: 180px;
+      width: 100px;
       height: 100%;
 
       display: flex;
