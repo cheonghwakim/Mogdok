@@ -59,6 +59,7 @@ public class RoomController {
     @GetMapping("/{roomId}")
     public ResponseEntity<?> roomInfo(@PathVariable String roomId) {
         StudyRoom room = roomRepository.getRoomById(roomId);
+        room.setUserCount(seatRepository.getSeatCount(room.getRoomId()));
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
 }

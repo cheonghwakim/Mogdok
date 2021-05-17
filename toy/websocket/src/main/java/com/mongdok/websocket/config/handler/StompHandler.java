@@ -68,7 +68,6 @@ public class StompHandler implements ChannelInterceptor {
                     .sender(userName)
                     .userId(userId)
                     .build());
-            log.info("SUBSCRIBED {} ----- {}", sessionId, roomId);
 
         } else if(StompCommand.DISCONNECT == accessor.getCommand()) { // WebSocket 연결 종료
             // 연결이 종료된 클라이언트 userId로 열람실 sessionId를 얻는다.
@@ -78,7 +77,6 @@ public class StompHandler implements ChannelInterceptor {
             log.info("[DISCONNECT] sessionId : {}", sessionId);
             // token값을 꺼내온다.
             String token = roomRepository.getTokenBySessionId(sessionId);
-            log.info("[DISCONNECT] token : {}", token);
 
             String userName = "";
             String userId = "";
@@ -95,25 +93,22 @@ public class StompHandler implements ChannelInterceptor {
                     // TODO: 현재 토큰에 담긴 userId가 실제 id가 아니므로 DB오류 발생시킨다.
                     seatNo = seat.getSeatNo();
                     studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
-                    log.info("***** 공부기록 저장 *****");
+                    log.info("[DISCONNECT] 공부기록 저장 ");
                     seatRepository.minusSeatCount(roomId);
+                    log.info("[DISCONNECT] 현재 착석 유저 수 : {} ", seatRepository.getSeatCount(roomId));
                 }
             }
 
             // 열람실의 인원 수를 -1한다.
             roomRepository.minusUserCount(roomId);
-            log.info("***** 인원 수 -1 *****");
 
             // 퇴장한 클라이언트의 sessionId 매핑 정보를 삭제한다.
             roomRepository.removeRoomEnterInfo(sessionId);
-            log.info("***** sessionId 매핑 정보를 삭제 *****");
 
             roomRepository.removeToken(sessionId);
-            log.info("***** 토큰 삭제 *****");
 
             // TODO: 좌석정보 삭제
             seatRepository.removeSeatInfo(roomId, userId);
-            log.info("***** 좌석정보 삭제 *****");
 
             SeatInfo seatInfo = SeatInfo.builder().seatNo(seatNo).build();
 
@@ -125,7 +120,7 @@ public class StompHandler implements ChannelInterceptor {
                     .userId(userId)
                     .seatInfo(seatInfo)
                     .build());
-            log.info("DISCONNECT {} ----- {}", sessionId, roomId);
+            log.info("[DISCONNECT] {} ----- {}", sessionId, roomId);
         }
         return message;
     }

@@ -53,10 +53,6 @@ public class MessageController {
             message.setUserId(userId);
         }
 
-        if(message.getType().equals(MessageType.SEAT_STATUS)) {
-            log.info("[study type] : {}", message.getSeatInfo().getStudyType());
-        }
-        
         roomService.sendMessage(message);
     }
 }

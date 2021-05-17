@@ -44,23 +44,25 @@ public class SeatRepository {
 
     // 특정 좌석정보 조회
     public Seat findSeatByUserId(String roomId, String userId) {
-        Seat seat =  hashOpsSeatInfo.get(SEAT_INFO+DELIMITER+roomId, userId);
-        if(seat != null) {
-            log.info("[SEAT 조회] : {}", seat.toString());
-        }
-        return seat;
+        return hashOpsSeatInfo.get(SEAT_INFO+DELIMITER+roomId, userId);
     }
 
     // 좌석정보 저장
     public boolean setSeatInfo(String roomId, String userId, String userName, SeatInfo seatInfo) {
+        Long seatCount = getSeatCount(roomId);
+
         // 1. 좌석이 꽉찬 경우
-        if(hashOpsSeatInfo.size(SEAT_INFO+DELIMITER+roomId) > roomRepository.getRoomById(roomId).getLimitUserCount()) {
-            log.info("{} : 좌석이 꽉 찼음... {}명", roomId, hashOpsSeatInfo.size(SEAT_INFO+DELIMITER+roomId));
+        if(seatCount > roomRepository.getRoomById(roomId).getLimitUserCount()) {
+            log.info("[SEAT ALLOCATED FAIL 1]{} : 좌석이 꽉 찼음... {}명", roomId, seatCount);
             return false;
         }
 
         // 2. 해당 좌석번호를 타 사용자가 사용하고 있는지 확인
         if(!isAllocate(roomId, seatInfo.getSeatNo(), userId)) {
+            log.info("[SEAT ALLOCATED FAIL 2] {}---{} : 현재 자리 있음.. {}명",
+                    roomId,
+                    seatInfo.getSeatNo(),
+                    hashOpsSeatNoInfo.get(SEAT_NO_INFO+DELIMITER+roomId, seatInfo.getSeatNo()));
             return false;
         }
 
@@ -77,20 +79,15 @@ public class SeatRepository {
                 .allocateTime(nowTime)
                 .build();
         hashOpsSeatInfo.put(SEAT_INFO+DELIMITER+roomId, userId, newSeat);
+        log.info("[SEAT ALLOCATED SUCCESS]");
         return true;
     }
 
     // 좌석정보 수정
     public void updateSeatInfo(String roomId, String userId, StudyType type) {
-        log.info("type : {}", type);
 
         if(hashOpsSeatInfo.hasKey(SEAT_INFO+DELIMITER+roomId, userId)) {
             Seat seat = findSeatByUserId(roomId, userId);
-            if(seat != null) {
-                log.info("seat {}", seat.toString());
-            } else {
-                log.info("seat null");
-            }
 
             List<Timestamp> timestampList = seat.getTimestampList();
             timestampList.add(Timestamp
@@ -105,14 +102,13 @@ public class SeatRepository {
 
     // 좌석정보 삭제
     public void removeSeatInfo(String roomId, String userId) {
-        log.info("=============== seat info 삭제 ===============");
         Seat removeSeat = hashOpsSeatInfo.get(SEAT_INFO+DELIMITER+roomId, userId);
         if(removeSeat != null) {
             int removeSeatNo = removeSeat.getSeatNo();
-            log.info("SEAT NO : {}", removeSeatNo);
+            log.info("[SEAT_REMOVE] SEAT NO : {}", removeSeatNo);
             hashOpsSeatNoInfo.delete(SEAT_NO_INFO+DELIMITER+roomId, removeSeatNo);
         } else {
-            log.info("SEAT NULL");
+            log.info("[SEAT_REMOVE] SEAT NULL");
         }
         hashOpsSeatInfo.delete(SEAT_INFO+DELIMITER+roomId, userId);
     }
@@ -120,12 +116,9 @@ public class SeatRepository {
     // 좌석번호 저장
     public boolean isAllocate(String roomId, int seatNo, String userId) {
         if(hashOpsSeatNoInfo.hasKey(SEAT_NO_INFO+DELIMITER+roomId, seatNo)) {
-            log.info("{}---{} : 현재 자리 있음.. {}명", roomId, seatNo,
-                    hashOpsSeatNoInfo.get(SEAT_NO_INFO+DELIMITER+roomId, seatNo));
             return false;
         }
         hashOpsSeatNoInfo.put(SEAT_NO_INFO+DELIMITER+roomId, seatNo, userId);
-        log.info("** SEAT ALLOCATED **");
         return true;
     }
 
