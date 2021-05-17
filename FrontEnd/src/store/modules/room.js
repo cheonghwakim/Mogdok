@@ -83,6 +83,7 @@ const state = () => ({
   timeList: undefined,
   selectedSeatInfo: undefined,
   userRoomState: ROOM_STUDY_TYPE_NO_ACTION,
+  userSeatIndex: -1,
 });
 
 const getters = {};
@@ -155,7 +156,9 @@ const actions = {
           commit('ADD_SEAT_INFO', { index, seatInfo: res });
           commit('ADD_TIMER_BY_INDEX', { index });
           if (res.sender === rootState.user.userInfo.userName) {
-            commit('SET_USER_ROOM_STATE', res.seatInfo.studyType);
+            // 내가 앉았을 경우
+            commit('SET_USER_ROOM_STATE', res.seatInfo.studyType); // 유저 상태를 변경함
+            commit('SET_USER_SEAT_INDEX', { index });
           }
           commit('UPDATE_ROOM_INFO', { key: 'userCount', value: res.userCount });
         } else if (res.type === ROOM_MESSAGE_SEAT_STATUS) {
@@ -169,6 +172,7 @@ const actions = {
           if (res.sender === rootState.user.userInfo.userName) {
             alert('자리에 앉을 수 없어요!');
             commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
+            commit('SET_USER_SEAT_INDEX', { index: -1 });
           }
         } else if (res.type === ROOM_MESSAGE_SEAT_END) {
           // 자리 떠나기
@@ -177,8 +181,10 @@ const actions = {
           commit('STOP_SEAT_INFO_TIMER', { index });
           commit('REMOVE_SEAT_INFO', { index });
           commit('REMOVE_TIMER_BY_INDEX', { index });
-          if (res.sender === rootState.user.userInfo.userName)
+          if (res.sender === rootState.user.userInfo.userName) {
             commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
+            commit('SET_USER_SEAT_INDEX', { index: -1 });
+          }
         } else if (res.type === ROOM_MESSAGE_SEAT_QUIT) {
           // 소켓마저 끊김
           // TODO : QUIT오나 확인
@@ -187,8 +193,10 @@ const actions = {
           commit('STOP_SEAT_INFO_TIMER', { index });
           commit('REMOVE_SEAT_INFO', { index });
           commit('REMOVE_TIMER_BY_INDEX', { index });
-          if (res.sender === rootState.user.userInfo.userName)
+          if (res.sender === rootState.user.userInfo.userName) {
             commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
+            commit('SET_USER_SEAT_INDEX', { index: -1 });
+          }
         }
       },
       (error) => {
@@ -518,6 +526,9 @@ const mutations = {
   },
   REMOVE_TIMER_BY_INDEX(state, { index }) {
     state.timeList[index] = '';
+  },
+  SET_USER_SEAT_INDEX(state, { index }) {
+    state.userSeatIndex = index;
   },
 };
 

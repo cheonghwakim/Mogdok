@@ -14,7 +14,7 @@
       ></div-cam-checker>
     </transition>
     <div class="postit-wrapper">
-      <div-timer-paper :type="'study'" :timer="'10:30:20'"></div-timer-paper>
+      <div-timer-paper :type="studyType" :timer="studyTimer"></div-timer-paper>
     </div>
     <div class="content">
       <btn-my-desk class="btnMyDesk-wrapper"></btn-my-desk>
@@ -58,6 +58,8 @@ export default {
   computed: {
     ...mapState({
       userRoomState: (state) => state.room.userRoomState,
+      timeList: (state) => state.room.timeList,
+      userSeatIndex: (state) => state.room.userSeatIndex,
     }),
     btnLabel() {
       switch (this.userRoomState) {
@@ -69,6 +71,22 @@ export default {
           return '쉬기';
       }
       return '';
+    },
+    studyType() {
+      switch (this.userRoomState) {
+        case ROOM_STUDY_TYPE_NO_ACTION:
+          return 'rest';
+        case ROOM_STUDY_TYPE_PAUSE:
+          return 'rest';
+        case ROOM_STUDY_TYPE_START:
+          return 'study';
+      }
+      return 'rest';
+    },
+    studyTimer() {
+      return this.userSeatIndex === -1 || !this.timeList[this.userSeatIndex]
+        ? '00:00:00'
+        : this.timeList[this.userSeatIndex];
     },
   },
   // watch: {},
