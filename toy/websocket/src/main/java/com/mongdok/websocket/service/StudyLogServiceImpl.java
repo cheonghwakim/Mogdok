@@ -32,7 +32,6 @@ public class StudyLogServiceImpl implements StudyLogService {
 
         List<StudyLog> studyLogList = new ArrayList<>();
 
-        // studyLogList 리스트 채우기
         logList.forEach(s -> {
             StudyLog studyLog = StudyLog.builder()
                     .studyType(s.getType())
@@ -41,7 +40,6 @@ public class StudyLogServiceImpl implements StudyLogService {
                     .userId(userId)
                     .build();
             studyLogList.add(studyLog);
-            log.info(studyLog.toString());
         });
 
         // 마지막 기록 저장

@@ -25,9 +25,9 @@ public class SeatController {
 
     // 특정 열람실 조회
     @ApiOperation(value = "특정 열람실 정보 조회 🏢")
-    @GetMapping("/{sessionId}")
-    public ResponseEntity<?> seatInfo(@PathVariable String sessionId) {
-        List<Seat> roomList = seatRepository.findAllSeatInfo(sessionId);
+    @GetMapping("/{roomId}")
+    public ResponseEntity<?> seatInfo(@PathVariable String roomId) {
+        List<Seat> roomList = seatRepository.findAllSeatInfo(roomId);
         return new ResponseEntity<>(roomList, HttpStatus.OK);
     }
 }

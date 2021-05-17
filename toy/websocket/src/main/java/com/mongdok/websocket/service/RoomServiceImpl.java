@@ -27,9 +27,6 @@ public class RoomServiceImpl implements RoomService{
     private final RedisTemplate redisTemplate;
 
     @Autowired
-    private RoomRepository roomRepository;
-
-    @Autowired
     private SeatRepository seatRepository;
 
     @Autowired
@@ -54,9 +51,8 @@ public class RoomServiceImpl implements RoomService{
      */
     @Override
     public void sendMessage(RoomMessage roomMessage) {
-        roomMessage.setUserCount(roomRepository.getUserCount(roomMessage.getRoomId()));
-        Seat seat = null;
-        SeatInfo seatInfo = null;
+        Seat seat;
+        SeatInfo seatInfo;
 
         switch (roomMessage.getType()) {
             case ENTER:
@@ -72,10 +68,13 @@ public class RoomServiceImpl implements RoomService{
                                            roomMessage.getUserId(),
                                            roomMessage.getSender(),
                                            roomMessage.getSeatInfo());
-                // 좌석에 착석할 수 없는 경우
-                if(!check) {
+                
+                if(check) { // 좌석에 착석할 수 있는 경우
+                    seatRepository.plusSeatCount(roomMessage.getRoomId());
+                    log.info("[SEAT_ALLOCATED] 현재 착석 유저 수 : {}", seatRepository.getSeatCount(roomMessage.getRoomId()));
+                } else { // 좌석에 착석할 수 없는 경우
                     roomMessage.setType(MessageType.SEAT_ALLOCATE_FAIL);
-                    roomMessage.setMessage("착석에 실패했습니다.");
+                    roomMessage.setMessage("[SEAT_ALLOCATED] 착석에 실패했습니다.");
                 }
                 break;
             case SEAT_STATUS:
@@ -86,7 +85,7 @@ public class RoomServiceImpl implements RoomService{
 
                 seatRepository.updateSeatInfo(roomMessage.getRoomId(),
                                               roomMessage.getUserId(),
-                                              seat.getStudyType());
+                                              roomMessage.getSeatInfo().getStudyType());
 
                 seatInfo = SeatInfo.builder()
                         .seatNo(seat.getSeatNo())
@@ -96,27 +95,32 @@ public class RoomServiceImpl implements RoomService{
                 break;
             case END:
                 // TODO: 좌석반납처리 구현
-                log.info("***** END *****");
                 seat = seatRepository.findSeatByUserId(roomMessage.getRoomId(), roomMessage.getUserId());
                 
                 // 가지고 있는 좌석이 없는 경우
                 if(seat == null) {
-                    log.info("가지고 있는 좌석이 없습니다.");
+                    log.info("[END] 가지고 있는 좌석이 없습니다.");
                     return;
                 }
+
                 seatInfo = SeatInfo.builder().seatNo(seat.getSeatNo()).build();
                 roomMessage.setSeatInfo(seatInfo);
 
+                // 좌석 착석 수 -1
+                seatRepository.minusSeatCount(roomMessage.getRoomId());
+                log.info("[END] 현재 착석 유저 수 : {}", seatRepository.getSeatCount(roomMessage.getRoomId()));
+
                 // 좌석정보가 있는 경우 ----> 시간 정보 저장
-                log.info("SEAT USER ID : {}", seat.getUserId());
+                log.info("[END] SEAT USER ID : {}", seat.getUserId());
                 studyLogService.saveLog(seat.getUserId(), seat.getTimestampList(), seat.getAllocateTime());
-                log.info("***** 공부기록 저장 *****");
+                log.info("[END] 공부기록 저장 *****");
 
                 seatRepository.removeSeatInfo(roomMessage.getRoomId(), roomMessage.getUserId());
-                log.info("***** 좌석정보 삭제 *****");
+                log.info("[END] 좌석정보 삭제 *****");
 
         }
 
+        roomMessage.setUserCount(seatRepository.getSeatCount(roomMessage.getRoomId())); // 인원정보 매핑
         redisTemplate.convertAndSend(channelTopic.getTopic(), roomMessage);
     }
 }
