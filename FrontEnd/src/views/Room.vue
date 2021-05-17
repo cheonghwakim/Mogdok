@@ -50,6 +50,8 @@ export default {
   },
   computed: {
     ...mapState({
+      socket: (state) => state.room.socket,
+      stomp: (state) => state.room.stomp,
       roomInfo: (state) => state.room.roomInfo,
       seatList: (state) => state.room.seatList,
       timeList: (state) => state.room.timeList,
@@ -81,7 +83,9 @@ export default {
   },
   //lifecycle area
   created() {
-    this.joinSession();
+    if (!this.socket || !this.stomp || !this.session) {
+      this.joinSession();
+    }
   },
   methods: {
     // 세선 참여

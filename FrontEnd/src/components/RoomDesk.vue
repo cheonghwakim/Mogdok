@@ -19,7 +19,7 @@
 
     <!-- 푸터 : 하단에 시간이 기록되는 공간 -->
     <div class="footer">
-      <p class="mark">🕳</p>
+      <!-- <p class="mark">🕳</p> -->
       <p class="timer" v-if="timer">{{ timer }}</p>
     </div>
   </div>
