@@ -2,7 +2,7 @@
    <div class="div-bgm-player">
       <!-- <img src="@/assets/img/bgm-player/music_tape.svg" alt="" /> -->
       <!-- 음악 플레이어 버튼 위치 -->
-      <div v-wave class="btn-player-wrapper" @click="togglePlayer">
+      <div v-wave class="btn-player-wrapper" @click="togglePlayer" :class="{ 'jello-vertical': !isPlaying && !isOpenPlayer }">
          <img v-show="!isOpenPlayer" src="@/assets/img/bgm-player/music.svg" alt="" />
          <btn-close class="btnClose" v-show="isOpenPlayer"></btn-close>
       </div>
@@ -118,15 +118,15 @@ export default {
 .div-bgm-player {
    position: fixed;
    bottom: 20vh;
-   right: 20px;
+   right: 10px;
    z-index: 20;
 }
 
 .btn-player-wrapper {
    cursor: pointer;
 
-   width: 60px;
-   height: 60px;
+   width: 55px;
+   height: 55px;
    border-radius: 50%;
    background-color: rgb(255, 255, 255);
    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
@@ -147,15 +147,15 @@ export default {
 
 /* 음악 재생 컨트롤러 */
 .controller-wrapper {
-   width: 250px;
-   height: 60px;
+   width: 240px;
+   height: 55px;
    border-radius: 40px;
    background-color: rgb(255, 255, 255);
    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
 
    position: absolute;
    top: 0px;
-   right: 70px;
+   right: 60px;
 
    padding: 0px 20px;
 
@@ -165,15 +165,15 @@ export default {
 
    /* 재생, 일시정지 버튼 */
    .btn-wrapper {
-      padding-top: 5px;
-      width: 25px;
-      height: 25px;
+      /* padding-top: 5px; */
+      width: 18px;
+      height: 18px;
       /* background-color: red; */
    }
 
    /* 가운데 : BGM 테마 */
    .select-wrapper {
-      width: 100%;
+      width: 80%;
       height: 100%;
 
       display: flex;
@@ -211,7 +211,7 @@ export default {
 
    /* 마지막 : 볼륨 조절 */
    .volumn-wrapper {
-      width: 100px;
+      width: 80px;
       height: 100%;
 
       display: flex;
@@ -258,15 +258,77 @@ export default {
 
 .player-open-enter-active,
 .player-open-leave-active {
-   transition: all 0.5s ease;
+   transition: all 0.3s ease;
 }
-.player-open-enter {
-   transform: translateX(6px) rotate(120deg);
-   transform-origin: right;
-   /* opacity: 0; */
+.player-open-enter,
+.player-open-leave-to {
+   transform: translateX(50px);
+   opacity: 0;
 }
 
-.player-open-leave-to {
-   opacity: 0;
+.jello-vertical {
+   -webkit-animation: jello-vertical 2s infinite both;
+   animation: jello-vertical 2s infinite both;
+}
+
+@-webkit-keyframes jello-vertical {
+   0% {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+   }
+   30% {
+      -webkit-transform: scale3d(0.75, 1.25, 1);
+      transform: scale3d(0.75, 1.25, 1);
+   }
+   40% {
+      -webkit-transform: scale3d(1.25, 0.75, 1);
+      transform: scale3d(1.25, 0.75, 1);
+   }
+   50% {
+      -webkit-transform: scale3d(0.85, 1.15, 1);
+      transform: scale3d(0.85, 1.15, 1);
+   }
+   65% {
+      -webkit-transform: scale3d(1.05, 0.95, 1);
+      transform: scale3d(1.05, 0.95, 1);
+   }
+   75% {
+      -webkit-transform: scale3d(0.95, 1.05, 1);
+      transform: scale3d(0.95, 1.05, 1);
+   }
+   100% {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+   }
+}
+@keyframes jello-vertical {
+   0% {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+   }
+   30% {
+      -webkit-transform: scale3d(0.75, 1.25, 1);
+      transform: scale3d(0.75, 1.25, 1);
+   }
+   40% {
+      -webkit-transform: scale3d(1.25, 0.75, 1);
+      transform: scale3d(1.25, 0.75, 1);
+   }
+   50% {
+      -webkit-transform: scale3d(0.85, 1.15, 1);
+      transform: scale3d(0.85, 1.15, 1);
+   }
+   65% {
+      -webkit-transform: scale3d(1.05, 0.95, 1);
+      transform: scale3d(1.05, 0.95, 1);
+   }
+   75% {
+      -webkit-transform: scale3d(0.95, 1.05, 1);
+      transform: scale3d(0.95, 1.05, 1);
+   }
+   100% {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+   }
 }
 </style>
