@@ -1,12 +1,10 @@
 # 몽실이네 독서실(MongDok)
 
-몽실이네 독서실에서 함께 공부해보세요😊 👉[몽실이네 독서실](www.mongdok.com)👈
+몽실이네 독서실에서 함께 공부해보세요(Study with MongDok)😊 👉[몽실이네 독서실](www.mongdok.com)👈
 
 <br>
 
 ## Member 👪
-
-------
 
 **몽실이 제자들(Mongsil's disciples)**
 
@@ -15,8 +13,6 @@
 <br>
 
 ## Project Summary 📙
-
-------
 
 - Duration 
 
@@ -35,8 +31,6 @@
 <br>
 
 ## Project Info 📜
-
-------
 
 ### ✨ Features
 
@@ -187,19 +181,33 @@
 
 ### 📚 ERD
 
+![tech stack](./docs/0_images/erd.png)
 
 
 
+<br>
 
+### :mag: ​Pages in Detail 
 
+> 각 페이지별 소개
+
+🔸 **로그인**
+
+🔸 **열람실 선택 페이지**
+
+🔸 **열람실**
+
+🔸 **프로필**
+
+🔸 **책상**
 
 ## 📄 문서 바로가기
 
-📌 [기획](./docs/1_planning) - 아이디어 구체화, 요구사항 정의 등
+📌 [기획](./docs/1_planning) - 아이디어 구체화, 요구사항 정의
 
-📌 [설계](./docs/2_design) - 시퀀스 다이어그램, 아키텍처 설계, 와이어 프레임, 사용자 상태 정리, 프로토타입 등
+📌 [설계](./docs/2_design) - 시퀀스 다이어그램, 아키텍처 설계, 와이어 프레임, 사용자 상태 정리, 프로토타입
 
-📌 [개발](./docs/3_develop) - 개발 컨벤션, 개발 관련 자료 정리 등
+📌 [개발](./docs/3_develop) - 개발 컨벤션, 깃 컨벤션, 개발 관련 자료 정리 
 
-📌 [로그](./docs/4_log) - 개발 로그 등
+📌 [로그](./docs/4_log) - 개발 로그 
 
