@@ -52,7 +52,7 @@ export default {
     ...mapState({
       socket: (state) => state.room.socket,
       stomp: (state) => state.room.stomp,
-      roomInfo: (state) => state.room.roomInfo,
+      roomInfo: (state) => state.user.roomInfo,
       seatList: (state) => state.room.seatList,
       timeList: (state) => state.room.timeList,
       selectedSeatInfo: (state) => state.room.selectedSeatInfo,
@@ -67,25 +67,22 @@ export default {
   },
   watch: {
     subscribers: {
-      immediate: true,
       handler() {
-        console.log('%cRoom.vue line:58 subscribers에 변경이 감지됨!', 'color: #007acc;');
         this.$store.dispatch('CONNECT_ROOM_WITH_OPENVIDU');
       },
     },
-    // seatList: {
-    //   handler(newValue, oldValue) {
-    //     console.log('%cRoom.vue line:74 newValue!!!!!!!!!!!!!!!!!!!!', 'color: #007acc;', newValue);
-    //     console.log('%cRoom.vue line:75 oldValue!!!!!!!!!!!!!!!!!!!!', 'color: #007acc;', oldValue);
-    //   },
-    //   deep: true,
-    // },
   },
   //lifecycle area
   created() {
+    if (!this.seatList || !this.timeList) {
+      this.$store.commit('INIT_ROOM', this.roomInfo);
+    }
     if (!this.socket || !this.stomp || !this.session) {
       this.joinSession();
     }
+  },
+  mounted() {
+    window.addEventListener('beforeunload', this.leaveSession);
   },
   methods: {
     // 세선 참여
@@ -105,7 +102,6 @@ export default {
         this.$store.dispatch('INIT_OV_SESSION_EVENT');
         // 세션에 유저 연결
         this.$store.dispatch('CONNECT_USER_TO_SESSION', this.userInfo);
-        window.addEventListener('beforeunload', this.leaveSession);
 
         // Room 서버 연결
         await this.$store.dispatch('CONNECT_ROOM_SERVER');
@@ -121,14 +117,13 @@ export default {
         return;
       }
     },
-    leaveSession() {
-      console.log('%cRoom.vue line:102 beforeunload', 'color: #007acc;');
-      // 현재 접속 중인 세션을 나간다. (disconnect)
-      // TODO: close버튼을 클릭하는게 아니라 이 부분에서도 자원해제를 해야하는지 판단후 적용
-      this.$store.dispatch('LEAVE_SESSION');
-      this.$store.commit('CLEAR_CONNECT');
+    leaveSession(e) {
+      e = e || window.event;
+      if (e) {
+        e.returnValue = '자리에서 떠나시겠습니까?'; //old browsers
+      }
       window.removeEventListener('beforeunload', this.leaveSession);
-      this.$router.replace('/');
+      return '자리에서 떠나시겠습니까?'; //safari, chrome(chrome ignores text)
     },
     async clickDesk(seat, index) {
       if (seat) {

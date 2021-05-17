@@ -2,6 +2,7 @@ import { getAuthToken, login, loginByAuthToken } from '../../api/user';
 
 const state = () => ({
   userInfo: {},
+  roomInfo: undefined,
   videoSourceList: [],
   videoSource: undefined,
 });
@@ -72,6 +73,9 @@ const mutations = {
   },
   SET_AUTH_TOKEN(state, payload) {
     state.userInfo.authToken = payload;
+  },
+  SET_ROOM_INFO(state, payload) {
+    state.roomInfo = payload;
   },
 };
 

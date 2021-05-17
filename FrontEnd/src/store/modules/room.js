@@ -78,7 +78,6 @@ const state = () => ({
   socket: undefined,
   stomp: undefined,
   roomList: undefined,
-  roomInfo: undefined,
   seatList: undefined,
   timeList: undefined,
   selectedSeatInfo: undefined,
@@ -100,50 +99,51 @@ const actions = {
       }
     );
   },
+  ENTER_ROOM({ commit }, room) {
+    commit('SET_ROOM_INFO', room, { root: true });
+    commit('INIT_ROOM', room);
+  },
   CONNECT_ROOM_SERVER({ state, rootState, commit }) {
     commit('INIT_CONNECT');
     return new Promise((resolve, reject) => {
       state.stomp.connect(
         { token: rootState.user.userInfo.authToken },
         () => {
-          resolve();
+          resolve('');
         },
         (error) => {
           console.log('%croom.js line:35 error', 'color: #007acc;', error);
-          reject();
+          reject(error);
         }
       );
     });
   },
-  GET_SEAT_INFO({ state, commit, dispatch }) {
-    return new Promise((resolve, reject) => {
-      getSeatList(
-        { roomId: state.roomInfo.roomId },
-        (res) => {
-          console.log('%croom.js line:107 res', 'color: #007acc;', res);
-          res.data.forEach((seatInfo) => {
-            seatInfo.isRunning = false;
-            seatInfo.timer = null;
-            seatInfo.timeBegan = new Date(seatInfo.timestampList[0].time).getTime(); // 시작시간 세팅;
-            seatInfo.timeStopped = null;
-            seatInfo.stoppedDuration = getStoppedDuration(seatInfo);
-            state.timeList[seatInfo.seatNo - 1] = getCurTime(seatInfo);
-            const index = seatInfo.seatNo - 1;
-            commit('ADD_SEAT_INFO', { index, seatInfo });
-            dispatch('INIT_SEAT_INFO_BY_STATUS', seatInfo);
-          });
-          resolve();
-        },
-        (error) => {
-          console.log('%croom.js line:32 error', 'color: #007acc;', error);
-          reject();
-        }
-      );
-    });
+  GET_SEAT_INFO({ state, rootState, commit, dispatch }) {
+    getSeatList(
+      { roomId: rootState.user.roomInfo.roomId },
+      (res) => {
+        console.log('%croom.js line:107 res', 'color: #007acc;', res);
+        res.data.forEach((seatInfo) => {
+          seatInfo.isRunning = false;
+          seatInfo.timer = null;
+          seatInfo.timeBegan = new Date(seatInfo.timestampList[0].time).getTime(); // 시작시간 세팅;
+          seatInfo.timeStopped = null;
+          seatInfo.stoppedDuration = getStoppedDuration(seatInfo);
+          state.timeList[seatInfo.seatNo - 1] = getCurTime(seatInfo);
+          const index = seatInfo.seatNo - 1;
+          commit('ADD_SEAT_INFO', { index, seatInfo });
+          dispatch('INIT_SEAT_INFO_BY_STATUS', seatInfo);
+        });
+        return Promise.resolve();
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
   },
   SUBSCRIBE_ROOM_SERVER({ state, rootState, commit, dispatch }) {
     state.stomp.subscribe(
-      `/sub/room/${state.roomInfo.roomId}`,
+      `/sub/room/${rootState.user.roomInfo.roomId}`,
       (message) => {
         let res = JSON.parse(message.body);
         console.log('%croom.js line:80 res', 'color: #007acc;', res);
@@ -231,7 +231,7 @@ const actions = {
           `/pub/room/message`,
           JSON.stringify({
             type: ROOM_MESSAGE_SEAT_ALLOCATED,
-            roomId: state.roomInfo.roomId,
+            roomId: rootState.user.roomInfo.roomId,
             seatInfo: {
               seatNo,
               studyType: ROOM_STUDY_TYPE_PAUSE,
@@ -252,7 +252,7 @@ const actions = {
         `/pub/room/message`,
         JSON.stringify({
           type: ROOM_MESSAGE_SEAT_END,
-          roomId: state.roomInfo.roomId,
+          roomId: rootState.user.roomInfo.roomId,
         }),
         { token: rootState.user.userInfo.authToken }
       );
@@ -367,15 +367,10 @@ const actions = {
         const timeElapsed = new Date(
           currentUTCTime - state.seatList[index].timeBegan - state.seatList[index].stoppedDuration
         );
-        console.log('%croom.js line:487 timeElapsed', 'color: #007acc;', timeElapsed);
         const hour = timeElapsed.getUTCHours();
         const min = timeElapsed.getUTCMinutes();
         const sec = timeElapsed.getUTCSeconds();
-        console.log(
-          '%croom.js line:360 업뎃외않되??',
-          'color: #007acc;',
-          zeroPrefix(hour, 2) + ':' + zeroPrefix(min, 2) + ':' + zeroPrefix(sec, 2)
-        );
+        // console.log('%croom.js line:373 timer동작중!', 'color: #007acc;', hour, min, sec);
         commit('RUN_SEAT_INFO_TIMER', {
           index,
           time: zeroPrefix(hour, 2) + ':' + zeroPrefix(min, 2) + ':' + zeroPrefix(sec, 2),
@@ -413,7 +408,7 @@ const actions = {
         `/pub/room/message`,
         JSON.stringify({
           type: ROOM_MESSAGE_SEAT_STATUS,
-          roomId: state.roomInfo.roomId,
+          roomId: rootState.user.roomInfo.roomId,
           seatInfo: {
             studyType: ROOM_STUDY_TYPE_START,
           },
@@ -431,7 +426,7 @@ const actions = {
         `/pub/room/message`,
         JSON.stringify({
           type: ROOM_MESSAGE_SEAT_STATUS,
-          roomId: state.roomInfo.roomId,
+          roomId: rootState.user.roomInfo.roomId,
           seatInfo: {
             studyType: ROOM_STUDY_TYPE_PAUSE,
           },
@@ -448,6 +443,11 @@ const actions = {
 const mutations = {
   SET_ALL_ROOMS(state, payload) {
     state.roomList = payload;
+  },
+  INIT_ROOM(state, payload) {
+    state.seatList = new Array(payload.limitUserCount);
+    state.timeList = Array.from({ length: payload.limitUserCount }, () => '');
+    state.roomUserCount = payload.userCount;
   },
   INIT_CONNECT(state) {
     state.socket = new SockJS(process.env.VUE_APP_BASE_URL_ROOM_CONNECT);
@@ -466,12 +466,12 @@ const mutations = {
     state.stomp = undefined;
     state.socket = undefined;
   },
-  SET_ROOM_INFO(state, payload) {
-    state.roomInfo = payload;
-    state.seatList = new Array(payload.limitUserCount);
-    state.timeList = Array.from({ length: payload.limitUserCount }, () => '');
-    state.roomUserCount = payload.userCount;
-  },
+  // SET_ROOM_INFO(state, payload) {
+  //   state.user.roomInfo = payload;
+  //   state.seatList = new Array(payload.limitUserCount);
+  //   state.timeList = Array.from({ length: payload.limitUserCount }, () => '');
+  //   state.roomUserCount = payload.userCount;
+  // },
   UPDATE_ROOM_USER_COUNT(state, payload) {
     state.roomUserCount = payload;
   },
@@ -482,12 +482,9 @@ const mutations = {
   },
   ADD_SUBSCRIBER_INTO_SEAT(state, { index, subscriber }) {
     // TODO : 매번 깊은복사해서 바꿔주는 과정 별로 안좋아보임. key이용해서 업데이트하는 방법 생각
-    console.log('%croom.js line:144 add!!', 'color: #007acc;');
     const tmp = [...state.seatList];
     tmp[index].subscriber = subscriber;
     state.seatList = tmp;
-    // state.seatList[index].subscriber = subscriber;
-    console.log('%croom.js line:146 ', 'color: #007acc;', state.seatList[index]);
   },
   SET_SELECTED_SEAT_INFO(state, payload) {
     state.selectedSeatInfo = payload;

@@ -28,7 +28,7 @@ export default {
   },
   computed: {
     ...mapState({
-      roomInfo: (state) => state.room.roomInfo,
+      roomInfo: (state) => state.user.roomInfo,
       roomUserCount: (state) => state.room.roomUserCount,
     }),
   },

@@ -40,8 +40,8 @@ export default {
     this.$store.dispatch('GET_ALL_ROOMS');
   },
   methods: {
-    enterRoom(room) {
-      this.$store.commit('SET_ROOM_INFO', room);
+    async enterRoom(room) {
+      await this.$store.dispatch('ENTER_ROOM', room);
       this.$router.replace({ name: 'Room' });
     },
   },
