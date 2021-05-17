@@ -84,6 +84,7 @@ const state = () => ({
   selectedSeatInfo: undefined,
   userRoomState: ROOM_STUDY_TYPE_NO_ACTION,
   userSeatIndex: -1,
+  roomUserCount: 0,
 });
 
 const getters = {};
@@ -155,12 +156,12 @@ const actions = {
           console.log('%croom.js line:151 index', 'color: #007acc;', index);
           commit('ADD_SEAT_INFO', { index, seatInfo: res });
           commit('ADD_TIMER_BY_INDEX', { index });
+          commit('UPDATE_ROOM_USER_COUNT', res.userCount);
           if (res.sender === rootState.user.userInfo.userName) {
             // 내가 앉았을 경우
             commit('SET_USER_ROOM_STATE', res.seatInfo.studyType); // 유저 상태를 변경함
             commit('SET_USER_SEAT_INDEX', { index });
           }
-          commit('UPDATE_ROOM_INFO', { key: 'userCount', value: res.userCount });
         } else if (res.type === ROOM_MESSAGE_SEAT_STATUS) {
           console.log('%croom.js line:153 유저의 상태가 변경됨', 'color: #007acc;');
           res = initSeatInfo(res);
@@ -178,6 +179,7 @@ const actions = {
           // 자리 떠나기
           const index = res.seatInfo.seatNo - 1;
           dispatch('PAUSE_TIMER_BY_INDEX', index);
+          commit('UPDATE_ROOM_USER_COUNT', res.userCount);
           commit('STOP_SEAT_INFO_TIMER', { index });
           commit('REMOVE_SEAT_INFO', { index });
           commit('REMOVE_TIMER_BY_INDEX', { index });
@@ -190,6 +192,7 @@ const actions = {
           // TODO : QUIT오나 확인
           const index = res.seatInfo.seatNo - 1;
           dispatch('PAUSE_TIMER_BY_INDEX', index);
+          commit('UPDATE_ROOM_USER_COUNT', res.userCount);
           commit('STOP_SEAT_INFO_TIMER', { index });
           commit('REMOVE_SEAT_INFO', { index });
           commit('REMOVE_TIMER_BY_INDEX', { index });
@@ -467,9 +470,10 @@ const mutations = {
     state.roomInfo = payload;
     state.seatList = new Array(payload.limitUserCount);
     state.timeList = Array.from({ length: payload.limitUserCount }, () => '');
+    state.roomUserCount = payload.userCount;
   },
-  UPDATE_ROOM_INFO(state, { key, value }) {
-    state.roomInfo[key] = value;
+  UPDATE_ROOM_USER_COUNT(state, payload) {
+    state.roomUserCount = payload;
   },
   ADD_SEAT_INFO(state, { index, seatInfo }) {
     const tmp = [...state.seatList];
