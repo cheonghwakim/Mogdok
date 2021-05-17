@@ -31,25 +31,25 @@ public class JwtUtil {
     /**
      * 이름으로 Jwt Token을 생성한다.
      */
-    public String generateToken(String userId, String userName) {
-        Date now = new Date();
-        return Jwts.builder()
-                .claim("userId", userId)
-                .claim("userName", userName)
-                .setIssuedAt(now) // 토큰 발행일자
-                .signWith( Keys.hmacShaKeyFor(secretKey.getBytes()),SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public String getUserName(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("userName", String.class);
-    }
-
-    public String getUserId(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("userId", String.class);
-    }
+//    public String generateToken(String userId, String userName) {
+//        Date now = new Date();
+//        return Jwts.builder()
+//                .claim("userId", userId)
+//                .claim("userName", userName)
+//                .setIssuedAt(now) // 토큰 발행일자
+//                .signWith( Keys.hmacShaKeyFor(secretKey.getBytes()),SignatureAlgorithm.HS256)
+//                .compact();
+//    }
+//
+//    public String getUserName(String token) {
+//        Claims claims = getClaims(token);
+//        return claims.get("userName", String.class);
+//    }
+//
+//    public String getUserId(String token) {
+//        Claims claims = getClaims(token);
+//        return claims.get("userId", String.class);
+//    }
 
 
     /**
