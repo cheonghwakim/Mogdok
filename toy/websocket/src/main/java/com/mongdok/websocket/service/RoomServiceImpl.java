@@ -54,9 +54,8 @@ public class RoomServiceImpl implements RoomService{
      */
     @Override
     public void sendMessage(RoomMessage roomMessage) {
-        roomMessage.setUserCount(roomRepository.getUserCount(roomMessage.getRoomId()));
-        Seat seat = null;
-        SeatInfo seatInfo = null;
+        Seat seat;
+        SeatInfo seatInfo;
 
         switch (roomMessage.getType()) {
             case ENTER:
@@ -72,8 +71,10 @@ public class RoomServiceImpl implements RoomService{
                                            roomMessage.getUserId(),
                                            roomMessage.getSender(),
                                            roomMessage.getSeatInfo());
-                // 좌석에 착석할 수 없는 경우
-                if(!check) {
+                
+                if(check) { // 좌석에 착석할 수 있는 경우
+                    seatRepository.plusSeatCount(roomMessage.getRoomId());
+                } else { // 좌석에 착석할 수 없는 경우
                     roomMessage.setType(MessageType.SEAT_ALLOCATE_FAIL);
                     roomMessage.setMessage("착석에 실패했습니다.");
                 }
@@ -104,8 +105,12 @@ public class RoomServiceImpl implements RoomService{
                     log.info("가지고 있는 좌석이 없습니다.");
                     return;
                 }
+
                 seatInfo = SeatInfo.builder().seatNo(seat.getSeatNo()).build();
                 roomMessage.setSeatInfo(seatInfo);
+
+                // 좌석 착석 수 -1
+                seatRepository.minusSeatCount(roomMessage.getRoomId());
 
                 // 좌석정보가 있는 경우 ----> 시간 정보 저장
                 log.info("SEAT USER ID : {}", seat.getUserId());
@@ -117,6 +122,7 @@ public class RoomServiceImpl implements RoomService{
 
         }
 
+        roomMessage.setUserCount(seatRepository.getSeatCount(roomMessage.getRoomId())); // 인원정보 매핑
         redisTemplate.convertAndSend(channelTopic.getTopic(), roomMessage);
     }
 }

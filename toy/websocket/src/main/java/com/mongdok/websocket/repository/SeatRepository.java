@@ -7,6 +7,7 @@ import com.mongdok.websocket.model.enums.StudyType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -25,12 +27,15 @@ public class SeatRepository {
     // Redis
     private static final String SEAT_INFO = "SEAT_INFO"; // 열람실의 좌석정보 저장
     private static final String SEAT_NO_INFO = "SEAT_NO_INFO"; // 열람실의 좌석번호 저장
+    private static final String SEAT_COUNT = "SEAT_COUNT"; // 열람실에 착석한 유저 수 저장
     private static final String DELIMITER= "_"; // 구분자
 
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, Seat> hashOpsSeatInfo;
     @Resource(name = "redisTemplate")
     private HashOperations<String, Integer, String> hashOpsSeatNoInfo;
+    @Resource(name = "redisTemplate")
+    private ValueOperations<String, String> valueOps;
 
     // 해당 열람실의 좌석정보 리스트 조회
     public List<Seat> findAllSeatInfo(String roomId) {
@@ -122,5 +127,20 @@ public class SeatRepository {
         hashOpsSeatNoInfo.put(SEAT_NO_INFO+DELIMITER+roomId, seatNo, userId);
         log.info("** SEAT ALLOCATED **");
         return true;
+    }
+
+    // 열람실 착석한 유저수 조회
+    public long getSeatCount(String roomId) {
+        return Long.valueOf(Optional.ofNullable(valueOps.get(SEAT_COUNT + "_" + roomId)).orElse("0"));
+    }
+
+    // 열람실 착석한 유저수 +1
+    public long plusSeatCount(String roomId) {
+        return Optional.ofNullable(valueOps.increment(SEAT_COUNT + "_" + roomId)).orElse(0L);
+    }
+
+    // 열람실 착석한 유저수 -1
+    public long minusSeatCount(String roomId) {
+        return Optional.ofNullable(valueOps.decrement(SEAT_COUNT + "_" + roomId)).filter(count -> count > 0).orElse(0L);
     }
 }

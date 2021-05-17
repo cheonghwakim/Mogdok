@@ -4,6 +4,7 @@ import com.mongdok.websocket.model.RoomElements;
 import com.mongdok.websocket.model.StudyRoom;
 import com.mongdok.websocket.model.UserInfo;
 import com.mongdok.websocket.repository.RoomRepository;
+import com.mongdok.websocket.repository.SeatRepository;
 import com.mongdok.websocket.util.JWTUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,9 @@ public class RoomController {
     @Autowired
     private RoomRepository roomRepository;
 
+    @Autowired
+    private SeatRepository seatRepository;
+
     @PostConstruct
     public void init() {
         roomRepository.createRoom(RoomElements.ROOM_A, RoomElements.ROOM_A_NAME, RoomElements.ROOM_A_SIZE);
@@ -46,7 +50,7 @@ public class RoomController {
     public ResponseEntity<?> getRoomList() {
         List<StudyRoom> roomList = roomRepository.findAllRoom();
         Collections.sort(roomList, Comparator.comparing(StudyRoom::getRoomId));
-        roomList.stream().forEach(room -> room.setUserCount(roomRepository.getUserCount(room.getRoomId())));
+        roomList.stream().forEach(room -> room.setUserCount(seatRepository.getSeatCount(room.getRoomId())));
         return new ResponseEntity<>(roomList, HttpStatus.OK);
     }
 

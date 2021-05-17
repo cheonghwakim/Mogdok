@@ -96,6 +96,7 @@ public class StompHandler implements ChannelInterceptor {
                     seatNo = seat.getSeatNo();
                     studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
                     log.info("***** 공부기록 저장 *****");
+                    seatRepository.minusSeatCount(roomId);
                 }
             }
 
