@@ -28,7 +28,6 @@ export default {
    props: {},
    data() {
       return {
-         // isOpenAbout: false,
          isOpenFAQ: false,
       };
    },
@@ -114,6 +113,7 @@ export default {
             cursor: pointer;
             font-size: 10pt;
             font-weight: 600;
+            text-align: center;
             letter-spacing: 2px;
             color: rgb(176, 176, 176);
 
