@@ -7,8 +7,8 @@
                <div v-dragscroll="true" class="roomItem" v-for="(room, idx) in roomList" :key="idx">
                   <enterance-door :room="room" @click="enterRoom(room)"></enterance-door>
                </div>
-               <!-- <div class="bottom-shader"></div> -->
             </div>
+            <div class="bottom-shader"></div>
             <p class="btnFAQ" @click="toggleModalFAQ"><i class="fas fa-question-circle"></i> 몽실이네 독서실이 궁금하세요?</p>
             <modal-faq :isOpenFAQ="isOpenFAQ" @onClick="toggleModalFAQ"></modal-faq>
          </div>
@@ -81,6 +81,7 @@ export default {
       .content {
          /* margin-top: 5vh; */
          width: inherit;
+         position: relative;
          display: inherit;
          flex-direction: column;
          align-items: center;
@@ -114,7 +115,24 @@ export default {
                margin: 0px 5px;
             }
          }
+
+         .bottom-shader {
+            /* border: 1px solid blue; */
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+            height: 60px;
+
+            z-index: 50;
+
+            background-image: linear-gradient(0deg, rgb(255, 255, 255), rgba(255, 255, 255) 40%, rgba(255, 255, 255, 0));
+         }
+
          .btnFAQ {
+            position: absolute;
+            bottom: -10px;
+            z-index: 51;
+
             cursor: pointer;
             font-size: 10pt;
             font-weight: 600;
