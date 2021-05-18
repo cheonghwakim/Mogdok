@@ -133,6 +133,21 @@ export default {
             padding-left: 20px;
             cursor: pointer;
             z-index: 20;
+
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            @include tinyMobile {
+               & {
+                  font-size: 50%;
+               }
+            }
+            @include mobile {
+               & {
+                  font-size: 80%;
+               }
+            }
          }
 
          .ac-content {
