@@ -138,12 +138,7 @@ export default {
             white-space: nowrap;
             text-overflow: ellipsis;
 
-            @include tinyMobile {
-               & {
-                  font-size: 50%;
-               }
-            }
-            @include mobile {
+            @media all and (max-width: 500px) {
                & {
                   font-size: 80%;
                }

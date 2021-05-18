@@ -46,6 +46,8 @@ export default {
    align-items: center;
    justify-content: center;
 
+   /* border: 1px solid red; */
+
    .lg-container {
       display: inherit;
       flex-direction: column;
@@ -54,10 +56,11 @@ export default {
       width: 70vw;
       height: 90vh;
 
-      /* border: 1px solid red; */
+      /* border: 1px solid rgb(34, 0, 255); */
 
       .content {
-         margin-top: 20vh;
+         /* border: 1px solid rgb(0, 159, 93); */
+         /* margin-top: 20vh; */
 
          p.sub {
             color: rgb(164, 164, 164);
