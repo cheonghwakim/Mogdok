@@ -11,6 +11,7 @@
         class="cam-check-wrapper"
         @onClickClose="closeCamChecker"
         @onClickStart="doStudy"
+        :startable="isCamChecker"
       ></div-cam-checker>
     </transition>
     <div class="postit-wrapper">
@@ -124,9 +125,9 @@ export default {
     },
 
     // 공부시작 커맨드 버튼 클릭 시, 캠 체커 띄우기
-    showCamChecker: function() {
-      this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
-      this.$store.dispatch('CAMERA_ON');
+    showCamChecker: async function() {
+      await this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
+      await this.$store.dispatch('CAMERA_ON');
       this.isCamChecker = true;
     },
 

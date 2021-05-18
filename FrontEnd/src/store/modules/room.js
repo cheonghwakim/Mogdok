@@ -189,7 +189,6 @@ const actions = {
           }
         } else if (res.type === ROOM_MESSAGE_SEAT_QUIT) {
           // 소켓마저 끊김
-          // TODO : QUIT오나 확인
           const index = res.seatInfo.seatNo - 1;
           dispatch('PAUSE_TIMER_BY_INDEX', index);
           commit('UPDATE_ROOM_USER_COUNT', res.userCount);
@@ -316,7 +315,6 @@ const actions = {
   },
   UPDATE_SEAT_INFO_BY_STATUS({ commit, dispatch }, seat) {
     console.log('%croom.js line:280 seat', 'color: #007acc;', seat);
-    // TODO : 백엔드 수정되면 seatNo-1 해야함
     const index = seat.seatInfo.seatNo - 1;
     const value = seat.seatInfo.studyType;
     commit('UPDATE_SEAT_INFO', {
@@ -481,7 +479,6 @@ const mutations = {
     state.seatList = tmp;
   },
   ADD_SUBSCRIBER_INTO_SEAT(state, { index, subscriber }) {
-    // TODO : 매번 깊은복사해서 바꿔주는 과정 별로 안좋아보임. key이용해서 업데이트하는 방법 생각
     const tmp = [...state.seatList];
     tmp[index].subscriber = subscriber;
     state.seatList = tmp;
@@ -501,17 +498,13 @@ const mutations = {
     state.seatList[index][key] = value;
   },
   SET_SEAT_INFO_TIMER(state, { index, timer }) {
-    // TODO : 타이머만 관리하는 배열 따로 만들어서 보여주는식으로 해보자
     // 객체변경말고 배열자체 변경되면 반영되는지 한번 확인해보자
     state.seatList[index].timer = timer;
   },
   RUN_SEAT_INFO_TIMER(state, { index, time }) {
-    // TODO : 타이머만 관리하는 배열 따로 만들어서 보여주는식으로 해보자
-    // 객체변경말고 배열자체 변경되면 반영되는지 한번 확인해보자
     const tmp = { ...state.timeList };
     tmp[index] = time;
     state.timeList = tmp;
-    // state.timeList[index] = time;
   },
   STOP_SEAT_INFO_TIMER(state, { index }) {
     clearInterval(state.seatList[index].timer);

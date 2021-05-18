@@ -81,6 +81,9 @@ $deskWidth: 20vw;
       width: 88.9%;
       height: 50%;
       border-radius: 10px;
+      background-image: url('../assets/img/discover.gif');
+      background-repeat: no-repeat;
+      background-size: cover;
       background-color: rgba(150, 150, 150, 0.516);
 
       /* 임시용 */
