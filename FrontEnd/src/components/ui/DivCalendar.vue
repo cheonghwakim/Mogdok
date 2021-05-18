@@ -337,7 +337,7 @@ export default {
         const runningHour = runningTime / (1000 * 60 * 60);
         // array splice 기능 이용해서 해당 시간에 true 삽입
         for (let j = 0; j < runningHour; j++) {
-          this.selectedDayDetail.splice(startHour + j, 1, true); // 시작시간부터 공부시간만큼 제거
+          this.selectedDayDetail.splice((startHour + j) % 24, 1, true); // 시작시간부터 공부시간만큼 제거
         }
       }
 
