@@ -54,7 +54,7 @@ public class StompHandler implements ChannelInterceptor {
             roomRepository.setRoomEnterInfo(sessionId, roomId);
 
             // 열람실의 인원 수를 +1한다.
-            roomRepository.plusUserCount(roomId);
+            // roomRepository.plusUserCount(roomId);
 
             // token값을 꺼내온다.
             String token = roomRepository.getTokenBySessionId(sessionId);
@@ -94,13 +94,13 @@ public class StompHandler implements ChannelInterceptor {
                     seatNo = seat.getSeatNo();
                     studyLogService.saveLog(userId, seat.getTimestampList(), seat.getAllocateTime());
                     log.info("[DISCONNECT] 공부기록 저장 ");
-                    seatRepository.minusSeatCount(roomId);
+                    // seatRepository.minusSeatCount(roomId);
                     log.info("[DISCONNECT] 현재 착석 유저 수 : {} ", seatRepository.getSeatCount(roomId));
                 }
             }
 
             // 열람실의 인원 수를 -1한다.
-            roomRepository.minusUserCount(roomId);
+            // roomRepository.minusUserCount(roomId);
 
             // 퇴장한 클라이언트의 sessionId 매핑 정보를 삭제한다.
             roomRepository.removeRoomEnterInfo(sessionId);

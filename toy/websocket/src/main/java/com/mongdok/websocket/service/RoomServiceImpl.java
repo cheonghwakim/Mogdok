@@ -70,7 +70,7 @@ public class RoomServiceImpl implements RoomService{
                                            roomMessage.getSeatInfo());
                 
                 if(check) { // 좌석에 착석할 수 있는 경우
-                    seatRepository.plusSeatCount(roomMessage.getRoomId());
+                    //seatRepository.plusSeatCount(roomMessage.getRoomId());
                     log.info("[SEAT_ALLOCATED] 현재 착석 유저 수 : {}", seatRepository.getSeatCount(roomMessage.getRoomId()));
                 } else { // 좌석에 착석할 수 없는 경우
                     roomMessage.setType(MessageType.SEAT_ALLOCATE_FAIL);
@@ -107,7 +107,7 @@ public class RoomServiceImpl implements RoomService{
                 roomMessage.setSeatInfo(seatInfo);
 
                 // 좌석 착석 수 -1
-                seatRepository.minusSeatCount(roomMessage.getRoomId());
+                //seatRepository.minusSeatCount(roomMessage.getRoomId());
                 log.info("[END] 현재 착석 유저 수 : {}", seatRepository.getSeatCount(roomMessage.getRoomId()));
 
                 // 좌석정보가 있는 경우 ----> 시간 정보 저장
