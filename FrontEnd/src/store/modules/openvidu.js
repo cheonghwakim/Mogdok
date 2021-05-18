@@ -28,7 +28,6 @@ const actions = {
     state.session.on('streamCreated', ({ stream }) => {
       const subscriber = state.session.subscribe(stream);
       commit('ADD_SUBSCRIBER', subscriber);
-      // TODO : seatList에 subsciber 이 단계에서 집어넣는것은 어떤지?
     });
     state.session.on('streamDestroyed', ({ stream }) => {
       if (!state.subscribers) return;
@@ -135,13 +134,13 @@ const actions = {
     commit('SET_PUBLISHED', false);
     commit('SET_PUBLISHER', undefined);
   },
-  LEAVE_SESSION({ state, commit, dispatch }) {
+  async LEAVE_SESSION({ state, commit, dispatch }) {
     if (state.session) state.session.disconnect();
-    dispatch('CAMERA_OFF');
+    await dispatch('CAMERA_OFF');
     commit('CLEAR_SESSION');
   },
   async CHANGE_CAMERA({ dispatch }) {
-    dispatch('CAMERA_OFF');
+    await dispatch('CAMERA_OFF');
     await dispatch('CAMERA_ON');
   },
 };

@@ -67,6 +67,7 @@ export default {
   },
   watch: {
     subscribers: {
+      immediate: true,
       handler() {
         this.$store.dispatch('CONNECT_ROOM_WITH_OPENVIDU');
       },

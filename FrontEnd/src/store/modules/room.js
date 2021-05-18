@@ -200,6 +200,7 @@ const actions = {
             commit('SET_USER_SEAT_INDEX', { index: -1 });
           }
         }
+        // dispatch('CONNECT_ROOM_WITH_OPENVIDU');
       },
       (error) => {
         console.log('%croom.js line:41 error', 'color: #007acc;', error);
@@ -219,6 +220,8 @@ const actions = {
       }
       commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, undefined });
     }
+    // 화면 갱신
+    commit('REFRESH_SEAT_LIST');
   },
   async SEND_SEAT_ALLOCATED({ state, rootState, dispatch }, { seatNo }) {
     const hasAlreadySeat = await dispatch('HAS_ALREADY_SEAT');
@@ -260,21 +263,16 @@ const actions = {
       return Promise.reject(error);
     }
   },
-  ADD_SUBSCRIBER_INTO_SEAT_LIST({ state, commit }, subscriber) {
-    console.log(
-      '%croom.js line:119 subscriber.stream.connection.data',
-      'color: #007acc;',
-      subscriber
-    );
-
-    for (let i = 0; i < state.seatList.length; i++) {
-      if (state.seatList[i] && state.seatList[i].userName === subscriber.stream.connection.data) {
-        console.log('%croom.js line:121 매칭!!', 'color: #007acc;');
-        commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, subscriber });
-        break;
-      }
-    }
-  },
+  // ADD_SUBSCRIBER_INTO_SEAT_LIST({ state, commit }, subscriber) {
+  //   for (let i = 0; i < state.seatList.length; i++) {
+  //     if (state.seatList[i] && state.seatList[i].userName === subscriber.stream.connection.data) {
+  //       console.log('%croom.js line:121 매칭!!', 'color: #007acc;');
+  //       commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, subscriber });
+  //       break;
+  //     }
+  //   }
+  //   commit('REFRESH_SEAT_LIST');
+  // },
   HAS_ALREADY_SEAT({ state, rootState }) {
     for (let i = 0; i < state.seatList.length; i++) {
       if (state.seatList[i] && state.seatList[i].userName === rootState.user.userInfo.userName) {
@@ -452,7 +450,6 @@ const mutations = {
     state.stomp = Stomp.over(state.socket);
   },
   CLEAR_CONNECT(state) {
-    // TODO : 백엔드와 연동 필요
     for (let i = 0; i < state.seatList.length; i++) {
       if (state.seatList[i]) {
         clearInterval(state.seatList[i].timer);
@@ -464,12 +461,6 @@ const mutations = {
     state.stomp = undefined;
     state.socket = undefined;
   },
-  // SET_ROOM_INFO(state, payload) {
-  //   state.user.roomInfo = payload;
-  //   state.seatList = new Array(payload.limitUserCount);
-  //   state.timeList = Array.from({ length: payload.limitUserCount }, () => '');
-  //   state.roomUserCount = payload.userCount;
-  // },
   UPDATE_ROOM_USER_COUNT(state, payload) {
     state.roomUserCount = payload;
   },
@@ -479,8 +470,10 @@ const mutations = {
     state.seatList = tmp;
   },
   ADD_SUBSCRIBER_INTO_SEAT(state, { index, subscriber }) {
+    state.seatList[index].subscriber = subscriber;
+  },
+  REFRESH_SEAT_LIST(state) {
     const tmp = [...state.seatList];
-    tmp[index].subscriber = subscriber;
     state.seatList = tmp;
   },
   SET_SELECTED_SEAT_INFO(state, payload) {

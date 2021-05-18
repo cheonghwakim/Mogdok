@@ -149,7 +149,6 @@ export default {
       try {
         await this.$store.dispatch('SEND_STUDY_START');
         await this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
-        this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_START);
         this.isCamChecker = false;
         this.isStudy = true;
       } catch (error) {
@@ -162,11 +161,6 @@ export default {
     },
 
     async btnClickEvent() {
-      console.log(
-        '%cRoomFooter.vue line:163 this.userRoomState',
-        'color: #007acc;',
-        this.userRoomState
-      );
       switch (this.userRoomState) {
         case ROOM_STUDY_TYPE_NO_ACTION:
           alert('공부를 시작하려면 자리에 앉아야 합니다. 좌석을 클릭해서 자리에 앉아주세요.');
