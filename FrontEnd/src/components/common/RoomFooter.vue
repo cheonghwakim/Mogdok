@@ -11,17 +11,19 @@
         class="cam-check-wrapper"
         @onClickClose="closeCamChecker"
         @onClickStart="doStudy"
+        @toggleStartable="toggleCamChecker"
+        :startable="isCamChecker"
       ></div-cam-checker>
     </transition>
     <div class="postit-wrapper">
-      <div-timer-paper :type="'study'" :timer="'10:30:20'"></div-timer-paper>
+      <div-timer-paper :type="studyType" :timer="studyTimer"></div-timer-paper>
     </div>
     <div class="content">
-      <btn-my-desk class="btnMyDesk-wrapper"></btn-my-desk>
+      <btn-my-desk class="btnMyDesk-wrapper" @click="goToMyDesk"></btn-my-desk>
       <btn-command
         class="btnCommand-wrapper"
         :label="btnLabel"
-        @onClick="btnClickEvent"
+        @click="btnClickEvent"
       ></btn-command>
       <btn-leave-desk class="btnLeaveDesk-wrapper" @click="leaveSeat"></btn-leave-desk>
     </div>
@@ -42,6 +44,7 @@ import {
   ROOM_STUDY_TYPE_PAUSE,
   ROOM_STUDY_TYPE_START,
 } from '../../store/modules/room';
+// import from 'vue-editor-bridge';
 
 export default {
   name: 'Footer',
@@ -57,7 +60,10 @@ export default {
   },
   computed: {
     ...mapState({
+      userInfo: (state) => state.user.userInfo,
       userRoomState: (state) => state.room.userRoomState,
+      timeList: (state) => state.room.timeList,
+      userSeatIndex: (state) => state.room.userSeatIndex,
     }),
     btnLabel() {
       switch (this.userRoomState) {
@@ -69,6 +75,22 @@ export default {
           return '쉬기';
       }
       return '';
+    },
+    studyType() {
+      switch (this.userRoomState) {
+        case ROOM_STUDY_TYPE_NO_ACTION:
+          return 'rest';
+        case ROOM_STUDY_TYPE_PAUSE:
+          return 'rest';
+        case ROOM_STUDY_TYPE_START:
+          return 'study';
+      }
+      return 'rest';
+    },
+    studyTimer() {
+      return this.userSeatIndex === -1 || !this.timeList[this.userSeatIndex]
+        ? '00:00:00'
+        : this.timeList[this.userSeatIndex];
     },
   },
   // watch: {},
@@ -104,9 +126,9 @@ export default {
     },
 
     // 공부시작 커맨드 버튼 클릭 시, 캠 체커 띄우기
-    showCamChecker: function() {
-      this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
-      this.$store.dispatch('CAMERA_ON');
+    showCamChecker: async function() {
+      await this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
+      await this.$store.dispatch('CAMERA_ON');
       this.isCamChecker = true;
     },
 
@@ -124,14 +146,27 @@ export default {
 
     // CamChecker에서 진짜 공부 시작
     doStudy: async function() {
-      // 휴식상태에서 클릭하면 세션에 캠 퍼블리시 시작
-      await this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
-      this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_START);
-      this.isCamChecker = false;
-      this.isStudy = true;
+      try {
+        await this.$store.dispatch('SEND_STUDY_START');
+        await this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
+        this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_START);
+        this.isCamChecker = false;
+        this.isStudy = true;
+      } catch (error) {
+        alert('공부를 시작하지 못했어요. ' + error);
+      }
+    },
+
+    goToMyDesk: function() {
+      this.$router.replace({ path: `/desk/${this.userInfo.userName}` });
     },
 
     async btnClickEvent() {
+      console.log(
+        '%cRoomFooter.vue line:163 this.userRoomState',
+        'color: #007acc;',
+        this.userRoomState
+      );
       switch (this.userRoomState) {
         case ROOM_STUDY_TYPE_NO_ACTION:
           alert('공부를 시작하려면 자리에 앉아야 합니다. 좌석을 클릭해서 자리에 앉아주세요.');
@@ -141,8 +176,13 @@ export default {
           break;
         case ROOM_STUDY_TYPE_START:
           // 공부를 멈췄을 때
-          await this.closeCamChecker(); // 타이머 시작, 캠 처리
-          this.$store.commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_PAUSE);
+          try {
+            await this.$store.dispatch('SEND_STUDY_PAUSE');
+            await this.closeCamChecker();
+          } catch (error) {
+            alert('휴식모드로 돌아가지 못했어요. 다시 시도해주세요.' + error);
+          }
+          // 타이머 시작, 캠 처리
           break;
       }
     },
@@ -156,6 +196,10 @@ export default {
           alert(error);
         }
       }
+    },
+
+    toggleCamChecker(value) {
+      this.isCamChecker = value;
     },
   },
 };

@@ -37,4 +37,18 @@ function signup(userInfo, success, fail) {
     .catch(fail);
 }
 
-export { getAuthToken, login, checkUserNameDuplicated, signup, loginByAuthToken };
+async function getProfileByUserName({ userName }, success, fail) {
+  await loginInstance
+    .get(`profile`, { params: { userName } })
+    .then(success)
+    .catch(fail);
+}
+
+export {
+  getAuthToken,
+  login,
+  checkUserNameDuplicated,
+  signup,
+  loginByAuthToken,
+  getProfileByUserName,
+};

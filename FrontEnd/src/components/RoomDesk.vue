@@ -19,8 +19,8 @@
 
     <!-- 푸터 : 하단에 시간이 기록되는 공간 -->
     <div class="footer">
-      <p class="mark">🕳</p>
-      <p class="timer" v-if="seat">{{ seat.timestampList }}</p>
+      <!-- <p class="mark">🕳</p> -->
+      <p class="timer" v-if="timer">{{ timer }}</p>
     </div>
   </div>
 </template>
@@ -32,9 +32,15 @@ export default {
   props: {
     seat: Object,
     streamManager: Object,
+    timer: String,
   },
-  methods: {},
+  data() {
+    return {
+      time: '',
+    };
+  },
   computed: {},
+  methods: {},
 };
 </script>
 <style scoped lang="scss">
@@ -75,6 +81,9 @@ $deskWidth: 20vw;
       width: 88.9%;
       height: 50%;
       border-radius: 10px;
+      background-image: url('../assets/img/discover.gif');
+      background-repeat: no-repeat;
+      background-size: cover;
       background-color: rgba(150, 150, 150, 0.516);
 
       /* 임시용 */

@@ -1,14 +1,14 @@
 import { roomInstance } from './index.js';
 
-function getAllRooms(success, fail) {
-  roomInstance
+async function getAllRooms(success, fail) {
+  await roomInstance
     .get(`rooms`)
     .then(success)
     .catch(fail);
 }
 
-function getSeatList({ roomId }, success, fail) {
-  roomInstance
+async function getSeatList({ roomId }, success, fail) {
+  await roomInstance
     .get(`seats/${roomId}`)
     .then(success)
     .catch(fail);

@@ -2,6 +2,7 @@ import { getAuthToken, login, loginByAuthToken } from '../../api/user';
 
 const state = () => ({
   userInfo: {},
+  roomInfo: undefined,
   videoSourceList: [],
   videoSource: undefined,
 });
@@ -29,8 +30,10 @@ const actions = {
             commit('SET_USER_INFO', res.data);
             localStorage.setItem('authToken', state.userInfo.authToken);
             resolve('ok');
-          } else {
+          } else if (res.data === undefined) {
             resolve('join');
+          } else {
+            reject('로그인에 실패했어요');
           }
         },
         (error) => {
@@ -70,6 +73,9 @@ const mutations = {
   },
   SET_AUTH_TOKEN(state, payload) {
     state.userInfo.authToken = payload;
+  },
+  SET_ROOM_INFO(state, payload) {
+    state.roomInfo = payload;
   },
 };
 

@@ -1,24 +1,29 @@
 <template lang="">
   <div class="divProfile">
     <!-- 내용들이 들어가는 내부 공간 -->
-    <div class="content">
+    <div class="content" v-if="seat">
       <!-- 닫기 버튼 -->
       <!-- 캠화면 -->
       <div class="cam-wrapper">
-        <div-tape></div-tape>
-        <div class="cam"></div>
+        <div v-if="streamManager">
+          <div-tape></div-tape>
+          <ov-video class="cam" :key="seat.userName" :stream-manager="streamManager"></ov-video>
+        </div>
+        <div v-else>
+          쉬는 중이어서 캠을 볼 수 없음을 알리는 UI
+        </div>
 
         <!-- 사람 이름 -->
         <div class="info-wrapper">
-          <h1 class="kyoboHand">{{ userName }}</h1>
-          <h2 class="kyoboHand">#취업준비생</h2>
-          <p>취업 가자! 아자아자!</p>
+          <h1 class="kyoboHand">{{ seat.userName }}</h1>
+          <h2 class="kyoboHand">{{ seat.category }}</h2>
+          <p>{{ seat.promise }}</p>
         </div>
       </div>
 
       <!-- 책상 구경 버튼 -->
       <div class="btn-wrapper">
-        <btn-command :label="'책상 구경하기'" class="btnCommand"></btn-command>
+        <btn-command :label="'책상 구경하기'" class="btnCommand" @click="openDesk"></btn-command>
         <btn-close class="btnClose" @onClick="closeProfile"></btn-close>
       </div>
     </div>
@@ -143,22 +148,27 @@
 import BtnClose from './BtnClose';
 import BtnCommand from '@/components/ui/BtnCommand';
 import DivTape from '@/components/ui/DivTape';
+import OvVideo from '@/components/common/OvVideo';
 
 export default {
   props: {
-    clickedDesk: Object,
+    seat: Object,
+    streamManager: Object,
   },
-  components: { BtnClose, BtnCommand, DivTape },
+  components: { BtnClose, BtnCommand, DivTape, OvVideo },
   methods: {
-    closeProfile: function() {
-      console.log('closeProfile 닫기');
+    closeProfile() {
       this.$store.commit('TOGGLE_PROFILE');
       this.$store.commit('CLEAR_DESK');
+    },
+    openDesk() {
+      this.closeProfile();
+      this.$router.replace({ path: `/desk/${this.seat.userName}` });
     },
   },
   computed: {
     userName() {
-      if (this.clickedDesk != null) return this.clickedDesk.userName;
+      if (this.userInfo != null) return this.clickedDesk.userName;
       else return '-';
     },
   },

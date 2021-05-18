@@ -2,16 +2,24 @@
   <div class="room">
     <transition name="slide-left">
       <div v-show="$store.state.desk.isOpenProfile" class="profile-wrapper">
-        <div-profile :clickedDesk="$store.state.desk.desk"></div-profile>
+        <div-profile
+          :seat="selectedSeatInfo"
+          :stream-manager="selectedSeatInfo ? selectedSeatInfo.subscriber : undefined"
+        ></div-profile>
       </div>
     </transition>
     <div class="deskList">
       <div class="deskItem" v-for="(seat, index) in seatList" :key="`${seat}${index}`">
-        <room-desk v-if="!seat" @click="clickDesk(seat, index)"></room-desk>
+        <room-desk
+          v-if="!seat"
+          :timer="timeList[index]"
+          @click="clickDesk(seat, index)"
+        ></room-desk>
         <room-desk
           v-else
           :seat="seat"
           :stream-manager="seat.subscriber"
+          :timer="timeList[index]"
           @click="clickDesk(seat, index)"
         ></room-desk>
       </div>
@@ -35,12 +43,18 @@ export default {
   },
   props: {},
   data() {
-    return {};
+    return {
+      selectedSeatIdx: -1,
+      time: [],
+    };
   },
   computed: {
     ...mapState({
-      roomInfo: (state) => state.room.roomInfo,
+      socket: (state) => state.room.socket,
+      stomp: (state) => state.room.stomp,
+      roomInfo: (state) => state.user.roomInfo,
       seatList: (state) => state.room.seatList,
+      timeList: (state) => state.room.timeList,
       selectedSeatInfo: (state) => state.room.selectedSeatInfo,
       userInfo: (state) => state.user.userInfo,
       videoSourceList: (state) => state.user.videoSourceList,
@@ -53,16 +67,25 @@ export default {
   },
   watch: {
     subscribers: {
-      immediate: true,
       handler() {
-        console.log('%cRoom.vue line:58 subscribers에 변경이 감지됨!', 'color: #007acc;');
         this.$store.dispatch('CONNECT_ROOM_WITH_OPENVIDU');
       },
     },
   },
   //lifecycle area
   created() {
-    this.joinSession();
+    if (!this.seatList || !this.timeList) {
+      this.$store.commit('INIT_ROOM', this.roomInfo);
+    }
+    if (!this.socket || !this.stomp || !this.session) {
+      this.joinSession();
+    }
+  },
+  mounted() {
+    window.addEventListener('beforeunload', this.leaveSession);
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.leaveSession);
   },
   methods: {
     // 세선 참여
@@ -82,7 +105,6 @@ export default {
         this.$store.dispatch('INIT_OV_SESSION_EVENT');
         // 세션에 유저 연결
         this.$store.dispatch('CONNECT_USER_TO_SESSION', this.userInfo);
-        window.addEventListener('beforeunload', this.leaveSession);
 
         // Room 서버 연결
         await this.$store.dispatch('CONNECT_ROOM_SERVER');
@@ -98,20 +120,23 @@ export default {
         return;
       }
     },
-    leaveSession() {
-      console.log('%cRoom.vue line:102 beforeunload', 'color: #007acc;');
-      // 현재 접속 중인 세션을 나간다. (disconnect)
-      // TODO: close버튼을 클릭하는게 아니라 이 부분에서도 자원해제를 해야하는지 판단후 적용
-      this.$store.dispatch('LEAVE_SESSION');
-      this.$store.commit('CLEAR_CONNECT');
-      window.removeEventListener('beforeunload', this.leaveSession);
-      this.$router.replace('/');
+    leaveSession(e) {
+      e = e || window.event;
+      if (e) {
+        e.returnValue = '자리에서 떠나시겠습니까?'; //old browsers
+      }
+      return '자리에서 떠나시겠습니까?'; //safari, chrome(chrome ignores text)
     },
     async clickDesk(seat, index) {
       if (seat) {
-        this.$store.commit('SET_SELECTED_SEAT_INFO', seat);
-        alert(`${this.selectedSeatInfo.userName} 클릭되었습니다.`);
-        // TODO: 신분증 나오도록
+        try {
+          this.selectedSeatIdx = index;
+          await this.$store.dispatch('GET_SELECTED_SEAT_USER_INFO', seat);
+        } catch (error) {
+          alert('유저 정보를 불러오는데 실패했어요.' + error);
+          this.selectedSeatIdx = -1;
+          return;
+        }
         this.$store.commit('TOGGLE_PROFILE');
       } else {
         if (confirm(`${index + 1}번 좌석에 앉으시겠습니까?`)) {

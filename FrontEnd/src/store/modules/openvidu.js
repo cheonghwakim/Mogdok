@@ -31,6 +31,7 @@ const actions = {
       // TODO : seatList에 subsciber 이 단계에서 집어넣는것은 어떤지?
     });
     state.session.on('streamDestroyed', ({ stream }) => {
+      if (!state.subscribers) return;
       const index = state.subscribers.indexOf(stream.streamManager, 0);
       if (index >= 0) commit('REMOVE_SUBSCRIBER', index);
     });
@@ -40,7 +41,7 @@ const actions = {
     // });
   },
   CONNECT_USER_TO_SESSION({ state, rootState, dispatch }, { userId, userName }) {
-    dispatch('GET_TOKEN', rootState.room.roomInfo.roomId).then((token) => {
+    dispatch('GET_TOKEN', rootState.user.roomInfo.roomId).then((token) => {
       state.session
         .connect(token, `${userId}##${userName}`) // Todo: 현재 로그인 중인 유저이름 (userId##userName)
         .then(() => {
@@ -57,7 +58,7 @@ const actions = {
   CREATE_SESSION({ rootState }) {
     return new Promise((resolve, reject) => {
       createSession(
-        { sessionId: rootState.room.roomInfo.roomId },
+        { sessionId: rootState.user.roomInfo.roomId },
         (res) => res.data,
         (data) => {
           console.log('세션 생성 성공');
@@ -65,7 +66,7 @@ const actions = {
         },
         (error) => {
           if (error.response && error.response.status === 409) {
-            resolve(rootState.room.roomInfo.roomId);
+            resolve(rootState.user.roomInfo.roomId);
           } else {
             // 에러처리
             alert('createSession ERROR' + error);
@@ -78,7 +79,7 @@ const actions = {
   CREATE_TOKEN({ rootState }) {
     return new Promise((resolve, reject) => {
       createToken(
-        { sessionId: rootState.room.roomInfo.roomId },
+        { sessionId: rootState.user.roomInfo.roomId },
         (res) => res.data,
         (data) => resolve(data.token),
         (error) => reject(error.response)

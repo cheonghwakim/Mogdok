@@ -40,9 +40,8 @@ export default {
     this.$store.dispatch('GET_ALL_ROOMS');
   },
   methods: {
-    enterRoom(room) {
-      // TODO : 입장 전 해당 방의 openvidu session과 room서버 연결 완료하고 페이지 이동
-      this.$store.commit('SET_ROOM_INFO', room);
+    async enterRoom(room) {
+      await this.$store.dispatch('ENTER_ROOM', room);
       this.$router.replace({ name: 'Room' });
     },
   },

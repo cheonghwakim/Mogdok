@@ -4,7 +4,7 @@
       <h2>{{ roomInfo.name }}</h2>
       <div-num-person
         class="NumOfPerson"
-        :current="roomInfo.userCount"
+        :current="roomUserCount"
         :limit="roomInfo.limitUserCount"
       ></div-num-person>
     </div>
@@ -28,7 +28,8 @@ export default {
   },
   computed: {
     ...mapState({
-      roomInfo: (state) => state.room.roomInfo,
+      roomInfo: (state) => state.user.roomInfo,
+      roomUserCount: (state) => state.room.roomUserCount,
     }),
   },
   watch: {},
