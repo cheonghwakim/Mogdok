@@ -65,7 +65,7 @@ export default {
          p.sub {
             color: rgb(164, 164, 164);
             font-weight: 600;
-            font-size: 8pt;
+            font-size: 9pt;
             letter-spacing: 3px;
             text-align: center;
          }

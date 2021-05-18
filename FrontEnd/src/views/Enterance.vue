@@ -7,6 +7,7 @@
                <div v-dragscroll="true" class="roomItem" v-for="(room, idx) in roomList" :key="idx">
                   <enterance-door :room="room" @click="enterRoom(room)"></enterance-door>
                </div>
+               <!-- <div class="bottom-shader"></div> -->
             </div>
             <p class="btnFAQ" @click="toggleModalFAQ"><i class="fas fa-question-circle"></i> 몽실이네 독서실이 궁금하세요?</p>
             <modal-faq :isOpenFAQ="isOpenFAQ" @onClick="toggleModalFAQ"></modal-faq>
@@ -65,6 +66,8 @@ export default {
    align-items: center;
    justify-content: center;
 
+   /* border: 1px solid red; */
+
    .container {
       display: inherit;
       flex-direction: column;
@@ -73,8 +76,10 @@ export default {
       width: 70vw;
       height: 90vh;
 
+      /* border: 1px solid rgb(34, 0, 255); */
+
       .content {
-         margin-top: 5vh;
+         /* margin-top: 5vh; */
          width: inherit;
          display: inherit;
          flex-direction: column;
@@ -83,12 +88,13 @@ export default {
 
          .character {
             max-width: 200px;
-            width: 70%;
+            width: 60%;
          }
 
          // roomList가 모여있는 공간
          .roomList {
             margin-top: 20px;
+            position: relative;
 
             /* border: 1px solid blue; */
 
@@ -108,7 +114,6 @@ export default {
                margin: 0px 5px;
             }
          }
-
          .btnFAQ {
             cursor: pointer;
             font-size: 10pt;

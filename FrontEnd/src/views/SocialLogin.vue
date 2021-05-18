@@ -56,7 +56,7 @@ export default {
    font-weight: 600;
    letter-spacing: 2px;
    color: rgb(125, 125, 125);
-   /* text-align: center; */
+   text-align: center;
 
    img {
       width: 100px;
