@@ -43,8 +43,12 @@ export default {
   },
   watch: {},
   //lifecycle area
-  created() {
-    this.$store.dispatch('GET_ALL_ROOMS');
+  async created() {
+    try {
+      await this.$store.dispatch('GET_ALL_ROOMS');
+    } catch (error) {
+      alert('열람실 목록을 가져오는데 실패했어요. ' + error);
+    }
   },
   methods: {
     enterRoom(room) {

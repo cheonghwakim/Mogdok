@@ -132,15 +132,15 @@ export default {
       this.isCamChecker = true;
     },
 
-    doRest: function() {
-      this.$store.dispatch('CAMERA_OFF');
+    doRest: async function() {
+      await this.$store.dispatch('CAMERA_OFF');
       this.isStudy = false;
     },
 
     // CamChecker를 닫기
-    closeCamChecker: function() {
+    closeCamChecker: async function() {
+      await this.$store.dispatch('CAMERA_OFF');
       this.isCamChecker = false;
-      this.$store.dispatch('CAMERA_OFF');
       this.hideFooter(); // 푸터 닫기
     },
 

@@ -123,9 +123,7 @@ const actions = {
       // unpublish는 카메라 자원 해제까지 해주는 메서드 존재
       await state.session.unpublish(state.publisher);
       const index = state.subscribers.indexOf(state.publisher, 0);
-      console.log('%copenvidu.js line:126 index', 'color: #007acc;', index);
       if (index >= 0) commit('REMOVE_SUBSCRIBER', index);
-      console.log('%copenvidu.js line:128 state.subscribers', 'color: #007acc;', state.subscribers);
     } else {
       // 세션을 통해 unpublish하지 않은 경우 카메라를 OFF만 하면,
       // 카메라 자원이 여전히 실행 중이게 되므로 카메라 자원을 해제하는 작업을 해주어야 함
