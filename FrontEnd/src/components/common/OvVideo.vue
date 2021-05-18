@@ -1,15 +1,21 @@
 <template>
-  <video autoplay />
+   <video autoplay />
 </template>
 
 <script>
 export default {
-  name: 'OvVideo',
-  props: {
-    streamManager: Object,
-  },
-  mounted() {
-    if (this.streamManager) this.streamManager.addVideoElement(this.$el);
-  },
+   name: 'OvVideo',
+   props: {
+      streamManager: Object,
+   },
+   mounted() {
+      if (this.streamManager) this.streamManager.addVideoElement(this.$el);
+   },
 };
 </script>
+
+<style scoped>
+video {
+   width: 100%;
+}
+</style>

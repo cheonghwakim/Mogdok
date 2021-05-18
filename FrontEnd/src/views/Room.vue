@@ -150,7 +150,7 @@ export default {
 
    width: 100%;
    height: calc(100% - #{$HeaderHeight});
-   background-color: rgb(255, 253, 190);
+   /* background-color: rgb(255, 253, 190); */
 
    /* 스크롤 가능 버젼 */
    overflow-y: auto;
@@ -175,13 +175,13 @@ export default {
       flex-wrap: wrap;
       justify-content: center;
 
-      border: 1px dashed red;
+      /* border: 1px dashed red; */
 
       /* 스크롤 불가능 버젼 */
       width: 100%;
 
       .deskItem {
-         border: 1px dashed rgb(0, 21, 255);
+         /* border: 1px dashed rgb(0, 21, 255); */
          width: 20vw;
          min-width: 150px;
          max-width: 250px;
