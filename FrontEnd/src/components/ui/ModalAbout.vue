@@ -36,7 +36,7 @@ export default {
    max-height: 900px;
 
    position: fixed;
-   z-index: 10;
+   z-index: 111;
    top: 50%;
    left: 50%;
    transform: translate(-50%, -50%);
