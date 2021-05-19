@@ -12,17 +12,22 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-  SET_VIDEO_SOURCE_LIST({ state, commit }) {
+  async SET_VIDEO_SOURCE_LIST({ state, commit }) {
     let videoSoruces = [];
     videoSoruces.push({ kind: 'videoinput', label: 'default', deviceId: undefined });
-    state.OV.getDevices().then((res) => {
-      res.forEach((e) => {
-        if (e.kind === 'videoinput' && e.label) {
-          videoSoruces.push(e);
-        }
+    await state.OV.getDevices()
+      .then((res) => {
+        res.forEach((e) => {
+          if (e.kind === 'videoinput' && e.label) {
+            videoSoruces.push(e);
+          }
+        });
+        commit('SET_VIDEO_SOURCE_LIST', videoSoruces, { root: true });
+        return Promise.resolve();
+      })
+      .catch((error) => {
+        return Promise.reject(error);
       });
-    });
-    commit('SET_VIDEO_SOURCE_LIST', videoSoruces, { root: true });
   },
   INIT_OV_SESSION_EVENT({ state, commit }) {
     state.session.on('streamCreated', ({ stream }) => {

@@ -97,7 +97,7 @@ export default {
         // --- 오픈바이두 객체 생성 ---
         if (!this.OV) this.$store.commit('CREATE_OPENVIDU');
         // 사용 가능한 비디오 소스 확인
-        this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
+        // await this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
         // 최대 이용 인원 수 설정
         this.$store.commit('SET_SUBSCRIBERS', this.roomInfo.limitUserCount);
         // --- 세션 초기화 ---

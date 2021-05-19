@@ -64,6 +64,7 @@ export default {
       userRoomState: (state) => state.room.userRoomState,
       timeList: (state) => state.room.timeList,
       userSeatIndex: (state) => state.room.userSeatIndex,
+      videoSoruces: (state) => state.user.videoSourceList,
     }),
     btnLabel() {
       switch (this.userRoomState) {
@@ -127,9 +128,16 @@ export default {
 
     // 공부시작 커맨드 버튼 클릭 시, 캠 체커 띄우기
     showCamChecker: async function() {
-      await this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
-      await this.$store.dispatch('CAMERA_ON');
-      this.isCamChecker = true;
+      try {
+        await this.$store.dispatch('SET_VIDEO_SOURCE_LIST');
+        if (this.videoSoruces.length <= 1) {
+          throw '카메라를 찾지 못했어요.';
+        }
+        await this.$store.dispatch('CAMERA_ON');
+        this.isCamChecker = true;
+      } catch (error) {
+        alert('카메라를 켜는데 문제가 발생했어요. ' + error);
+      }
     },
 
     doRest: async function() {
