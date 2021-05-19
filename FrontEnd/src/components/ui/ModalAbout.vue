@@ -10,7 +10,7 @@
             </div>
             <div class="desc-wrapper">
                <span class="team">몽실이 제자들</span>은 <br /><span style="color:#1b0b88; font-weight:600">삼성 청년 SW 아카데미 4기</span> 개발자 5명으로 이루어진 팀입니다.<br />
-               코로나 걱정 없는, 독서실 빌런 걱정 없는, <br /><span style="font-weight:600">세상에서 가장 귀여운 몽실이네 독서실</span>에서 공부하세요!
+               코로나 걱정 없는, 독서실 빌런 걱정 없는, <br />당신의 꿈과 함께하는 공간, <span style="font-weight:600">몽실이네 독서실</span>에서 공부하세요!
             </div>
             <div class="member-wrapper">
                <div v-for="(person, idx) in members" :key="idx" class="member">
