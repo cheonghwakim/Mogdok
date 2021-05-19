@@ -140,7 +140,7 @@ export default {
         }
         this.$store.commit('TOGGLE_PROFILE');
       } else {
-        if (confirm(`${index + 1}번 좌석에 앉으시겠습니까?`)) {
+        if (confirm(`🪑[ ${index + 1} ]번 좌석에 앉을까요?`)) {
           // room 서버에 해당 좌석에 앉았음을 알림
           try {
             await this.$store.dispatch('SEND_SEAT_ALLOCATED', { seatNo: index + 1 });
