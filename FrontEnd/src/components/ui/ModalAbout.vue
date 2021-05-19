@@ -10,7 +10,10 @@
             </div>
             <div class="desc-wrapper">
                <span class="team">몽실이 제자들</span>은 <br /><span style="color:#1b0b88; font-weight:600">삼성 청년 SW 아카데미 4기</span> 개발자 5명으로 이루어진 팀입니다.<br />
-               코로나 걱정 없는, 독서실 빌런 걱정 없는, <br />당신의 꿈과 함께하는 공간, <span style="font-weight:600">몽실이네 독서실</span>에서 공부하세요!
+               코로나 걱정 없는, 독서실 빌런 걱정 없는, <br />당신의 꿈과 함께하는 공간, <span style="font-weight:600">몽실이네 독서실</span>에서 공부하세요! <br /><br />
+               <a class="notion-btn" href="https://www.notion.so/jusami/f54d54e271d84d46abe54ea0a56151ec#b5ab970d14b34986bd50ca66dcbd13e3" target="_blank">
+                  <img src="../../assets/img/about/notion.svg" alt="" /> 노션 페이지</a
+               >
             </div>
             <div class="member-wrapper">
                <div v-for="(person, idx) in members" :key="idx" class="member">
@@ -139,6 +142,20 @@ export default {
       font-weight: 400;
       letter-spacing: 1px;
       line-height: 22px;
+
+      .notion-btn {
+         font-size: 9pt;
+         font-weight: 600;
+         text-decoration: none;
+         color: black;
+
+         display: flex;
+
+         img {
+            width: 16px;
+            margin-right: 6px;
+         }
+      }
    }
 
    .member-wrapper {
