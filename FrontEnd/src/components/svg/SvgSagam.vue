@@ -184,22 +184,20 @@ export default {
 
       var resX, resY;
 
-      resX = midX - x;
-      resY = y - midY;
+      // resX = midX - x;
+      // resY = y - midY;
 
-      console.log(resX, resY);
+      // console.log(resX, resY);
 
       if (x < midX && y < midY) {
         // 1사분면
-        console.log('1사분면');
-
-        resX = midX - x;
+        resX = x;
         resY = -y;
       } else if (x > midX && y < midY) {
         // 2사분면
-        console.log('2사분면');
-        resX = Math.abs(midX - x);
-        resY = Math.abs(y);
+        resX = x;
+        resY = y;
+        // console.log('2사분면 : ', resX, resY);
       } else if (x < midX && y > midY) {
         //3사분면
         console.log('3사분면');
@@ -207,7 +205,9 @@ export default {
         // resY = -Math.abs(resY);
       } else if (x > midX && y > midY) {
         // 4사분면
-        console.log('4사분면');
+        resX = -Math.abs(midX - x);
+        resY = Math.abs(midY - y);
+        // console.log('4사분면 : ', resX, resY);
         // resY = Math.abs(resY);
       }
 
