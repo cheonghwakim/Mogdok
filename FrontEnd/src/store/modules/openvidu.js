@@ -29,7 +29,7 @@ const actions = {
         return Promise.reject(error);
       });
   },
-  INIT_OV_SESSION_EVENT({ state, commit }) {
+  async INIT_OV_SESSION_EVENT({ state, commit }) {
     state.session.on('streamCreated', ({ stream }) => {
       const subscriber = state.session.subscribe(stream);
       commit('ADD_SUBSCRIBER', subscriber);
@@ -98,11 +98,12 @@ const actions = {
       .then(() => {
         commit('ADD_SUBSCRIBER', state.publisher);
         commit('SET_PUBLISHED', true);
+        return Promise.resolve();
       })
       .catch((error) => {
         console.log('%copenvidu.js line:102 error', 'color: #007acc;', error);
-        alert('영상 공유를 실패했습니다');
         commit('SET_PUBLISHED', false);
+        return Promise.reject('영상 공유를 실패했어요.');
       });
   },
   async CAMERA_ON({ state, rootState, commit }) {

@@ -6,6 +6,7 @@ import { getProfileByUserName } from '../../api/user';
 const ROOM_MESSAGE_SEAT_ALLOCATED = 'SEAT_ALLOCATED';
 const ROOM_MESSAGE_SEAT_ALLOCATE_FAIL = 'SEAT_ALLOCATE_FAIL';
 const ROOM_MESSAGE_SEAT_STATUS = 'SEAT_STATUS';
+const ROOM_MESSAGE_SEAT_ENTER = 'ENTER';
 const ROOM_MESSAGE_SEAT_END = 'END';
 const ROOM_MESSAGE_SEAT_QUIT = 'QUIT';
 const ROOM_STUDY_TYPE_START = 'START';
@@ -149,12 +150,14 @@ const actions = {
         let res = JSON.parse(message.body);
         console.log('%croom.js line:80 res', 'color: #007acc;', res);
         // TODO: 각 사용자의 변경된 상태를 적용해야함
-        if (res.type === ROOM_MESSAGE_SEAT_ALLOCATED) {
+        if (res.type === ROOM_MESSAGE_SEAT_ENTER) {
+          if (res.sender === rootState.user.userInfo.userName) {
+            commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
+          }
+        } else if (res.type === ROOM_MESSAGE_SEAT_ALLOCATED) {
           // 자리앉기
           res = initSeatInfo(res);
           const index = res.seatInfo.seatNo - 1;
-          console.log('%croom.js line:150 res', 'color: #007acc;', res);
-          console.log('%croom.js line:151 index', 'color: #007acc;', index);
           commit('ADD_SEAT_INFO', { index, seatInfo: res });
           commit('ADD_TIMER_BY_INDEX', { index });
           commit('UPDATE_ROOM_USER_COUNT', res.userCount);
@@ -376,7 +379,7 @@ const actions = {
       key: 'timeStopped',
       value: currentUTCTime,
     });
-    if (state.seatList[index].timer != null) {
+    if (state.seatList[index] && state.seatList[index].timer != null) {
       clearInterval(state.seatList[index].timer);
       commit('STOP_SEAT_INFO_TIMER', { index });
     }

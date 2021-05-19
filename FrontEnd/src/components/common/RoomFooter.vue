@@ -155,8 +155,8 @@ export default {
     // CamChecker에서 진짜 공부 시작
     doStudy: async function() {
       try {
-        await this.$store.dispatch('SEND_STUDY_START');
         await this.$store.dispatch('PUBLISH_VIDEO_TO_SESSION');
+        await this.$store.dispatch('SEND_STUDY_START');
         this.isCamChecker = false;
         this.isStudy = true;
       } catch (error) {
@@ -165,7 +165,7 @@ export default {
     },
 
     goToMyDesk: function() {
-      this.$router.replace({ path: `/desk/${this.userInfo.userName}` });
+      this.$router.replace({ path: `/desk/${this.userInfo.userName}` }).catch(() => {});
     },
 
     async btnClickEvent() {
@@ -191,7 +191,7 @@ export default {
 
     async leaveSeat() {
       // 자리를 벗어남. openvidu, socket 연결은 끊기지 않음
-      if (confirm('정말 자리를 떠나실건가요?')) {
+      if (confirm('정말 자리를 떠나실건가요?\n진행중인 공부가 종료돼요🥺')) {
         try {
           await this.$store.dispatch('SEND_SEAT_END');
         } catch (error) {
