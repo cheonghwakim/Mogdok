@@ -22,6 +22,7 @@
     "vue-lottie-player": "^0.1.9",
     "vue-moveable": "^1.8.10",
     "vue-router": "^3.5.1",
+    "vue-typical": "^1.6.2",
     "vuex": "^3.6.2",
     "vuex-persistedstate": "^4.0.0-beta.3",
     "webstomp-client": "^1.2.6"
