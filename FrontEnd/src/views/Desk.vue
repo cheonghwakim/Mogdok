@@ -184,11 +184,7 @@ export default {
     },
 
     exitDesk: function() {
-      let isExit = confirm(`책상을 떠나시겠습니까?`);
-
-      if (isExit) {
-        this.$router.push('/room');
-      }
+      this.$router.replace('/room');
     },
     clickMemo: function(index) {
       console.log(index + '번째 메모 클릭');

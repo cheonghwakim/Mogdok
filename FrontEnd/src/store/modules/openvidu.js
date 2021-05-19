@@ -12,23 +12,27 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-  SET_VIDEO_SOURCE_LIST({ state, commit }) {
+  async SET_VIDEO_SOURCE_LIST({ state, commit }) {
     let videoSoruces = [];
     videoSoruces.push({ kind: 'videoinput', label: 'default', deviceId: undefined });
-    state.OV.getDevices().then((res) => {
-      res.forEach((e) => {
-        if (e.kind === 'videoinput' && e.label) {
-          videoSoruces.push(e);
-        }
+    await state.OV.getDevices()
+      .then((res) => {
+        res.forEach((e) => {
+          if (e.kind === 'videoinput' && e.label) {
+            videoSoruces.push(e);
+          }
+        });
+        commit('SET_VIDEO_SOURCE_LIST', videoSoruces, { root: true });
+        return Promise.resolve();
+      })
+      .catch((error) => {
+        return Promise.reject(error);
       });
-    });
-    commit('SET_VIDEO_SOURCE_LIST', videoSoruces, { root: true });
   },
-  INIT_OV_SESSION_EVENT({ state, commit }) {
+  async INIT_OV_SESSION_EVENT({ state, commit }) {
     state.session.on('streamCreated', ({ stream }) => {
       const subscriber = state.session.subscribe(stream);
       commit('ADD_SUBSCRIBER', subscriber);
-      // TODO : seatList에 subsciber 이 단계에서 집어넣는것은 어떤지?
     });
     state.session.on('streamDestroyed', ({ stream }) => {
       if (!state.subscribers) return;
@@ -94,11 +98,12 @@ const actions = {
       .then(() => {
         commit('ADD_SUBSCRIBER', state.publisher);
         commit('SET_PUBLISHED', true);
+        return Promise.resolve();
       })
       .catch((error) => {
         console.log('%copenvidu.js line:102 error', 'color: #007acc;', error);
-        alert('영상 공유를 실패했습니다');
         commit('SET_PUBLISHED', false);
+        return Promise.reject('영상 공유를 실패했어요.');
       });
   },
   async CAMERA_ON({ state, rootState, commit }) {
@@ -124,9 +129,7 @@ const actions = {
       // unpublish는 카메라 자원 해제까지 해주는 메서드 존재
       await state.session.unpublish(state.publisher);
       const index = state.subscribers.indexOf(state.publisher, 0);
-      console.log('%copenvidu.js line:126 index', 'color: #007acc;', index);
       if (index >= 0) commit('REMOVE_SUBSCRIBER', index);
-      console.log('%copenvidu.js line:128 state.subscribers', 'color: #007acc;', state.subscribers);
     } else {
       // 세션을 통해 unpublish하지 않은 경우 카메라를 OFF만 하면,
       // 카메라 자원이 여전히 실행 중이게 되므로 카메라 자원을 해제하는 작업을 해주어야 함
@@ -135,13 +138,13 @@ const actions = {
     commit('SET_PUBLISHED', false);
     commit('SET_PUBLISHER', undefined);
   },
-  LEAVE_SESSION({ state, commit, dispatch }) {
+  async LEAVE_SESSION({ state, commit, dispatch }) {
     if (state.session) state.session.disconnect();
-    dispatch('CAMERA_OFF');
+    await dispatch('CAMERA_OFF');
     commit('CLEAR_SESSION');
   },
   async CHANGE_CAMERA({ dispatch }) {
-    dispatch('CAMERA_OFF');
+    await dispatch('CAMERA_OFF');
     await dispatch('CAMERA_ON');
   },
 };

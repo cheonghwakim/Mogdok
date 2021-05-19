@@ -6,6 +6,7 @@ import { getProfileByUserName } from '../../api/user';
 const ROOM_MESSAGE_SEAT_ALLOCATED = 'SEAT_ALLOCATED';
 const ROOM_MESSAGE_SEAT_ALLOCATE_FAIL = 'SEAT_ALLOCATE_FAIL';
 const ROOM_MESSAGE_SEAT_STATUS = 'SEAT_STATUS';
+const ROOM_MESSAGE_SEAT_ENTER = 'ENTER';
 const ROOM_MESSAGE_SEAT_END = 'END';
 const ROOM_MESSAGE_SEAT_QUIT = 'QUIT';
 const ROOM_STUDY_TYPE_START = 'START';
@@ -78,7 +79,7 @@ const state = () => ({
   socket: undefined,
   stomp: undefined,
   roomList: undefined,
-  seatList: undefined,
+  seatList: [],
   timeList: undefined,
   selectedSeatInfo: undefined,
   userRoomState: ROOM_STUDY_TYPE_NO_ACTION,
@@ -89,13 +90,14 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-  GET_ALL_ROOMS({ commit }) {
-    getAllRooms(
+  async GET_ALL_ROOMS({ commit }) {
+    await getAllRooms(
       (res) => {
         commit('SET_ALL_ROOMS', res.data);
+        return Promise.resolve();
       },
       (error) => {
-        console.log('%croom.js line:19 error', 'color: #007acc;', error);
+        return Promise.reject(error);
       }
     );
   },
@@ -148,12 +150,14 @@ const actions = {
         let res = JSON.parse(message.body);
         console.log('%croom.js line:80 res', 'color: #007acc;', res);
         // TODO: 각 사용자의 변경된 상태를 적용해야함
-        if (res.type === ROOM_MESSAGE_SEAT_ALLOCATED) {
+        if (res.type === ROOM_MESSAGE_SEAT_ENTER) {
+          if (res.sender === rootState.user.userInfo.userName) {
+            commit('SET_USER_ROOM_STATE', ROOM_STUDY_TYPE_NO_ACTION);
+          }
+        } else if (res.type === ROOM_MESSAGE_SEAT_ALLOCATED) {
           // 자리앉기
           res = initSeatInfo(res);
           const index = res.seatInfo.seatNo - 1;
-          console.log('%croom.js line:150 res', 'color: #007acc;', res);
-          console.log('%croom.js line:151 index', 'color: #007acc;', index);
           commit('ADD_SEAT_INFO', { index, seatInfo: res });
           commit('ADD_TIMER_BY_INDEX', { index });
           commit('UPDATE_ROOM_USER_COUNT', res.userCount);
@@ -219,6 +223,8 @@ const actions = {
       }
       commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, undefined });
     }
+    // 화면 갱신
+    commit('REFRESH_SEAT_LIST');
   },
   async SEND_SEAT_ALLOCATED({ state, rootState, dispatch }, { seatNo }) {
     const hasAlreadySeat = await dispatch('HAS_ALREADY_SEAT');
@@ -260,21 +266,6 @@ const actions = {
       return Promise.reject(error);
     }
   },
-  ADD_SUBSCRIBER_INTO_SEAT_LIST({ state, commit }, subscriber) {
-    console.log(
-      '%croom.js line:119 subscriber.stream.connection.data',
-      'color: #007acc;',
-      subscriber
-    );
-
-    for (let i = 0; i < state.seatList.length; i++) {
-      if (state.seatList[i] && state.seatList[i].userName === subscriber.stream.connection.data) {
-        console.log('%croom.js line:121 매칭!!', 'color: #007acc;');
-        commit('ADD_SUBSCRIBER_INTO_SEAT', { index: i, subscriber });
-        break;
-      }
-    }
-  },
   HAS_ALREADY_SEAT({ state, rootState }) {
     for (let i = 0; i < state.seatList.length; i++) {
       if (state.seatList[i] && state.seatList[i].userName === rootState.user.userInfo.userName) {
@@ -301,7 +292,6 @@ const actions = {
   INIT_SEAT_INFO_BY_STATUS({ commit, dispatch }, seat) {
     const index = seat.seatNo - 1;
     const value = seat.studyType;
-    console.log('%croom.js line:293 index,value', 'color: #007acc;', index, value);
     commit('UPDATE_SEAT_INFO', {
       index,
       key: 'studyType',
@@ -314,7 +304,6 @@ const actions = {
     }
   },
   UPDATE_SEAT_INFO_BY_STATUS({ commit, dispatch }, seat) {
-    console.log('%croom.js line:280 seat', 'color: #007acc;', seat);
     const index = seat.seatInfo.seatNo - 1;
     const value = seat.seatInfo.studyType;
     commit('UPDATE_SEAT_INFO', {
@@ -323,10 +312,8 @@ const actions = {
       value,
     });
     if (value === ROOM_STUDY_TYPE_START) {
-      console.log('%croom.js line:290 START!!', 'color: #007acc;');
       dispatch('START_TIMER_BY_INDEX', index);
     } else if (value === ROOM_STUDY_TYPE_PAUSE) {
-      console.log('%croom.js line:293 PAUSE!!', 'color: #007acc;');
       dispatch('PAUSE_TIMER_BY_INDEX', index);
     }
   },
@@ -368,7 +355,6 @@ const actions = {
         const hour = timeElapsed.getUTCHours();
         const min = timeElapsed.getUTCMinutes();
         const sec = timeElapsed.getUTCSeconds();
-        // console.log('%croom.js line:373 timer동작중!', 'color: #007acc;', hour, min, sec);
         commit('RUN_SEAT_INFO_TIMER', {
           index,
           time: zeroPrefix(hour, 2) + ':' + zeroPrefix(min, 2) + ':' + zeroPrefix(sec, 2),
@@ -384,7 +370,6 @@ const actions = {
       key: 'isRunning',
       value: false,
     });
-
     const currentTime = new Date();
     const currentUTCTime = new Date(
       currentTime.getTime() + currentTime.getTimezoneOffset() * 60 * 1000
@@ -394,7 +379,7 @@ const actions = {
       key: 'timeStopped',
       value: currentUTCTime,
     });
-    if (state.seatList[index].timer != null) {
+    if (state.seatList[index] && state.seatList[index].timer != null) {
       clearInterval(state.seatList[index].timer);
       commit('STOP_SEAT_INFO_TIMER', { index });
     }
@@ -452,7 +437,6 @@ const mutations = {
     state.stomp = Stomp.over(state.socket);
   },
   CLEAR_CONNECT(state) {
-    // TODO : 백엔드와 연동 필요
     for (let i = 0; i < state.seatList.length; i++) {
       if (state.seatList[i]) {
         clearInterval(state.seatList[i].timer);
@@ -464,12 +448,6 @@ const mutations = {
     state.stomp = undefined;
     state.socket = undefined;
   },
-  // SET_ROOM_INFO(state, payload) {
-  //   state.user.roomInfo = payload;
-  //   state.seatList = new Array(payload.limitUserCount);
-  //   state.timeList = Array.from({ length: payload.limitUserCount }, () => '');
-  //   state.roomUserCount = payload.userCount;
-  // },
   UPDATE_ROOM_USER_COUNT(state, payload) {
     state.roomUserCount = payload;
   },
@@ -479,8 +457,10 @@ const mutations = {
     state.seatList = tmp;
   },
   ADD_SUBSCRIBER_INTO_SEAT(state, { index, subscriber }) {
+    state.seatList[index].subscriber = subscriber;
+  },
+  REFRESH_SEAT_LIST(state) {
     const tmp = [...state.seatList];
-    tmp[index].subscriber = subscriber;
     state.seatList = tmp;
   },
   SET_SELECTED_SEAT_INFO(state, payload) {
@@ -495,7 +475,7 @@ const mutations = {
     state.seatList = tmp;
   },
   UPDATE_SEAT_INFO(state, { index, key, value }) {
-    state.seatList[index][key] = value;
+    if (state.seatList[index]) state.seatList[index][key] = value;
   },
   SET_SEAT_INFO_TIMER(state, { index, timer }) {
     // 객체변경말고 배열자체 변경되면 반영되는지 한번 확인해보자
@@ -512,7 +492,7 @@ const mutations = {
   },
   CLEAR_ALL_TIMER(state) {
     state.seatList.forEach((e) => {
-      e.timer = undefined;
+      if (e) e.timer = undefined;
     });
   },
   ADD_TIMER_BY_INDEX(state, { index }) {

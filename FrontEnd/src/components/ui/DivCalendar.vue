@@ -51,37 +51,17 @@
       <div v-if="isOpenDetail" class="detail-wrapper">
         <p class="title">DAY STUDY TIME</p>
         <table class="running-table">
-          <tr class="day">
-            <td class="head"><img src="@/assets/img/emoji/day.png" alt="" /></td>
-            <td
-              class="time"
-              v-for="time in dayRunningTable"
-              :key="'day-' + time"
-              :class="{ 'study-hour': selectedDayDetail[time] }"
-            >
-              {{ time }}
+          <tr class="day" v-for="(items, indexs) in dayDetail" :key="'dayLine' + indexs">
+            <td class="head">
+              <img :src="require(`@/assets/img/emoji/${emoji[indexs]}.png`)" alt="" />
             </td>
-          </tr>
-          <tr class="noon">
-            <td class="head"><img src="@/assets/img/emoji/noon.png" alt="" /></td>
             <td
               class="time"
-              v-for="time in noonRunningTable"
-              :key="'noon-' + time"
-              :class="{ 'study-hour': selectedDayDetail[time] }"
+              v-for="(item, index) in items"
+              :key="'day-' + indexs + '-' + index"
+              :class="{ 'study-hour': item }"
             >
-              {{ time }}
-            </td>
-          </tr>
-          <tr class="night">
-            <td class="head"><img src="@/assets/img/emoji/night.png" alt="" /></td>
-            <td
-              class="time"
-              v-for="time in nightRunningTable"
-              :key="'night-' + time"
-              :class="{ 'study-hour': selectedDayDetail[time] }"
-            >
-              {{ time }}
+              {{ getDayDisplay(8 * indexs + index + 1) }}
             </td>
           </tr>
         </table>
@@ -105,6 +85,7 @@ export default {
     return {
       days: ['일', '월', '화', '수', '목', '금', '토'],
       dates: [],
+      emoji: ['night', 'day', 'noon', 'fire'],
 
       // 달력 제어용
       currentYear: 0, // 실제 현재 연도
@@ -150,6 +131,26 @@ export default {
       studyCalendarDay: (state) => state.calendar.studyCalendarDay, //  책상의 메모들
       runningTimeCalendar: (state) => state.calendar.runningTimeCalendar, //  책상의 디데이들
     }),
+    dayDetail() {
+      const dDetail = this.selectedDayDetail;
+      const tmps = [];
+      let tmp = [];
+      for (let i = 1; i <= 24; i++) {
+        tmp.push(dDetail[i - 1]);
+        if (i % 8 === 0) {
+          tmps.push(tmp);
+          tmp = [];
+        }
+      }
+      // 24시간이 넘을 경우
+      if (dDetail.length > 24) {
+        for (let i = 25; i <= 32; i++) {
+          tmp.push(dDetail[i - 1] ? dDetail[i - 1] : false);
+        }
+        tmps.push(tmp);
+      }
+      return tmps;
+    },
   },
   watch: {
     month: {
@@ -353,6 +354,11 @@ export default {
       var hours = parseInt((ms / (1000 * 60 * 60)) % 24);
 
       return `${hours}시간 ${min}분`;
+    },
+
+    getDayDisplay(day) {
+      if (day < 32) return day;
+      else return '⋯';
     },
   },
 };
