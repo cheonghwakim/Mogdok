@@ -83,6 +83,14 @@ export default {
    text-align: center;
 }
 
+/* .btnCmdDiv .disabled-tape {
+   position: absolute;
+   top: -10px;
+   left: -15px;
+   width: 130%;
+   z-index: 15;
+} */
+
 .btnCmdDiv #btnCmd-mid {
    fill: white;
 }

@@ -10,10 +10,14 @@
             :startable="isCamChecker"
          ></div-cam-checker>
       </transition>
-      <div class="postit-wrapper">
+      <div v-show="userRoomState !== 'NO_ACTION'" class="postit-wrapper">
          <div-timer-paper :type="studyType" :timer="studyTimer"></div-timer-paper>
       </div>
       <div class="content">
+         <div v-show="userRoomState === 'NO_ACTION'" class="closed-box">
+            앉을 책상을 클릭해서,<br />
+            자리에 앉아주세요 🪑
+         </div>
          <btn-my-desk class="btnMyDesk-wrapper" @click="goToMyDesk"></btn-my-desk>
          <btn-command class="btnCommand-wrapper" :label="btnLabel" @click="btnClickEvent"></btn-command>
          <btn-leave-desk class="btnLeaveDesk-wrapper" @click="leaveSeat"></btn-leave-desk>
@@ -29,6 +33,7 @@ import BtnCommand from '@/components/ui/BtnCommand';
 import BtnMyDesk from '@/components/ui/BtnMyDesk';
 import BtnLeaveDesk from '@/components/ui/BtnLeaveDesk';
 import DivCamChecker from '@/components/ui/DivCamChecker';
+
 import { mapState } from 'vuex';
 import { ROOM_STUDY_TYPE_NO_ACTION, ROOM_STUDY_TYPE_PAUSE, ROOM_STUDY_TYPE_START } from '../../store/modules/room';
 // import from 'vue-editor-bridge';
@@ -189,7 +194,7 @@ export default {
 @import 'src/assets/css/common';
 
 * {
-   border: 1px dashed red;
+   /* border: 1px dashed red; */
 }
 
 .footer {
@@ -217,10 +222,16 @@ export default {
       left: 50%;
 
       transform: translateX(-50%);
+
+      @media (max-width: 600px) {
+         & {
+            top: -15%;
+         }
+      }
    }
 
    .content {
-      background-color: rgba(255, 0, 255, 0.24);
+      /* background-color: rgba(255, 0, 255, 0.24); */
       /* border: 1px solid blue; */
       width: 100%;
       /* height: 100px; */
@@ -230,6 +241,38 @@ export default {
       display: flex;
       align-content: center;
       justify-content: space-around;
+
+      .closed-box {
+         position: absolute;
+         top: -10px;
+         right: 15px;
+         width: 65%;
+         height: 120%;
+         background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQUlEQVQoU2NkIAIUFBTMZCSkDqRowoQJ6QQVwgzCqRBmEl6F6IpAijFMxKYIq0JcnoObiMskFDcSUgS2mhhFIIUA1IId9JIePAcAAAAASUVORK5CYII=)
+            repeat;
+         background-color: rgb(242, 242, 242);
+         border: 2px solid rgb(136, 136, 136);
+         border-radius: 15px;
+         z-index: 10;
+
+         font-size: 10pt;
+         font-weight: 600;
+         letter-spacing: 2px;
+         text-align: center;
+         line-height: 14pt;
+
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+
+         @media (max-width: 500px) {
+            & {
+               top: 0px;
+               font-size: 4pt;
+            }
+         }
+      }
 
       .btnMyDesk-wrapper {
          width: 10vw;
@@ -265,15 +308,6 @@ export default {
       .content {
          /* top: 20%; */
          /* height: 100px; */
-      }
-   }
-}
-@media (max-width: 600px) {
-   .footer {
-      width: 100vw;
-      .content {
-         /* top: 20%; */
-         /* height: 200px; */
       }
    }
 }

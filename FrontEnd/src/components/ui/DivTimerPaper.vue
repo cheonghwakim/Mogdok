@@ -52,7 +52,7 @@ export default {
 <style scoped>
 .postit {
    width: 15vw;
-   min-width: 100px;
+   min-width: 140px;
    max-width: 160px;
 }
 
