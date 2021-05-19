@@ -27,7 +27,7 @@ public class SeatRepository {
     // Redis
     private static final String SEAT_INFO = "SEAT_INFO"; // 열람실의 좌석정보 저장
     private static final String SEAT_NO_INFO = "SEAT_NO_INFO"; // 열람실의 좌석번호 저장
-    private static final String SEAT_COUNT = "SEAT_COUNT"; // 열람실에 착석한 유저 수 저장
+    //private static final String SEAT_COUNT = "SEAT_COUNT"; // 열람실에 착석한 유저 수 저장
     private static final String DELIMITER= "_"; // 구분자
 
     @Resource(name = "redisTemplate")
@@ -124,16 +124,16 @@ public class SeatRepository {
 
     // 열람실 착석한 유저수 조회
     public long getSeatCount(String roomId) {
-        return Long.valueOf(Optional.ofNullable(valueOps.get(SEAT_COUNT + "_" + roomId)).orElse("0"));
+        return hashOpsSeatInfo.size(SEAT_NO_INFO+DELIMITER+roomId);
     }
 
-    // 열람실 착석한 유저수 +1
-    public long plusSeatCount(String roomId) {
-        return Optional.ofNullable(valueOps.increment(SEAT_COUNT + "_" + roomId)).orElse(0L);
-    }
-
-    // 열람실 착석한 유저수 -1
-    public long minusSeatCount(String roomId) {
-        return Optional.ofNullable(valueOps.decrement(SEAT_COUNT + "_" + roomId)).filter(count -> count > 0).orElse(0L);
-    }
+//    // 열람실 착석한 유저수 +1
+//    public long plusSeatCount(String roomId) {
+//        return Optional.ofNullable(valueOps.increment(SEAT_COUNT + "_" + roomId)).orElse(0L);
+//    }
+//
+//    // 열람실 착석한 유저수 -1
+//    public long minusSeatCount(String roomId) {
+//        return Optional.ofNullable(valueOps.decrement(SEAT_COUNT + "_" + roomId)).filter(count -> count > 0).orElse(0L);
+//    }
 }
