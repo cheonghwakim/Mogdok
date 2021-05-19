@@ -1,3 +1,5 @@
+<img src="./docs/0_images/몽실이_투명.png" alt="몽실이" style="zoom:15%;" />
+
 # 몽실이네 독서실(MongDok)
 
 몽실이네 독서실에서 함께 공부해보세요(Study with MongDok)😊 👉[몽실이네 독서실](https://www.mongdok.com)👈
