@@ -44,5 +44,16 @@ export default {
       background-color: transparent;
       border-radius: 20px;
    }
+
+   .typicalWrapper::after {
+      content: '|';
+      animation: blink 1s infinite step-start;
+   }
+
+   @keyframes blink {
+      50% {
+         opacity: 0;
+      }
+   }
 }
 </style>

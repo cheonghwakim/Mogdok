@@ -1,7 +1,7 @@
 <template lang="">
    <div class="camChecker">
       <!-- 최상단 닫기 버튼 -->
-      <btn-close class="btnClose" @onClick="closeCam"></btn-close>
+      <btn-close v-wave class="btnClose" @onClick="closeCam"></btn-close>
 
       <!-- 내용들이 들어가는 내부 공간 -->
       <div class="content">
@@ -81,8 +81,13 @@ export default {
       top: 20px;
       right: 25px;
 
-      width: 20px;
-      height: auto;
+      width: 40px;
+      height: 40px;
+
+      background-color: white;
+      border: 2px solid black;
+      padding: 8px;
+      border-radius: 50%;
    }
 
    .content {
