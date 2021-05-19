@@ -34,7 +34,7 @@ export default {
 
    // 스크롤바 스타일링
    ::-webkit-scrollbar {
-      width: 6px;
+      width: 8px;
    }
    ::-webkit-scrollbar-thumb {
       background-color: rgb(203, 203, 203);

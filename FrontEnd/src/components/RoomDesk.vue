@@ -82,7 +82,7 @@ export default {
          background-image: url('../assets/img/Spin-loading.gif');
          background-repeat: no-repeat;
          background-position: center;
-         background-size: 120px 120px;
+         background-size: 60px 60px;
          /* background-color: rgba(150, 150, 150, 0.516); */
          /* border: 1px solid black; */
       }
