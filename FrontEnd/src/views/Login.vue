@@ -2,7 +2,7 @@
    <div class="login">
       <div class="lg-container">
          <div class="content">
-            <p class="sub">세상에서 가장 귀여운 온라인 독서실</p>
+            <p class="sub">당신의 꿈과 함께하는 공간</p>
             <p class="main kyoboHand">몽실이네 독서실</p>
             <v-lottie-player name="scooterAnim" :width="'250px'" :height="'250px'" loop path="https://assets7.lottiefiles.com/private_files/lf30_z8mfdyic.json" />
             <login-kakao-button></login-kakao-button>
