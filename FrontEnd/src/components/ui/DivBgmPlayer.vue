@@ -117,16 +117,23 @@ export default {
 <style scoped lang="scss">
 .div-bgm-player {
    position: fixed;
-   bottom: 20vh;
-   right: 10px;
+   top: 70px;
+   left: 30px;
    z-index: 20;
+
+   /* 반응형 크기 */
+   @media all and (max-width: 321px) {
+      & {
+         left: 10px;
+      }
+   }
 }
 
 .btn-player-wrapper {
    cursor: pointer;
 
-   width: 55px;
-   height: 55px;
+   width: 45px;
+   height: 45px;
    border-radius: 50%;
    background-color: rgb(255, 255, 255);
    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
@@ -141,27 +148,34 @@ export default {
    }
 
    .btnClose {
-      width: 18px;
+      width: 13px;
    }
 }
 
 /* 음악 재생 컨트롤러 */
 .controller-wrapper {
-   width: 240px;
-   height: 55px;
+   width: 300px;
+   height: 45px;
    border-radius: 40px;
    background-color: rgb(255, 255, 255);
    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
 
    position: absolute;
    top: 0px;
-   right: 60px;
+   left: 55px;
 
    padding: 0px 20px;
 
    display: flex;
    align-items: center;
    justify-content: space-between;
+
+   /* 반응형 크기 */
+   @media all and (max-width: 400px) {
+      & {
+         width: 240px;
+      }
+   }
 
    /* 재생, 일시정지 버튼 */
    .btn-wrapper {
@@ -173,7 +187,7 @@ export default {
 
    /* 가운데 : BGM 테마 */
    .select-wrapper {
-      width: 80%;
+      width: 70%;
       height: 100%;
 
       display: flex;
@@ -181,8 +195,8 @@ export default {
       justify-content: center;
 
       .bgm-select {
-         width: 22px;
-         margin-right: 10px;
+         width: 20px;
+         margin-right: 12px;
          cursor: pointer;
 
          img {
@@ -211,7 +225,8 @@ export default {
 
    /* 마지막 : 볼륨 조절 */
    .volumn-wrapper {
-      width: 80px;
+      min-width: 80px;
+      width: 40%;
       height: 100%;
 
       display: flex;
@@ -262,13 +277,14 @@ export default {
 }
 .player-open-enter,
 .player-open-leave-to {
-   transform: translateX(50px);
+   transform: translateX(-50px);
    opacity: 0;
 }
 
 .jello-vertical {
-   -webkit-animation: jello-vertical 2s infinite both;
-   animation: jello-vertical 2s infinite both;
+   -webkit-animation: jello-vertical 2s both;
+   animation: jello-vertical 2s both;
+   animation-iteration-count: 2;
 }
 
 @-webkit-keyframes jello-vertical {

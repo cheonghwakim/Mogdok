@@ -8,6 +8,7 @@
                   <enterance-door :room="room" @click="enterRoom(room)"></enterance-door>
                </div>
             </div>
+            <div class="bottom-shader"></div>
             <p class="btnFAQ" @click="toggleModalFAQ"><i class="fas fa-question-circle"></i> 몽실이네 독서실이 궁금하세요?</p>
             <modal-faq :isOpenFAQ="isOpenFAQ" @onClick="toggleModalFAQ"></modal-faq>
          </div>
@@ -65,6 +66,8 @@ export default {
    align-items: center;
    justify-content: center;
 
+   /* border: 1px solid red; */
+
    .container {
       display: inherit;
       flex-direction: column;
@@ -73,9 +76,12 @@ export default {
       width: 70vw;
       height: 90vh;
 
+      /* border: 1px solid rgb(34, 0, 255); */
+
       .content {
-         margin-top: 5vh;
+         /* margin-top: 5vh; */
          width: inherit;
+         position: relative;
          display: inherit;
          flex-direction: column;
          align-items: center;
@@ -83,12 +89,13 @@ export default {
 
          .character {
             max-width: 200px;
-            width: 70%;
+            width: 60%;
          }
 
          // roomList가 모여있는 공간
          .roomList {
             margin-top: 20px;
+            position: relative;
 
             /* border: 1px solid blue; */
 
@@ -109,7 +116,23 @@ export default {
             }
          }
 
+         .bottom-shader {
+            /* border: 1px solid blue; */
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+            height: 60px;
+
+            z-index: 50;
+
+            background-image: linear-gradient(0deg, rgb(255, 255, 255), rgba(255, 255, 255) 40%, rgba(255, 255, 255, 0));
+         }
+
          .btnFAQ {
+            position: absolute;
+            bottom: -10px;
+            z-index: 51;
+
             cursor: pointer;
             font-size: 10pt;
             font-weight: 600;

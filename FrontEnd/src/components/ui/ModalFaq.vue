@@ -100,7 +100,7 @@ export default {
    max-height: 900px;
 
    position: fixed;
-   z-index: 10;
+   z-index: 100;
    top: 50%;
    left: 50%;
    transform: translate(-50%, -50%);
@@ -133,6 +133,16 @@ export default {
             padding-left: 20px;
             cursor: pointer;
             z-index: 20;
+
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            @media all and (max-width: 500px) {
+               & {
+                  font-size: 80%;
+               }
+            }
          }
 
          .ac-content {
@@ -155,7 +165,7 @@ export default {
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 20;
+      z-index: 101;
 
       &:hover {
          transform: translateX(-50%) translateY(-7px);

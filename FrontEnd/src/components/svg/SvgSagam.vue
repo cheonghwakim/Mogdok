@@ -158,10 +158,10 @@ export default {
    },
    //lifecycle area
    mounted() {
-      // window.addEventListener('mousemove', this.following);
+      window.addEventListener('mousemove', this.following);
    },
    beforeDestroy() {
-      // window.removeEventListener('mousemove', this.following);
+      window.removeEventListener('mousemove', this.following);
    },
    methods: {
       following: function(event) {
@@ -181,29 +181,29 @@ export default {
          resX = midX - x;
          resY = y - midY;
 
-         // console.log(resX, resY);
+         console.log(resX, resY);
 
-         // if (x < midX && y < midY) {
-         //    // 1사분면
-         //    console.log('1사분면');
+         if (x < midX && y < midY) {
+            // 1사분면
+            console.log('1사분면');
 
-         //    resX = midX - x;
-         //    resY = -y;
-         // } else if (x > midX && y < midY) {
-         //    // 2사분면
-         //    console.log('2사분면');
-         //    resX = Math.abs(midX - x);
-         //    resY = Math.abs(y);
-         // } else if (x < midX && y > midY) {
-         //    //3사분면
-         //    console.log('3사분면');
-         //    // resX = -Math.abs(resX);
-         //    // resY = -Math.abs(resY);
-         // } else if (x > midX && y > midY) {
-         //    // 4사분면
-         //    console.log('4사분면');
-         //    // resY = Math.abs(resY);
-         // }
+            resX = midX - x;
+            resY = -y;
+         } else if (x > midX && y < midY) {
+            // 2사분면
+            console.log('2사분면');
+            resX = Math.abs(midX - x);
+            resY = Math.abs(y);
+         } else if (x < midX && y > midY) {
+            //3사분면
+            console.log('3사분면');
+            // resX = -Math.abs(resX);
+            // resY = -Math.abs(resY);
+         } else if (x > midX && y > midY) {
+            // 4사분면
+            console.log('4사분면');
+            // resY = Math.abs(resY);
+         }
 
          const value = `rotate3d(${resX}, ${resY}, 0, 1rad)`;
          face.style.transform = value;

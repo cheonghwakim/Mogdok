@@ -30,7 +30,7 @@ h1 {
 
 h2 {
    font-family: 'Noto Sans KR', sans-serif;
-   font-size: 2vmin;
+   font-size: 12pt;
    font-weight: 700;
 }
 
@@ -81,7 +81,7 @@ h3 {
 
 .fade-enter-active,
 .fade-leave-active {
-   transition: all 1s ease;
+   transition: all 0.5s ease;
 }
 .fade-enter,
 .fade-leave-to {
