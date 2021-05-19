@@ -142,6 +142,7 @@ const actions = {
       // 세션에 들어가있고 "publish 중인 상태"에서는 unpublish 해야 함
       // unpublish는 카메라 자원 해제까지 해주는 메서드 존재
       await state.session.unpublish(state.publisher);
+      if (!state.subscribers) return;
       const index = state.subscribers.indexOf(state.publisher, 0);
       if (index >= 0) commit('REMOVE_SUBSCRIBER', index);
     } else {
@@ -174,7 +175,7 @@ const mutations = {
     state.publisher = payload;
   },
   ADD_SUBSCRIBER(state, payload) {
-    state.subscribers.push(payload);
+    if (state.subscribers) state.subscribers.push(payload);
   },
   //   SET_SUBSCRIBERS(state, payload) {
   //     state.subscribers = [];

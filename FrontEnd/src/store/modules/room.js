@@ -482,6 +482,7 @@ const mutations = {
     state.timeList = tmp;
   },
   STOP_SEAT_INFO_TIMER(state, { index }) {
+    if (!state.seatList[index]) return;
     clearInterval(state.seatList[index].timer);
     state.seatList[index].timer = undefined;
   },
