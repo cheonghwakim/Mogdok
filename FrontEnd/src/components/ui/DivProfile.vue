@@ -9,7 +9,7 @@
                <ov-video class="cam" :key="seat.userName" :stream-manager="streamManager"></ov-video>
             </div>
             <div v-else>
-               쉬는 중이어서 캠을 볼 수 없음을 알리는 UI
+               <svg-sleeping class="character"></svg-sleeping>
             </div>
 
             <!-- 사람 이름 -->
@@ -23,7 +23,6 @@
          <!-- 책상 구경 버튼 -->
          <div class="btn-wrapper">
             <btn-command :label="'책상 구경하기'" class="btnCommand" @click="openDesk"></btn-command>
-            <btn-close class="btnClose" @onClick="closeProfile"></btn-close>
          </div>
       </div>
 
@@ -92,23 +91,20 @@
    </div>
 </template>
 <script>
-import BtnClose from './BtnClose';
 import BtnCommand from '@/components/ui/BtnCommand';
 import OvVideo from '@/components/common/OvVideo';
+import SvgSleeping from '@/components/svg/SvgSleeping.vue';
 
 export default {
    props: {
       seat: Object,
       streamManager: Object,
    },
-   components: { BtnClose, BtnCommand, OvVideo },
+   components: { BtnCommand, OvVideo, SvgSleeping },
    methods: {
-      closeProfile() {
+      openDesk() {
          this.$store.commit('TOGGLE_PROFILE');
          this.$store.commit('CLEAR_DESK');
-      },
-      openDesk() {
-         this.closeProfile();
          this.$router.replace({ path: `/desk/${this.seat.userName}` });
       },
    },
@@ -154,6 +150,13 @@ export default {
             background-size: 60px 60px;
          }
 
+         .character {
+            display: flex;
+            justify-content: center;
+            margin-left: 20px;
+            width: 80%;
+         }
+
          .info-wrapper {
             margin-top: 5%;
             display: flex;
@@ -162,14 +165,20 @@ export default {
 
             width: 100%;
 
+            h1 {
+               font-size: 18pt;
+            }
+
             h2 {
                margin-top: 10px;
                color: rgb(63, 63, 63);
-               font-size: 1em;
+               font-size: 14pt;
             }
 
             p {
                margin-top: 10%;
+               font-weight: 600;
+               color: rgb(89, 89, 89);
                width: 100%;
                text-align: center;
             }
