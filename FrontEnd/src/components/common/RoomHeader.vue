@@ -36,7 +36,7 @@ export default {
   //lifecycle area
   methods: {
     exitRoom: async function() {
-      let isExit = confirm(`방을 나가시겠습니까?`);
+      let isExit = confirm(`🚪 방을 나갈까요?`);
 
       if (isExit) {
         // TODO : 로딩중필요

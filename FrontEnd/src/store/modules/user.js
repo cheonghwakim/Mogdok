@@ -53,6 +53,11 @@ const actions = {
       }
     );
   },
+  LOGOUT({ commit }) {
+    commit('SET_AUTH_TOKEN', undefined);
+    commit('SET_USER_INFO', undefined);
+    localStorage.removeItem('authToken');
+  },
 };
 
 const mutations = {

@@ -52,12 +52,21 @@ import Join from '@/views/Join.vue';
 // 여러개 태울 때, routes 변수 생성
 const routes = [
   {
+    path: '*',
+    redirect: '/404',
+  },
+  {
     path: '/',
     name: 'Enterance',
     beforeEnter: requireAuth(),
     components: {
       default: Enterance,
     },
+  },
+  {
+    path: '/404',
+    name: 'NotFound',
+    component: () => import('@/views/Error.vue'),
   },
   {
     path: '/login',

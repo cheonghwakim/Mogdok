@@ -10,10 +10,12 @@
         </div>
         <div class="bottom-shader"></div>
         <p class="btnFAQ" @click="toggleModalFAQ">
-          <i class="fas fa-question-circle"></i> [FAQ] 몽실이네 독서실이 궁금하세요?
+          <i class="fas fa-question-circle"></i> 자주 묻는 질문
         </p>
         <modal-faq :isOpenFAQ="isOpenFAQ" @onClick="toggleModalFAQ"></modal-faq>
       </div>
+      <div class="grey-btn" @click="getAllRooms">새로고침</div>
+      <div class="grey-btn" @click="logout">로그아웃</div>
       <logo></logo>
     </div>
   </div>
@@ -45,13 +47,16 @@ export default {
   watch: {},
   //lifecycle area
   async created() {
-    try {
-      await this.$store.dispatch('GET_ALL_ROOMS');
-    } catch (error) {
-      alert('열람실 목록을 가져오는데 실패했어요. ' + error);
-    }
+    await this.getAllRooms();
   },
   methods: {
+    async getAllRooms() {
+      try {
+        await this.$store.dispatch('GET_ALL_ROOMS');
+      } catch (error) {
+        alert('열람실 목록을 가져오는데 실패했어요. ' + error);
+      }
+    },
     enterRoom(room) {
       this.$store.dispatch('ENTER_ROOM', room);
       this.$router.replace({ name: 'Room' });
@@ -59,10 +64,47 @@ export default {
     toggleModalFAQ() {
       this.isOpenFAQ = !this.isOpenFAQ;
     },
+    logout() {
+      this.$store.dispatch('LOGOUT');
+      this.$router.replace({ path: '/login' });
+    },
   },
 };
 </script>
 <style scoped lang="scss">
+.grey-btn {
+  font-size: 10pt;
+  font-weight: 600;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: grey;
+  text-decoration: underline;
+  letter-spacing: 2px;
+}
+.grey-btn:hover {
+  font-size: 10pt;
+  font-weight: 600;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: black;
+  background-color: rgb(243, 243, 243);
+  text-decoration: underline;
+  letter-spacing: 2px;
+}
+.grey-btn:active {
+  font-size: 10pt;
+  font-weight: 600;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: black;
+  background-color: rgb(228, 228, 228);
+  text-decoration: underline;
+  letter-spacing: 2px;
+}
+
 .enterance {
   width: 100%;
   height: 100%;
