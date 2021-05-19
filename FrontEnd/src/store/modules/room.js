@@ -114,7 +114,6 @@ const actions = {
           resolve('');
         },
         (error) => {
-          console.log('%croom.js line:35 error', 'color: #007acc;', error);
           reject(error);
         }
       );
@@ -124,7 +123,6 @@ const actions = {
     getSeatList(
       { roomId: rootState.user.roomInfo.roomId },
       (res) => {
-        console.log('%croom.js line:107 res', 'color: #007acc;', res);
         res.data.forEach((seatInfo) => {
           seatInfo.isRunning = false;
           seatInfo.timer = null;
@@ -148,7 +146,6 @@ const actions = {
       `/sub/room/${rootState.user.roomInfo.roomId}`,
       (message) => {
         let res = JSON.parse(message.body);
-        console.log('%croom.js line:80 res', 'color: #007acc;', res);
         // TODO: 각 사용자의 변경된 상태를 적용해야함
         if (res.type === ROOM_MESSAGE_SEAT_ENTER) {
           if (res.sender === rootState.user.userInfo.userName) {
@@ -167,7 +164,6 @@ const actions = {
             commit('SET_USER_SEAT_INDEX', { index });
           }
         } else if (res.type === ROOM_MESSAGE_SEAT_STATUS) {
-          console.log('%croom.js line:153 유저의 상태가 변경됨', 'color: #007acc;');
           res = initSeatInfo(res);
           if (res.sender === rootState.user.userInfo.userName) {
             commit('SET_USER_ROOM_STATE', res.seatInfo.studyType);
@@ -206,7 +202,7 @@ const actions = {
         }
       },
       (error) => {
-        console.log('%croom.js line:41 error', 'color: #007acc;', error);
+        alert('열람실 좌석 정보를 가져오는데 실패했어요. ' + error);
       }
     );
   },
@@ -385,7 +381,6 @@ const actions = {
     }
   },
   async SEND_STUDY_START({ state, rootState }) {
-    console.log('%croom.js line:360 send study start', 'color: #007acc;');
     try {
       state.stomp.send(
         `/pub/room/message`,

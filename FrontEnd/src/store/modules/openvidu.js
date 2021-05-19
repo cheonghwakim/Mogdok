@@ -59,11 +59,9 @@ const actions = {
     dispatch('GET_TOKEN', rootState.user.roomInfo.roomId).then((token) => {
       state.session
         .connect(token, `${userId}##${userName}`) // Todo: 현재 로그인 중인 유저이름 (userId##userName)
-        .then(() => {
-          console.log('세션에 참가했습니다');
-        })
+        .then(() => {})
         .catch((error) => {
-          console.log('세션 연결에 실패했습니다.', error.code, error.message);
+          alert('세션 연결에 실패했습니다.' + error.code + ':' + error.message);
         });
     });
   },
@@ -178,10 +176,9 @@ const mutations = {
   ADD_SUBSCRIBER(state, payload) {
     state.subscribers.push(payload);
   },
-  SET_SUBSCRIBERS(state, payload) {
-    console.log('%copenvidu.js line:163 payload', 'color: #007acc;', payload);
-    state.subscribers = [];
-  },
+  //   SET_SUBSCRIBERS(state, payload) {
+  //     state.subscribers = [];
+  //   },
   REMOVE_SUBSCRIBER(state, payload) {
     state.subscribers.splice(payload, 1);
   },

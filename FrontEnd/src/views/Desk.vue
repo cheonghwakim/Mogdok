@@ -39,7 +39,6 @@
           :key="'memo' + index + memoId"
           class="moveable-container"
           v-bind="moveable"
-          @click.native="clickMemo(index)"
           :style="{ zIndex, transform }"
         >
           <svg-memo :text="content" :color="color"></svg-memo>
@@ -185,9 +184,6 @@ export default {
 
     exitDesk: function() {
       this.$router.replace('/room');
-    },
-    clickMemo: function(index) {
-      console.log(index + '번째 메모 클릭');
     },
     // 최초 데스크 셋팅(서버 내 메모 셋팅 등)
     // initDesk: async function() {

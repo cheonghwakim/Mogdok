@@ -46,7 +46,6 @@ const actions = {
     const rawData = state.studyCalendarMonth;
 
     if (typeof rawData === 'string') {
-      console.log(rawData);
       return; // 비어있음 끝내기
     }
 
