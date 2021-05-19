@@ -17,8 +17,6 @@ const actions = {
     // 기존 메모리스트 초기화
     commit('SET_MEMO_LIST', []);
 
-    console.log('---------- GET_DESK_INFO ----------');
-
     await getDeskInfo(
       { nickname },
       (res) => {
@@ -47,8 +45,6 @@ const actions = {
   GET_DESK_ALL_MEMO_4_EDIT({ commit }, { nickname, objectState }) {
     // 기존 메모리스트 초기화
     commit('SET_MEMO_LIST', []);
-
-    console.log('---------- GET_DESK_ALL_MEMO_4_EDIT ----------');
 
     getDeskInfo(
       // { nickname },

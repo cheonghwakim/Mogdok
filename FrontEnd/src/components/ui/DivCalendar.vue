@@ -156,7 +156,7 @@ export default {
     month: {
       // immediate: true,
       handler(value) {
-        console.log('📅 watch');
+        // console.log('📅 watch');
 
         const param = {
           userName: this.userName,
@@ -178,7 +178,7 @@ export default {
   methods: {
     // 달력 초기 셋팅
     initCal: function() {
-      console.log('📅 initCal');
+      // console.log('📅 initCal');
       const date = new Date();
 
       this.currentYear = date.getFullYear();

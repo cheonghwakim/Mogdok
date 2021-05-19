@@ -211,10 +211,6 @@ export default {
         transform: event.target.style.transform,
       });
     },
-
-    exitDesk() {
-      console.log('exitDesk?');
-    },
   },
 };
 </script>
