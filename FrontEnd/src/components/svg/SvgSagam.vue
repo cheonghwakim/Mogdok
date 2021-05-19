@@ -178,32 +178,32 @@ export default {
 
          var resX, resY;
 
-         resX = midX - x;
-         resY = y - midY;
+      // resX = midX - x;
+      // resY = y - midY;
 
-         //  console.log(x, y);
+      // console.log(resX, resY);
 
-         if (x < midX && y < midY) {
-            // 1사분면
-            console.log('1사분면');
-
-            // resX = midX - x;
-            // resY = -y;
-         } else if (x > midX && y < midY) {
-            // 2사분면
-            console.log('2사분면');
-            // resX = Math.abs(midX - x);
-            // resY = Math.abs(y);
-         } else if (x < midX && y > midY) {
-            //3사분면
-            console.log('3사분면');
-            // resX = -Math.abs(resX);
-            // resY = -Math.abs(resY);
-         } else if (x > midX && y > midY) {
-            // 4사분면
-            console.log('4사분면');
-            // resY = Math.abs(resY);
-         }
+      if (x < midX && y < midY) {
+        // 1사분면
+        resX = x;
+        resY = -y;
+      } else if (x > midX && y < midY) {
+        // 2사분면
+        resX = x;
+        resY = y;
+        // console.log('2사분면 : ', resX, resY);
+      } else if (x < midX && y > midY) {
+        //3사분면
+        console.log('3사분면');
+        // resX = -Math.abs(resX);
+        // resY = -Math.abs(resY);
+      } else if (x > midX && y > midY) {
+        // 4사분면
+        resX = -Math.abs(midX - x);
+        resY = Math.abs(midY - y);
+        // console.log('4사분면 : ', resX, resY);
+        // resY = Math.abs(resY);
+      }
 
          const value = `rotate3d(${resX}, ${resY}, 0, 1rad)`;
          face.style.transform = value;
