@@ -211,7 +211,7 @@ export default {
    }
 
    .black-screen {
-      cursor: pointer;
+      /* cursor: pointer; */
       width: 100vw;
       height: 100vh;
       background-color: rgba(0, 0, 0, 0.45);
