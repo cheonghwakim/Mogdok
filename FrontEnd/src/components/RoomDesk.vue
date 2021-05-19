@@ -19,7 +19,7 @@
       <!-- 푸터 : 하단에 시간이 기록되는 공간 -->
       <div class="footer">
          <!-- <p class="mark">🕳</p> -->
-         <p class="timer" v-if="timer">{{ timer }}</p>
+         <p class="timer" v-if="timer" :class="{ 'rest-time': !seat.isRunning }"><i class="fas fa-stopwatch"></i>{{ timer }}</p>
       </div>
    </div>
 </template>
@@ -142,7 +142,26 @@ export default {
          letter-spacing: 2px;
          opacity: 1;
          color: #cd0b0b;
+
+         &.rest-time {
+            color: #074f10;
+            -webkit-animation-name: blinker;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-duration: 2.5s;
+         }
       }
+   }
+}
+
+@-webkit-keyframes blinker {
+   0% {
+      opacity: 0.2;
+   }
+   50% {
+      opacity: 1;
+   }
+   100% {
+      opacity: 0.2;
    }
 }
 </style>
