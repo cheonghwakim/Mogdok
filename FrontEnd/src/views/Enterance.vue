@@ -10,7 +10,7 @@
         </div>
         <div class="bottom-shader"></div>
         <p class="btnFAQ" @click="toggleModalFAQ">
-          <i class="fas fa-question-circle"></i> 몽실이네 독서실이 궁금하세요?
+          <i class="fas fa-question-circle"></i> [FAQ] 몽실이네 독서실이 궁금하세요?
         </p>
         <modal-faq :isOpenFAQ="isOpenFAQ" @onClick="toggleModalFAQ"></modal-faq>
       </div>

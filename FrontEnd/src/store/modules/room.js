@@ -229,7 +229,7 @@ const actions = {
   async SEND_SEAT_ALLOCATED({ state, rootState, dispatch }, { seatNo }) {
     const hasAlreadySeat = await dispatch('HAS_ALREADY_SEAT');
     if (hasAlreadySeat) {
-      return Promise.reject('이미 앉아있는 좌석이 있습니다. 자리에서 일어나서 시도해주세요.');
+      return Promise.reject('✋ 이미 앉아있는 좌석이 있어요.\n자리에서 일어나서 시도해주세요.');
     } else {
       try {
         state.stomp.send(
