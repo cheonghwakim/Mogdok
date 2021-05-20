@@ -120,11 +120,12 @@ public class KakaoLoginController {
 	    	redisUser.setAuthToken(newJwtToken);
 	    	System.out.println(redisUser);
 	    	redisUtil.setObjectExpire(newJwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
+	    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
 		}	
     		
     	System.out.println("user: " + redisUser);
     			
-    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
+    	return new ResponseEntity<>("null", HttpStatus.OK);
     }
     
     @GetMapping("/auth")

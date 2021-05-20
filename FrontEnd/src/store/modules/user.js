@@ -30,10 +30,9 @@ const actions = {
                   commit('SET_USER_INFO', res.data);
                   localStorage.setItem('authToken', state.userInfo.authToken);
                   resolve('ok');
-               } else if (res.data === '') {
+               } else if (res.data === 'null') {
                   resolve('join');
                } else {
-                  // console.log(res.data);
                   reject('😭 로그인에 실패했어요. 다시 시도해주세요.');
                }
             },
