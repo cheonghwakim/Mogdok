@@ -5,7 +5,7 @@
             <div v-wave class="refresh-btn" @click="getAllRooms"><i class="fas fa-sync-alt"></i></div>
             <svg-sagam class="character"></svg-sagam>
             <div class="roomList">
-               <div v-dragscroll="true" class="roomItem" v-for="(room, idx) in roomList" :key="idx">
+               <div class="roomItem" v-for="(room, idx) in roomList" :key="idx">
                   <enterance-door :room="room" @click="enterRoom(room)"></enterance-door>
                </div>
             </div>
