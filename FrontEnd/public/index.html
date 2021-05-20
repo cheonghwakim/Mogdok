@@ -5,7 +5,7 @@
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width,initial-scale=1.0" />
       <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
-      <title>몽실이네 독서실2 - MONGDOK</title>
+      <title>몽실이네 독서실1 - MONGDOK</title>
 
       <!-- google web fonts -->
       <!-- weight : 300,400,700 -->
@@ -44,30 +44,21 @@
          font-style: normal;
       }
 
-      html {
+      html,
+      body {
          min-width: 320px;
          overflow: hidden;
-         /*  */
-         /* min-height: 100vh; mobile viewport bug fix */
-         /* min-height: -webkit-fill-available; */
 
-         height: 100vh;
-         height: var(--vh, 1vh) * 100;
+         min-height: 100vh; /* mobile viewport bug fix */
+         @supports (-webkit-appearance: none) and (stroke-color: transparent) {
+            min-height: -webkit-fill-available;
+         }
       }
    </style>
    <body>
-      <script>
-         let vh = window.innerHeight * 0.01;
-         document.documentElement.style.setProperty('--vh', `${vh}px`);
-         window.addEventListener('resize', () => {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-         });
-         window.addEventListener('touchend', () => {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-         });
-      </script>
+      <noscript>
+         <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      </noscript>
       <div id="app"></div>
       <!-- built files will be auto injected -->
    </body>

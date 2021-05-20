@@ -25,9 +25,9 @@ export default {
    },
    methods: {
       // resizeBrowser: function() {
-      //    let vh = window.innerHeight * 0.01;
-      //    console.log(vh);
-      //    this.$refs.root.style.setProperty('--vh', `${vh}px`);
+      // let vh = window.innerHeight * 0.01;
+      // console.log(vh);
+      // this.$refs.root.style.setProperty('--vh', `${vh}px`);
       // },
    },
 };
