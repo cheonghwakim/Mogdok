@@ -1,5 +1,5 @@
 <template lang="">
-   <div @mouseenter="showFooter" @mouseleave="hideFooter" class="footer floating" :class="{ borrow: !isShowFooter }">
+   <div @mouseenter="showFooter" @mouseleave="hideFooter" @touchstart="showFooter" class="footer floating" :class="{ borrow: !isShowFooter }">
       <transition name="fade">
          <div-cam-checker
             v-show="isCamChecker"
@@ -263,7 +263,7 @@ export default {
          align-items: center;
          justify-content: center;
 
-         @media (min-width: 37px) and (max-width: 500px) {
+         @media (min-width: 376px) and (max-width: 500px) {
             & {
                top: 0px;
                font-size: 4pt;
