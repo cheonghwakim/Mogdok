@@ -38,8 +38,11 @@ export default {
 @import 'src/assets/css/moveable';
 
 #app {
-   width: 100vw;
-   height: 100vh;
+   width: 100%;
+   height: 100%;
+
+   position: fixed;
+   overflow: hidden;
 
    display: flex;
    flex-direction: column;
