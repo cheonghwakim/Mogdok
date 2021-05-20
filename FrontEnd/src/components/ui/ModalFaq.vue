@@ -174,8 +174,8 @@ export default {
 .about-modal {
    min-width: 300px;
    max-width: 600px;
-   width: 80vw;
-   height: 80vh;
+   width: 80%;
+   height: 80%;
    max-height: 900px;
 
    position: fixed;
