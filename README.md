@@ -193,15 +193,29 @@
 
 > 각 페이지별 소개
 
-🔸 **로그인(Login)**
+🔸 **회원가입(Signup) & 로그인(Login)**
+
+![회원가입](./docs/0_images/회원가입 몽독.gif)
 
 🔸 **열람실 선택 페이지(Select Room)**
 
+![열람실선택](./docs/0_images/열람실선택.gif)
+
 🔸 **열람실(Room)**
+
+![열람실](./docs/0_images/열람실.gif)
 
 🔸 **프로필(Profile)**
 
-🔸 **책상(Desk)**
+![프로필](./docs/0_images/프로필2.gif)
+
+🔸 **책상(Desk) - 메모**
+
+![메모](./docs/0_images/메모.gif)
+
+🔸 **책상(Desk) - 스터디 캘린더**
+
+![스터디 캘린더](./docs/0_images/스터디캘린더.gif)
 
 <br>
 
