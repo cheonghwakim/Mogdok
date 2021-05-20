@@ -159,16 +159,15 @@ const actions = {
       }
     );
   },
-  async HAS_ALREADY_SEAT({ state, rootState }) {
-    state.seatList.forEach((seat) => {
-      if (seat && seat.userName === rootState.user.userInfo.userName) {
-        return Promise.reject(
-          '이미 접속되어있는 계정이에요. 기존 계정의 접속을 종료하고 다시 시도해주세요.'
-        );
+  HAS_ALREADY_SEAT({ state, rootState }) {
+    for (let i = 0; i < state.seatList.length; i++) {
+      if (state.seatList[i] && state.seatList[i].userName === rootState.user.userInfo.userName) {
+        return true;
       }
-    });
-    return Promise.resolve();
+    }
+    return false;
   },
+
   SUBSCRIBE_ROOM_SERVER({ state, rootState, commit, dispatch }) {
     state.stomp.subscribe(
       `/sub/room/${rootState.user.roomInfo.roomId}`,
