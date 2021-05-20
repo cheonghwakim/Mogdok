@@ -150,7 +150,7 @@ export default {
             },
             {
                title: '안드로이드',
-               contents: ['운영체제 : iOS 9.2 이상', '저장공간 : 1GB 여유공간', 'RAM : 2GB 이상', ''],
+               contents: ['운영체제 : iOS 9.2 이상', '저장공간 : 1GB 여유공간', 'RAM : 2GB 이상'],
             },
          ],
       };
