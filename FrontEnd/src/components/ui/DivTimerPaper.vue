@@ -49,7 +49,7 @@ export default {
    },
 };
 </script>
-<style scoped>
+<style scoped lang="scss">
 .postit {
    width: 15vw;
    min-width: 140px;
@@ -66,6 +66,12 @@ export default {
    font-size: 1.5vmin;
    font-weight: 700;
    color: white;
+
+   @media all and (max-width: 500px) {
+      & {
+         font-size: 12pt;
+      }
+   }
 }
 
 /* 바인딩 된 속성에 따라 포스트잇 색상을 변경 */

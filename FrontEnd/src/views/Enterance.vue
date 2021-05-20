@@ -63,8 +63,10 @@ export default {
          this.isOpenFAQ = !this.isOpenFAQ;
       },
       logout() {
-         this.$store.dispatch('LOGOUT');
-         this.$router.replace({ path: '/login' });
+         if (confirm('정말 로그아웃하시겠어요? 😢')) {
+            this.$store.dispatch('LOGOUT');
+            this.$router.replace({ path: '/login' });
+         }
       },
    },
 };
@@ -107,9 +109,6 @@ export default {
    width: 100%;
    height: 100%;
 
-   position: fixed;
-   overflow: hidden;
-
    display: flex;
    align-items: center;
    justify-content: center;
@@ -121,8 +120,8 @@ export default {
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      width: 70vw;
-      height: 90vh;
+      width: 70%;
+      height: 90%;
 
       /* border: 1px solid rgb(34, 0, 255); */
 

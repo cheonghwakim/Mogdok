@@ -142,14 +142,14 @@ export default {
             },
             {
                title: 'PC',
-               contents: ['윈도우 최소 7버전 이상', 'RAM 4GB 이상', 'HDD 10GB 이상 여유공간', 'CPU 2Core 이상'],
+               contents: ['운영체제 : 윈도우 최소 7버전 이상', 'RAM : 4GB 이상', 'HDD : 1GB 이상 여유공간', 'CPU : 2Core 이상'],
+            },
+            {
+               title: 'IOS',
+               contents: ['운영체제 : Kitkat 이상', '저장공간 : 1GB 여유공간', 'RAM : 2GB 이상', '권장 브라우저 : Safari'],
             },
             {
                title: '안드로이드',
-               contents: ['운영체제 : Kitkat 이상', '저장공간 : 1GB 여유공간', 'RAM : 2GB 이상'],
-            },
-            {
-               title: 'PC 최소사양',
                contents: ['운영체제 : iOS 9.2 이상', '저장공간 : 1GB 여유공간', 'RAM : 2GB 이상'],
             },
          ],
@@ -174,8 +174,8 @@ export default {
 .about-modal {
    min-width: 300px;
    max-width: 600px;
-   width: 80vw;
-   height: 80vh;
+   width: 80%;
+   height: 80%;
    max-height: 900px;
 
    position: fixed;

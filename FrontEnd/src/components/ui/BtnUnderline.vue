@@ -31,9 +31,9 @@ export default {
    width: 100px;
    cursor: pointer;
 
-   display: flex;
-   flex-direction: column;
-   align-items: center;
+   /* display: flex; */
+   /* flex-direction: column; */
+   /* align-items: center; */
 
    .title {
       font-size: 16pt;
