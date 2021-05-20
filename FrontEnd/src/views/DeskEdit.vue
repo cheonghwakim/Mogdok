@@ -40,7 +40,7 @@
           @scale="handleScale"
           @dblclick.native="toggleModal"
           @mousedown.native="$store.dispatch('UPDATE_SELECTED_MEMO_UI_BY_INDEX', index)"
-          @touchstart="$store.dispatch('UPDATE_SELECTED_MEMO_UI_BY_INDEX', index)"
+          @touchstart.native="$store.dispatch('UPDATE_SELECTED_MEMO_UI_BY_INDEX', index)"
           :style="{ zIndex, transform }"
         >
           <svg-memo :text="content" :color="color"></svg-memo>
