@@ -61,7 +61,7 @@
               :key="'day-' + indexs + '-' + index"
               :class="{ 'study-hour': item }"
             >
-              {{ getDayDisplay(8 * indexs + index + 1) }}
+              {{ getDayDisplay(8 * indexs + index) }}
             </td>
           </tr>
         </table>
@@ -357,7 +357,7 @@ export default {
     },
 
     getDayDisplay(day) {
-      if (day < 32) return day;
+      if (day < 31) return day;
       else return '⋯';
     },
   },
