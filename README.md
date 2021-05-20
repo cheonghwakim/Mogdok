@@ -209,11 +209,10 @@
 ### 🔨Tech Stack
 
 - **Common** : OpenVidu, Sock.js, WebStomp
-
 - **BackEnd** : Spring, JPA ,Redis, Docker, MariaDB, JWT, Jenkins
 - **FrontEnd** : Vue.js, Storybook, Lottie, Figma, Adobe Tools(after effects, illustrator)
 
-![tech stack](./docs/0_images/techstack.PNG)
+![기술스택](./docs/0_images/기술스택.jpg)
 
 <br>
 
@@ -221,7 +220,11 @@
 
 ![tech stack](./docs/0_images/erd.png)
 
+<br>
 
+### 🔧시스템 구조도
+
+![시스템구조도](./docs/0_images/시스템구조도.jpg)
 
 <br>
 
