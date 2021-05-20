@@ -125,7 +125,7 @@ public class KakaoLoginController {
     		
     	System.out.println("user: " + redisUser);
     			
-    	return new ResponseEntity<>("null", HttpStatus.OK);
+    	return new ResponseEntity<>("gosignup", HttpStatus.OK);
     }
     
     @GetMapping("/auth")
