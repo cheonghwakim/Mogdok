@@ -1,6 +1,6 @@
 import Stomp from 'webstomp-client';
 import SockJS from 'sockjs-client';
-import { getSeatList, getAllRooms } from '../../api/room';
+import { getSeatList, getAllRooms, hasAlreadyEntered } from '../../api/room';
 import { getProfileByUserName } from '../../api/user';
 
 const ROOM_MESSAGE_SEAT_ALLOCATED = 'SEAT_ALLOCATED';
@@ -90,6 +90,21 @@ const state = () => ({
 const getters = {};
 
 const actions = {
+  async HAS_ALREADY_ENTERED({ rootState }) {
+    await hasAlreadyEntered(
+      { token: rootState.user.userInfo.authToken },
+      () => {
+        return Promise.resolve();
+      },
+      (error) => {
+        if (error.response.status === 409)
+          return Promise.reject(
+            '😱 이미 접속된 계정이 있어요. 접속된 계정을 종료하고 다시 시도해주세요.'
+          );
+        else return Promise.reject(error);
+      }
+    );
+  },
   async GET_ALL_ROOMS({ commit }) {
     await getAllRooms(
       (res) => {
@@ -114,16 +129,19 @@ const actions = {
           resolve('');
         },
         (error) => {
-          reject(error);
+          reject(
+            '⛔️ 연결을 실패했어요. 이미 접속된 계정이 있을 수 있습니다. 기존 계정을 종료하고 다시 시도하거나 다음 내용을 참고하세요.\n[Error]' +
+              error
+          );
         }
       );
     });
   },
-  GET_SEAT_INFO({ state, rootState, commit, dispatch }) {
-    getSeatList(
+  async GET_SEAT_INFO({ state, rootState, commit, dispatch }) {
+    await getSeatList(
       { roomId: rootState.user.roomInfo.roomId },
-      (res) => {
-        res.data.forEach((seatInfo) => {
+      async (res) => {
+        await res.data.forEach(async (seatInfo) => {
           seatInfo.isRunning = false;
           seatInfo.timer = null;
           seatInfo.timeBegan = new Date(seatInfo.timestampList[0].time).getTime(); // 시작시간 세팅;
@@ -132,7 +150,7 @@ const actions = {
           state.timeList[seatInfo.seatNo - 1] = getCurTime(seatInfo);
           const index = seatInfo.seatNo - 1;
           commit('ADD_SEAT_INFO', { index, seatInfo });
-          dispatch('INIT_SEAT_INFO_BY_STATUS', seatInfo);
+          await dispatch('INIT_SEAT_INFO_BY_STATUS', seatInfo);
         });
         return Promise.resolve();
       },
@@ -140,6 +158,16 @@ const actions = {
         return Promise.reject(error);
       }
     );
+  },
+  async HAS_ALREADY_SEAT({ state, rootState }) {
+    state.seatList.forEach((seat) => {
+      if (seat && seat.userName === rootState.user.userInfo.userName) {
+        return Promise.reject(
+          '이미 접속되어있는 계정이에요. 기존 계정의 접속을 종료하고 다시 시도해주세요.'
+        );
+      }
+    });
+    return Promise.resolve();
   },
   SUBSCRIBE_ROOM_SERVER({ state, rootState, commit, dispatch }) {
     state.stomp.subscribe(
@@ -261,14 +289,6 @@ const actions = {
     } catch (error) {
       return Promise.reject(error);
     }
-  },
-  HAS_ALREADY_SEAT({ state, rootState }) {
-    for (let i = 0; i < state.seatList.length; i++) {
-      if (state.seatList[i] && state.seatList[i].userName === rootState.user.userInfo.userName) {
-        return true;
-      }
-    }
-    return false;
   },
   async GET_SELECTED_SEAT_USER_INFO({ commit }, seat) {
     await getProfileByUserName(
