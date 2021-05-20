@@ -1,5 +1,5 @@
 <template>
-   <div id="app">
+   <div id="app" ref="root">
       <router-view name="header" />
       <router-view />
       <router-view name="footer" />
@@ -17,7 +17,20 @@ export default {
    computed: {},
    watch: {},
    //lifecycle area
-   methods: {},
+   mounted() {
+      window.addEventListener('resize', this.resizeBrowser);
+   },
+   beforeDestroy() {
+      window.removeEventListener('resize', this.resizeBrowser);
+   },
+   methods: {
+      resizeBrowser: function() {
+         let vh = window.innerHeight * 0.01;
+         // console.log(vh);
+
+         this.$refs.root.style.setProperty('--vh', `${vh}px`);
+      },
+   },
 };
 </script>
 
@@ -28,6 +41,7 @@ export default {
 #app {
    width: 100vw;
    height: 100vh;
+   height: calc(var(--vh, 1vh) * 100);
 
    display: flex;
    flex-direction: column;

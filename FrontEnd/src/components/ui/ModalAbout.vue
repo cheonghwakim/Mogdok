@@ -28,6 +28,7 @@
          <div class="powered-wrapper">
             powered by.
             <img src="../../assets/img/about/openvidu.png" alt="" />
+            <p class="version">v1.0.1 2105201820</p>
          </div>
          <btn-rounded class="btnClose" :label="'CLOSE'" :color="'red'" @onClick="closeAbout"></btn-rounded>
       </div>
@@ -122,6 +123,12 @@ export default {
       font-size: 22pt;
       margin-bottom: 10px;
       font-weight: 200;
+
+      @media (max-width: 480px) {
+         & {
+            font-size: 16pt;
+         }
+      }
    }
 
    .team {
@@ -227,6 +234,10 @@ export default {
       img {
          margin-top: 20px;
          width: 100px;
+      }
+
+      .version {
+         margin: 20px;
       }
    }
 
