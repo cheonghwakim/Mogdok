@@ -24,19 +24,6 @@ public class JWTUtil {
         return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(token).getBody();
     }
 
-    /**
-     * 이름으로 Jwt Token을 생성한다.
-     */
-    public String generateToken(String userId, String userName) {
-        Date now = new Date();
-        return Jwts.builder()
-                .claim("userId", userId)
-                .claim("userName", userName)
-                .setIssuedAt(now) // 토큰 발행일자
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
     public String getUserName(String token) {
         Claims claims = getClaims(token);
         return claims.get("userName", String.class);
@@ -46,7 +33,6 @@ public class JWTUtil {
         Claims claims = getClaims(token);
         return claims.get("userId", String.class);
     }
-
 
     /**
      * 토큰의 유효성 검증 메서드
@@ -61,8 +47,6 @@ public class JWTUtil {
             log.error("Unsupported JWT token");
         } catch (MalformedJwtException e) {
             log.error("Invalid JWT token");
-        } catch (SignatureException e) {
-            log.error("Invalid JWT Signature");
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty.");
         }
