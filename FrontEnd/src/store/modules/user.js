@@ -26,11 +26,14 @@ const actions = {
          login(
             { kakaoId: state.userInfo.kakaoId },
             (res) => {
-               if (res.data) {
-                  commit('SET_USER_INFO', res.data);
+
+      
+               if (res.data.login === 'OK') {
+                  commit('SET_USER_INFO', res.data.user);
                   localStorage.setItem('authToken', state.userInfo.authToken);
                   resolve('ok');
-               } else if (res.data === 'null') {
+               } else if (res.data.login === "Join") {
+                  console.log(res.data);
                   resolve('join');
                } else {
                   reject('😭 로그인에 실패했어요. 다시 시도해주세요.');

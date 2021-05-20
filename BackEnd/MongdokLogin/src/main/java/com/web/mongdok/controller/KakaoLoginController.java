@@ -1,5 +1,6 @@
 package com.web.mongdok.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -101,7 +102,8 @@ public class KakaoLoginController {
     	
     	String newJwtToken = null;
     	RedisUserDto redisUser = null;
-
+    	Map<String, Object> map = new HashMap<>();
+    	
     	Optional<User> user = authService.findByKakaoId(kakaoId);
 		if(user.isPresent()) { // user는 null이 아니라면 -> redis에 정보 저장 (jwt)
 			
@@ -120,12 +122,16 @@ public class KakaoLoginController {
 	    	redisUser.setAuthToken(newJwtToken);
 	    	System.out.println(redisUser);
 	    	redisUtil.setObjectExpire(newJwtToken, redisUser, JwtUtil.TOKEN_VALIDATION_SECOND);
-	    	return new ResponseEntity<>(redisUser, HttpStatus.OK);
+	    	
+	    	map.put("user", redisUser);
+	    	map.put("login", "OK");
+	    	return new ResponseEntity<>(map, HttpStatus.OK);
 		}	
     		
     	System.out.println("user: " + redisUser);
-    			
-    	return new ResponseEntity<>("null", HttpStatus.OK);
+    	map.put("user", redisUser);
+    	map.put("login", "Join");		
+    	return new ResponseEntity<>(map, HttpStatus.OK);
     }
     
     @GetMapping("/auth")
