@@ -104,11 +104,8 @@ export default {
 }
 
 .enterance {
-   width: 100%;
-   height: 100%;
-
-   position: fixed;
-   overflow: hidden;
+   width: 100vw;
+   height: 100vh;
 
    display: flex;
    align-items: center;

@@ -17,7 +17,19 @@ export default {
    computed: {},
    watch: {},
    //lifecycle area
-   methods: {},
+   mounted() {
+      // window.addEventListener('resize', this.resizeBrowser);
+   },
+   beforeDestroy() {
+      // window.removeEventListener('resize', this.resizeBrowser);
+   },
+   methods: {
+      // resizeBrowser: function() {
+      //    let vh = window.innerHeight * 0.01;
+      //    console.log(vh);
+      //    this.$refs.root.style.setProperty('--vh', `${vh}px`);
+      // },
+   },
 };
 </script>
 
@@ -26,8 +38,8 @@ export default {
 @import 'src/assets/css/moveable';
 
 #app {
-   width: 100%;
-   height: 100%;
+   width: 100vw;
+   height: 100vh;
 
    display: flex;
    flex-direction: column;
