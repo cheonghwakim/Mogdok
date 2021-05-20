@@ -6,11 +6,46 @@
 
 <br>
 
-## Member 👪
+## Member & Role 👪
 
 **몽실이 제자들(Mongsil's disciples)**
 
 ![MEMBER](./docs/0_images/member.PNG)
+
+#### 박영철(팀장)
+
+- FrontEnd
+- Client 로그인, 비즈니스 로직, 프레젠테이션 로직 담당
+- Client OpenVidu와 STOMP 기능 구축 및 연동
+- 프로젝트 관리
+
+#### 김청화
+
+- BackEnd
+- Redis와 JWT토큰을 사용한 회원인증 API 구축
+- MSA 아키텍쳐를 활용한 서버 구축
+- 영상 제작 및 발표자료 준비
+
+#### 김한솔
+
+- BackEnd
+- Scale out을 고려하여 Redis pub/sub 시스템을 활용한 STOMP서버 구축
+- OpenVidu를 활용한 영상공유 시그널 서버 구축
+- 프로젝트 문서화
+
+#### 박유정
+
+- BackEnd
+- Spring Data JPA를 활용한 Desk API 구축
+- Jenkins 적용을 비롯한 배포 담당
+- 영상 제작 및 발표자료 준비
+
+#### 이주상
+
+- FrontEnd
+- Client UI/UX 담당
+- Storybook을 활용한 디자인 시스템 구축
+- 발표 및 발표자료 제작
 
 <br>
 
@@ -48,13 +83,13 @@
 
   공부 달력, 다짐, 메모, D-DAY 등 내 책상을 꾸미며 자신의 공부를 관리
 
-- **타이머 기능(Timer)**
+- **실시간 스터디 타이머(Timer)**
 
   자신의 상태(공부, 휴식)에 따라 자동으로 시간을 기록.
 
   타인의 공부 시간을 보며 자극을 받음
 
-- **공부 달력(Study Calendar)**
+- **스터디 캘린더(Study Calendar)**
 
   공부한 시간만큼 진하기를 달리하여 공부량을 시각적으로 확인. 
 
@@ -171,13 +206,16 @@
 
 <br>
 
-### 🔨Tech Stack 
+### 🔨Tech Stack
 
-- **BackEnd : SpringBoot, Redis, Mariadb**
+- **Common** : OpenVidu, Sock.js, WebStomp
 
-- **FrontEnd : Vue.js**
+- **BackEnd** : Spring, JPA ,Redis, Docker, MariaDB, JWT, Jenkins
+- **FrontEnd** : Vue.js, Storybook, Lottie, Figma, Adobe Tools(after effects, illustrator)
 
 ![tech stack](./docs/0_images/techstack.PNG)
+
+<!-- 발표 ppt가 완성되면 이곳에 기술스택 이미지를 삽입한다 -->
 
 <br>
 
@@ -189,7 +227,7 @@
 
 <br>
 
-### :mag: ​Pages in Detail 
+### :mag: ​Pages in Detail
 
 > 각 페이지별 소개
 
