@@ -194,6 +194,7 @@ export default {
 }
 
 .footer {
+   position: absolute;
    bottom: 0;
    left: 50%;
    transform: translate(-50%, 20%);
@@ -262,13 +263,13 @@ export default {
          align-items: center;
          justify-content: center;
 
-         @media (min-width: 370px) and (max-width: 500px) {
+         @media (min-width: 37px) and (max-width: 500px) {
             & {
                top: 0px;
                font-size: 4pt;
             }
          }
-         @media (max-width: 370px) {
+         @media (max-width: 375px) {
             & {
                font-size: 6pt;
             }

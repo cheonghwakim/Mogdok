@@ -63,8 +63,10 @@ export default {
          this.isOpenFAQ = !this.isOpenFAQ;
       },
       logout() {
-         this.$store.dispatch('LOGOUT');
-         this.$router.replace({ path: '/login' });
+         if (confirm('정말 로그아웃하시겠어요? 😢')) {
+            this.$store.dispatch('LOGOUT');
+            this.$router.replace({ path: '/login' });
+         }
       },
    },
 };
