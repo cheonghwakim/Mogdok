@@ -39,8 +39,8 @@ export default {
 </script>
 <style scoped lang="scss">
 .login {
-   width: 100vw;
-   height: 100vh;
+   width: 100%;
+   height: 100%;
 
    display: flex;
    align-items: center;
@@ -53,8 +53,8 @@ export default {
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      width: 70vw;
-      height: 90vh;
+      width: 70%;
+      height: 90%;
 
       /* border: 1px solid rgb(34, 0, 255); */
 

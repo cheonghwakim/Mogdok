@@ -42,7 +42,7 @@ export default {
    height: 100%;
 
    position: fixed;
-   overflow: hidden;
+   bottom: 0;
 
    display: flex;
    flex-direction: column;
@@ -58,17 +58,6 @@ export default {
    ::-webkit-scrollbar-track {
       background-color: transparent;
       border-radius: 20px;
-   }
-
-   .typicalWrapper::after {
-      content: '|';
-      animation: blink 1s infinite step-start;
-   }
-
-   @keyframes blink {
-      50% {
-         opacity: 0;
-      }
    }
 }
 </style>
