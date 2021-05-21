@@ -6,7 +6,7 @@
 
 <br>
 
-## Member 👪
+## Member & Role 👪
 
 **몽실이 제자들(Mongsil's disciples)**
 
@@ -83,13 +83,13 @@
 
   공부 달력, 다짐, 메모, D-DAY 등 내 책상을 꾸미며 자신의 공부를 관리
 
-- **타이머 기능(Timer)**
+- **실시간 스터디 타이머(Timer)**
 
   자신의 상태(공부, 휴식)에 따라 자동으로 시간을 기록.
 
   타인의 공부 시간을 보며 자극을 받음
 
-- **공부 달력(Study Calendar)**
+- **스터디 캘린더(Study Calendar)**
 
   공부한 시간만큼 진하기를 달리하여 공부량을 시각적으로 확인. 
 
@@ -214,6 +214,8 @@
 - **BackEnd** : Spring, JPA ,Redis, Docker, MariaDB, JWT, Jenkins
 - **FrontEnd** : Vue.js, Storybook, Lottie, Figma, Adobe Tools(after effects, illustrator)
 
+<!-- 발표 ppt가 완성되면 이곳에 기술스택 이미지를 삽입한다 -->
+
 <br>
 
 ### 📚 ERD
@@ -228,7 +230,7 @@
 
 <br>
 
-### :mag: ​Pages in Detail 
+### :mag: ​Pages in Detail
 
 > 각 페이지별 소개
 

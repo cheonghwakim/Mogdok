@@ -154,8 +154,8 @@ const actions = {
     commit('SET_PUBLISHER', undefined);
   },
   async LEAVE_SESSION({ state, commit, dispatch }) {
-    if (state.session) state.session.disconnect();
     await dispatch('CAMERA_OFF');
+    if (state.session) state.session.disconnect();
     commit('CLEAR_SESSION');
   },
   async CHANGE_CAMERA({ dispatch }) {
@@ -190,7 +190,7 @@ const mutations = {
     state.OV = undefined;
     state.session = undefined;
     state.publisher = undefined;
-    state.subscribers = undefined;
+    state.subscribers = [];
   },
   SET_PUBLISHED(state, payload) {
     state.isPublished = payload;
