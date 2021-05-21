@@ -57,20 +57,25 @@ public class RoomRepository {
     }
 
     // 유저가 입장한 열람실ID와 유저ID 맵핑 정보 저장
-    public void setRoomEnterInfo(String sessionId, String roomId) {
-        hashOpsUserInfo.put(USER_INFO, sessionId, roomId);
+    public void setRoomEnterInfo(String userId, String roomId) {
+        hashOpsUserInfo.put(USER_INFO, userId, roomId);
     }
 
-    public String getRoomEnterSessionId(String sessionId) {
-        return hashOpsUserInfo.get(USER_INFO, sessionId);
+    public String getRoomEnterSessionId(String userId) {
+        return hashOpsUserInfo.get(USER_INFO, userId);
     }
 
     // 유저 세션정보와 맵핑된 열람실ID 삭제
-    public void removeRoomEnterInfo(String sessionId) {
-        hashOpsUserInfo.delete(USER_INFO, sessionId);
+    public void removeRoomEnterInfo(String userId) {
+        hashOpsUserInfo.delete(USER_INFO, userId);
     }
 
-    // 채팅방 유저수 조회
+    // 유저가 열람실에 접속 중인지 확인
+    public boolean isEnterUser(String userId) {
+        return hashOpsTokenInfo.hasKey(USER_INFO, userId);
+    }
+
+   // 채팅방 유저수 조회
     public long getUserCount(String roomId) {
         return Long.valueOf(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0"));
     }

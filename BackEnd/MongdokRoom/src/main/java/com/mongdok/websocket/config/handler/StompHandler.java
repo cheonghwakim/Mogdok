@@ -1,5 +1,6 @@
 package com.mongdok.websocket.config.handler;
 
+import com.mongdok.websocket.exception.ConnectionFailException;
 import com.mongdok.websocket.model.RoomMessage;
 import com.mongdok.websocket.model.Seat;
 import com.mongdok.websocket.model.SeatInfo;
@@ -42,7 +43,9 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         if(StompCommand.CONNECT == accessor.getCommand()) {
+            // TODO: 이미 접속해있는 유저인지 확인(이미 접속해있다면 connection X)
             String jwtToken = accessor.getFirstNativeHeader("token");
+
             roomRepository.setTokenInfo((String) message.getHeaders().get("simpSessionId"), jwtToken);
         }
         else if(StompCommand.SUBSCRIBE == accessor.getCommand()) {
@@ -51,16 +54,14 @@ public class StompHandler implements ChannelInterceptor {
 
             // 열람실에 들어온 클라이언트 userId를 sessionId와 맵핑해 놓는다. (추후 특정 클라이언트가 어떤 열람실에 있는지 알기 위함)
             String sessionId = (String) message.getHeaders().get("simpSessionId");
-            roomRepository.setRoomEnterInfo(sessionId, roomId);
-
-            // 열람실의 인원 수를 +1한다.
-            // roomRepository.plusUserCount(roomId);
 
             // token값을 꺼내온다.
             String token = roomRepository.getTokenBySessionId(sessionId);
 
             String userName = jwtUtil.getUserName(token);
             String userId = jwtUtil.getUserId(token);
+
+            roomRepository.setRoomEnterInfo(userId, roomId);
 
             // 클라이언트 입장 메시지를 채팅방에 발송한다.
             roomService.sendMessage(RoomMessage.builder().type(MessageType.ENTER)
@@ -72,7 +73,6 @@ public class StompHandler implements ChannelInterceptor {
         } else if(StompCommand.DISCONNECT == accessor.getCommand()) { // WebSocket 연결 종료
             // 연결이 종료된 클라이언트 userId로 열람실 sessionId를 얻는다.
             String sessionId = (String) message.getHeaders().get("simpSessionId");
-            String roomId = roomRepository.getRoomEnterSessionId(sessionId);
 
             log.info("[DISCONNECT] sessionId : {}", sessionId);
             // token값을 꺼내온다.
@@ -80,12 +80,14 @@ public class StompHandler implements ChannelInterceptor {
 
             String userName = "";
             String userId = "";
+            String roomId = "";
             int seatNo = 0;
 
             if(token != null) {
                 userName = jwtUtil.getUserName(token);
                 userId = jwtUtil.getUserId(token);
 
+                roomId = roomRepository.getRoomEnterSessionId(userId);
                 Seat seat = seatRepository.findSeatByUserId(roomId, userId);
 
                 // 좌석정보가 있는 경우 ----> 시간 정보 저장
@@ -103,7 +105,7 @@ public class StompHandler implements ChannelInterceptor {
             // roomRepository.minusUserCount(roomId);
 
             // 퇴장한 클라이언트의 sessionId 매핑 정보를 삭제한다.
-            roomRepository.removeRoomEnterInfo(sessionId);
+            roomRepository.removeRoomEnterInfo(userId);
 
             roomRepository.removeToken(sessionId);
 
@@ -124,6 +126,4 @@ public class StompHandler implements ChannelInterceptor {
         }
         return message;
     }
-
-
 }

@@ -6,5 +6,6 @@ public enum MessageType {
     SEAT_ALLOCATED, // 좌석 착석
     SEAT_STATUS, // 공부상태 변경
     SEAT_ALLOCATE_FAIL, // 좌석 착석 실패
-    END // 공부 종료(공부를 종료하고 좌석을 반납하는 것이지 열람실을 퇴장하지 않음)
+    END, // 공부 종료(공부를 종료하고 좌석을 반납하는 것이지 열람실을 퇴장하지 않음)
+    DENY // 서버 측에서 연결 거절(같은 계정에서 여러 곳에 접속 요청하는 경우)
 }

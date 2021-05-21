@@ -12,12 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * author: pinest94
@@ -36,6 +38,9 @@ public class RoomController {
 
     @Autowired
     private SeatRepository seatRepository;
+
+    @Autowired
+    private JWTUtil jwtUtil;
 
     @PostConstruct
     public void init() {
@@ -61,5 +66,23 @@ public class RoomController {
         StudyRoom room = roomRepository.getRoomById(roomId);
         room.setUserCount(seatRepository.getSeatCount(room.getRoomId()));
         return new ResponseEntity<>(room, HttpStatus.OK);
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<?> isEnterUser(@RequestBody Map<String, String> resources) {
+        String token = resources.get("token");
+
+        log.info("[TOKEN] : {}", token);
+
+        if(token == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        // 열람실에 접속상태인 경우
+        if(roomRepository.isEnterUser(jwtUtil.getUserId(token))) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

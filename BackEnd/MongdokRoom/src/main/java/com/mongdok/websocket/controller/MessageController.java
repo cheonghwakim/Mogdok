@@ -1,15 +1,14 @@
 package com.mongdok.websocket.controller;
 
 import com.mongdok.websocket.model.RoomMessage;
-import com.mongdok.websocket.model.enums.MessageType;
 import com.mongdok.websocket.service.RoomService;
 import com.mongdok.websocket.util.JWTUtil;
+import com.sun.istack.Nullable;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;

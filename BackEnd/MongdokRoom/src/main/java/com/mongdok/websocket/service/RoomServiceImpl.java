@@ -117,7 +117,9 @@ public class RoomServiceImpl implements RoomService{
 
                 seatRepository.removeSeatInfo(roomMessage.getRoomId(), roomMessage.getUserId());
                 log.info("[END] 좌석정보 삭제 *****");
-
+            case DENY:
+                log.info("[DENY] 중복요청으로인한 연결 거절");
+                return;
         }
 
         roomMessage.setUserCount(seatRepository.getSeatCount(roomMessage.getRoomId())); // 인원정보 매핑
