@@ -1,4 +1,4 @@
-![몽실이](./docs/0_images/몽실이_투명.png)
+![몽실이네독서실](./docs/0_images/brand.png)
 
 # 몽실이네 독서실(MongDok)
 
@@ -208,11 +208,11 @@
 
 ### 🔨Tech Stack
 
+![기술스택](./docs/0_images/기술스택.png)
+
 - **Common** : OpenVidu, Sock.js, WebStomp
 - **BackEnd** : Spring, JPA ,Redis, Docker, MariaDB, JWT, Jenkins
 - **FrontEnd** : Vue.js, Storybook, Lottie, Figma, Adobe Tools(after effects, illustrator)
-
-![기술스택](./docs/0_images/기술스택.jpg)
 
 <br>
 
@@ -232,7 +232,11 @@
 
 > 각 페이지별 소개
 
-🔸 **회원가입(Signup) & 로그인(Login)**
+🔸 **로그인(Login)**
+
+![로그인](./docs/0_images/login.gif)
+
+🔸 **회원가입(Signup)**
 
 ![회원가입](./docs/0_images/회원가입.gif)
 
@@ -250,11 +254,11 @@
 
 🔸 **책상(Desk) - 메모**
 
-![메모](./docs/0_images/메모.gif)
+![메모](./docs/0_images/desk_memo.gif)
 
 🔸 **책상(Desk) - 스터디 캘린더**
 
-![스터디 캘린더](./docs/0_images/스터디캘린더.gif)
+![스터디 캘린더](./docs/0_images/study_calendar.gif)
 
 <br>
 
@@ -268,3 +272,6 @@
 
 📌 [로그](./docs/4_log) - 개발 로그 
 
+<br>
+
+![몽실이](./docs/0_images/몽실이_투명.png)
