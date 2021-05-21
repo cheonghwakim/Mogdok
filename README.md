@@ -1,4 +1,4 @@
-<img src="./docs/0_images/몽실이_투명.png" alt="몽실이" style="zoom:15%;" />
+![몽실이네독서실](./docs/0_images/brand.png)
 
 # 몽실이네 독서실(MongDok)
 
@@ -18,6 +18,13 @@
 - Client 로그인, 비즈니스 로직, 프레젠테이션 로직 담당
 - Client OpenVidu와 STOMP 기능 구축 및 연동
 - 프로젝트 관리
+
+#### 이주상
+
+- FrontEnd
+- Client UI/UX 담당
+- Storybook을 활용한 디자인 시스템 구축
+- 발표 및 발표자료 제작
 
 #### 김청화
 
@@ -40,26 +47,19 @@
 - Jenkins 적용을 비롯한 배포 담당
 - 영상 제작 및 발표자료 준비
 
-#### 이주상
-
-- FrontEnd
-- Client UI/UX 담당
-- Storybook을 활용한 디자인 시스템 구축
-- 발표 및 발표자료 제작
-
 <br>
 
 ## Project Summary 📙
 
-- Duration 
+- **Duration** 
 
   Apr 12th 2021 ~ May 28th 2021
 
-- Purpose 
+- **Purpose** 
 
   비대면이 익숙한 MZ세대에게 화상공유를 통해 다른 사용자와 함께 공부하며 자기 주도 학습을 할 수 있는 환경을 제공
 
-- Planning background
+- **Planning background**
 
   코로나로 인해 대면이 불가능해지며 야자실(야간 자율 학습실) 이나 독서실에 모여 함께 공부하는 스터디 모임이 힘들어졌다. 하지만 집에서 공부하는 학생들이 스스로 의지를 다잡지 못하자 이를 돕기 위한 콘텐츠가 생겨나고 있다. 공부하는 모습을 보며 같이 공부하는 `스터디 위드 미(Study With Me)` 나 `웹엑스(Webex)` , `줌(Zoom)` 에서 함께 모여 스터디 모임을 갖는 등의 비대면 콘텐츠의 수요가 증가하고 있다.
 
@@ -208,12 +208,11 @@
 
 ### 🔨Tech Stack
 
-- **Common** : OpenVidu, Sock.js, WebStomp
+![기술스택](./docs/0_images/기술스택.png)
 
+- **Common** : OpenVidu, Sock.js, WebStomp
 - **BackEnd** : Spring, JPA ,Redis, Docker, MariaDB, JWT, Jenkins
 - **FrontEnd** : Vue.js, Storybook, Lottie, Figma, Adobe Tools(after effects, illustrator)
-
-![tech stack](./docs/0_images/techstack.PNG)
 
 <!-- 발표 ppt가 완성되면 이곳에 기술스택 이미지를 삽입한다 -->
 
@@ -223,7 +222,11 @@
 
 ![tech stack](./docs/0_images/erd.png)
 
+<br>
 
+### 🔧시스템 구조도
+
+![시스템구조도](./docs/0_images/시스템구조도.JPG)
 
 <br>
 
@@ -233,13 +236,31 @@
 
 🔸 **로그인(Login)**
 
+![로그인](./docs/0_images/login.gif)
+
+🔸 **회원가입(Signup)**
+
+![회원가입](./docs/0_images/회원가입.gif)
+
 🔸 **열람실 선택 페이지(Select Room)**
+
+![열람실선택](./docs/0_images/열람실선택.gif)
 
 🔸 **열람실(Room)**
 
+![열람실](./docs/0_images/열람실.gif)
+
 🔸 **프로필(Profile)**
 
-🔸 **책상(Desk)**
+![프로필](./docs/0_images/프로필.gif)
+
+🔸 **책상(Desk) - 메모**
+
+![메모](./docs/0_images/desk_memo.gif)
+
+🔸 **책상(Desk) - 스터디 캘린더**
+
+![스터디 캘린더](./docs/0_images/study_calendar.gif)
 
 <br>
 
@@ -253,3 +274,6 @@
 
 📌 [로그](./docs/4_log) - 개발 로그 
 
+<br>
+
+![몽실이](./docs/0_images/몽실이_투명.png)
