@@ -17,7 +17,7 @@ export default {
 <style scoped lang="scss">
 .div-temp {
    position: fixed;
-   top: 190px;
+   top: 130px;
    left: 30px;
 
    /* 반응형 크기 */

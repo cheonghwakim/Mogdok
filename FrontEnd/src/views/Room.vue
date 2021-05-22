@@ -13,7 +13,7 @@
       <!-- 좌상단 버튼들 -->
       <div-bgm-player></div-bgm-player>
       <!-- <div-about></div-about> -->
-      <div-faq></div-faq>
+      <!-- <div-faq></div-faq> -->
       <div-temp></div-temp>
 
       <!-- 프로필 -->
@@ -33,7 +33,7 @@ import RoomDesk from '@/components/RoomDesk';
 import DivProfile from '@/components/ui/DivProfile';
 import DivBgmPlayer from '@/components/ui/DivBgmPlayer';
 import DivGuide from '@/components/ui/DivGuide';
-import DivFaq from '@/components/ui/DivFaq';
+// import DivFaq from '@/components/ui/DivFaq';
 import DivTemp from '@/components/ui/DivTemp';
 // import DivAbout from '@/components/ui/DivAbout';
 import { mapState } from 'vuex';
@@ -45,7 +45,7 @@ export default {
       DivProfile,
       DivBgmPlayer,
       DivGuide,
-      DivFaq,
+      // DivFaq,
       DivTemp,
       // DivAbout,
    },
