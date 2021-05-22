@@ -24,11 +24,11 @@
                   </div>
                </div>
             </div>
-         </div>
-         <div class="powered-wrapper">
-            powered by.
-            <img src="../../assets/img/about/openvidu.png" alt="" />
-            <p class="version">v1.0.1 2105201820</p>
+            <div class="powered-wrapper">
+               powered by.
+               <img src="../../assets/img/about/openvidu.png" alt="" />
+               <p class="version">v1.0.3 2105221441</p>
+            </div>
          </div>
          <btn-rounded class="btnClose" :label="'CLOSE'" :color="'red'" @onClick="closeAbout"></btn-rounded>
       </div>
@@ -108,144 +108,152 @@ export default {
 
    padding: 20px;
 
-   overflow-x: hidden;
-   overflow-y: auto;
+   .content-wrapper {
+      height: 100%;
 
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
+      overflow-x: hidden;
+      overflow-y: auto;
 
-   .title-wrapper {
-      margin: 40px 0;
-   }
-
-   .title {
-      font-size: 22pt;
-      margin-bottom: 10px;
-      font-weight: 200;
-
-      @media (max-width: 480px) {
-         & {
-            font-size: 16pt;
-         }
-      }
-   }
-
-   .team {
-      font-weight: 600;
-      color: #074f10;
-   }
-
-   .bold {
-      font-weight: 400;
-   }
-
-   .desc-wrapper {
-      border-top: 1px solid rgb(237, 237, 237);
-      border-bottom: 1px solid rgb(237, 237, 237);
-      padding: 30px 20px;
-      color: gray;
-      font-size: 10pt;
-      font-weight: 400;
-      letter-spacing: 1px;
-      line-height: 22px;
-
-      .notion-btn {
-         font-size: 9pt;
-         font-weight: 600;
-         text-decoration: none;
-         color: black;
-
-         display: flex;
-
-         img {
-            width: 16px;
-            margin-right: 6px;
-         }
-      }
-   }
-
-   .member-wrapper {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      width: 100%;
+      flex-direction: column;
+      /* justify-content: space-between; */
 
-      margin: 40px 0px;
-
-      /* 주상 */
-      .member:nth-child(2) {
-         .pic {
-            background-size: 100px 100px;
-         }
-      }
-      /* 유정 */
-      .member:nth-child(5) {
-         .pic {
-            background-position: -55px -30px;
-         }
+      .title-wrapper {
+         margin: 40px 0;
       }
 
-      .person-wrapper {
+      .title {
+         font-size: 22pt;
+         margin-bottom: 10px;
+         font-weight: 200;
+
+         @media (max-width: 480px) {
+            & {
+               font-size: 16pt;
+            }
+         }
+      }
+
+      .team {
+         font-weight: 600;
+         color: #074f10;
+      }
+
+      .bold {
+         font-weight: 400;
+      }
+
+      .desc-wrapper {
+         border-top: 1px solid rgb(237, 237, 237);
+         border-bottom: 1px solid rgb(237, 237, 237);
+         padding: 30px 20px;
+         color: gray;
+         font-size: 10pt;
+         font-weight: 400;
+         letter-spacing: 1px;
+         line-height: 22px;
+
+         .notion-btn {
+            font-size: 9pt;
+            font-weight: 600;
+            text-decoration: none;
+            color: black;
+
+            display: flex;
+
+            img {
+               width: 16px;
+               margin-right: 6px;
+            }
+         }
+      }
+
+      .member-wrapper {
+         display: flex;
+         flex-wrap: wrap;
+         justify-content: space-around;
+         width: 100%;
+
+         margin: 40px 0px;
+
+         /* 주상 */
+         .member:nth-child(2) {
+            .pic {
+               background-size: 100px 100px;
+            }
+         }
+         /* 유정 */
+         .member:nth-child(5) {
+            .pic {
+               background-position: -55px -30px;
+            }
+         }
+
+         .person-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            margin: 10px;
+
+            font-weight: 600;
+            font-size: 10pt;
+
+            .pic {
+               height: 80px;
+               width: 80px;
+
+               box-shadow: 0px 4px 15px rgb(0 0 0 / 20%);
+
+               border-radius: 50%;
+               background-repeat: no-repeat;
+               background-position: center;
+               background-size: 180px 180px;
+
+               margin-bottom: 14px;
+            }
+
+            .position {
+               margin-top: 6px;
+               font-weight: 400;
+               color: rgb(109, 109, 109);
+            }
+         }
+      }
+      .powered-wrapper {
+         width: 100%;
+         padding-bottom: 50px;
+
          display: flex;
          flex-direction: column;
          align-items: center;
 
-         margin: 10px;
+         font-weight: 400;
+         font-size: 8pt;
+         letter-spacing: 2px;
+         color: rgb(181, 181, 181);
 
-         font-weight: 600;
-         font-size: 10pt;
-
-         .pic {
-            height: 80px;
-            width: 80px;
-
-            box-shadow: 0px 4px 15px rgb(0 0 0 / 20%);
-
-            border-radius: 50%;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 180px 180px;
-
-            margin-bottom: 14px;
+         img {
+            margin-top: 20px;
+            width: 100px;
          }
 
-         .position {
-            margin-top: 6px;
-            font-weight: 400;
-            color: rgb(109, 109, 109);
+         .version {
+            margin: 20px;
          }
-      }
-   }
-
-   .powered-wrapper {
-      width: 100%;
-      /* border: 1px dashed red; */
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      font-weight: 400;
-      font-size: 8pt;
-      letter-spacing: 2px;
-      color: rgb(181, 181, 181);
-
-      img {
-         margin-top: 20px;
-         width: 100px;
-      }
-
-      .version {
-         margin: 20px;
       }
    }
 
    .btnClose {
+      position: absolute;
       width: 250px;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 111;
 
       &:hover {
-         transform: translateY(-7px);
+         transform: translateX(-50%) translateY(-7px);
       }
    }
 }
