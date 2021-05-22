@@ -250,7 +250,7 @@ export default {
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 101;
+      z-index: 111;
 
       &:hover {
          transform: translateX(-50%) translateY(-7px);
