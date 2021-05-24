@@ -4,7 +4,7 @@
          <div class="accordion-wrapper">
             <div class="section">
                <div v-wave class="ac-header" @click="toggleFAQ(0)">
-                  <p class="title">💁🏻 몽실이네 독서실은 뭐에요?</p>
+                  <p class="title">💁🏻 몽실이네 독서실은 뭐예요?</p>
                </div>
                <transition name="slide-in-top">
                   <div v-show="isOpenList[0]" class="ac-content">

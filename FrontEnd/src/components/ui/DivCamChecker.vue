@@ -24,7 +24,7 @@
 
          <!-- 하단 버튼 -->
          <!-- TODO : startable을 이용해서 클릭가능/불가능 UI 변경 -->
-         <btn-underline :color="startable ? 'black' : 'lightgrey'" :label="'START'" @onClick="startStudy"></btn-underline>
+         <btn-underline :color="startable ? 'black' : 'lightgrey'" :label="'공부 시작'" @onClick="startStudy"></btn-underline>
       </div>
       <!-- 바탕 이미지 -->
       <img src="@/assets/img/bubble.svg" alt="" />

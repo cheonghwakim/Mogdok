@@ -12,6 +12,8 @@
             <div class="bottom-shader"></div>
             <p class="btnFAQ" @click="toggleModalFAQ"><i class="fas fa-question-circle"></i> 자주 묻는 질문</p>
             <modal-faq :isOpenFAQ="isOpenFAQ" @onClick="toggleModalFAQ"></modal-faq>
+            <p class="btnFAQ btnGuide" @click="toggleModalGuide"><i class="fas fa-info-circle"></i> 퀵 가이드</p>
+            <modal-guide :isOpenGuide="isOpenGuide" @onClick="toggleModalGuide"></modal-guide>
          </div>
          <div class="grey-btn" @click="logout">로그아웃</div>
          <logo></logo>
@@ -20,18 +22,20 @@
 </template>
 <script>
 import SvgSagam from '@/components/svg/SvgSagam';
+import EnteranceDoor from '@/components/EnteranceDoor';
 import Logo from '@/components/ui/Logo';
 import ModalFaq from '@/components/ui/ModalFaq';
-import EnteranceDoor from '@/components/EnteranceDoor';
+import ModalGuide from '@/components/ui/ModalGuide';
 import { mapState } from 'vuex';
 
 export default {
    name: 'Enterance',
-   components: { SvgSagam, Logo, EnteranceDoor, ModalFaq },
+   components: { SvgSagam, Logo, EnteranceDoor, ModalFaq, ModalGuide },
    props: {},
    data() {
       return {
          isOpenFAQ: false,
+         isOpenGuide: false, // 가이드 토글용
       };
    },
    computed: {
@@ -46,6 +50,7 @@ export default {
    //lifecycle area
    async created() {
       await this.getAllRooms();
+      this.checkGuideShown();
    },
    methods: {
       async getAllRooms() {
@@ -61,6 +66,22 @@ export default {
       },
       toggleModalFAQ() {
          this.isOpenFAQ = !this.isOpenFAQ;
+      },
+
+      //가이드가 이미 보여졌는지 체크
+      checkGuideShown() {
+         const temp = localStorage.getItem('GuideShown');
+         console.log(temp);
+         if (temp == null) {
+            // 가이드가 출력된 적이 없으면, 보여주기
+            this.isOpenGuide = true;
+         } else {
+            this.isOpenGuide = false;
+         }
+      },
+      toggleModalGuide() {
+         this.isOpenGuide = !this.isOpenGuide;
+         localStorage.setItem('GuideShown', 'Y'); // 이미 가이드가 보였음
       },
       logout() {
          if (confirm('정말 로그아웃하시겠어요? 😢')) {
@@ -177,7 +198,7 @@ export default {
 
          .btnFAQ {
             position: absolute;
-            bottom: -10px;
+            bottom: 0px;
             z-index: 51;
 
             cursor: pointer;
@@ -188,6 +209,10 @@ export default {
             color: rgb(176, 176, 176);
 
             margin-top: 12px;
+
+            &.btnGuide {
+               bottom: -20px;
+            }
          }
       }
 
