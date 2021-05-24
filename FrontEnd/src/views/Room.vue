@@ -11,7 +11,7 @@
       <div-bgm-player></div-bgm-player>
       <!-- <div-about></div-about> -->
       <!-- <div-faq></div-faq> -->
-      <div-temp></div-temp>
+      <!-- <div-temp></div-temp> -->
 
       <!-- 프로필 -->
       <transition name="slide-left">
@@ -30,7 +30,7 @@ import RoomDesk from '@/components/RoomDesk';
 import DivProfile from '@/components/ui/DivProfile';
 import DivBgmPlayer from '@/components/ui/DivBgmPlayer';
 // import DivFaq from '@/components/ui/DivFaq';
-import DivTemp from '@/components/ui/DivTemp';
+// import DivTemp from '@/components/ui/DivTemp';
 // import DivAbout from '@/components/ui/DivAbout';
 import { mapState } from 'vuex';
 
@@ -41,7 +41,7 @@ export default {
       DivProfile,
       DivBgmPlayer,
       // DivFaq,
-      DivTemp,
+      // DivTemp,
       // DivAbout,
    },
    props: {},

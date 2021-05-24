@@ -43,8 +43,9 @@ export default {
 <style scoped lang="scss">
 .div-about {
    position: fixed;
-   top: 130px;
+   top: 190px;
    left: 30px;
+   z-index: 20;
 
    /* 반응형 크기 */
    @media all and (max-width: 321px) {
