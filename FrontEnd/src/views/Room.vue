@@ -1,8 +1,5 @@
 <template>
    <div class="room">
-      <transition name="fade">
-         <div-guide v-if="GuideShown == null" @onClick="closeGuide"></div-guide>
-      </transition>
       <div class="deskList">
          <div class="deskItem" v-for="(seat, index) in seatList" :key="`${seat}${index}`">
             <room-desk v-if="!seat" :timer="timeList[index]" @click="clickDesk(seat, index)"></room-desk>
@@ -32,7 +29,6 @@
 import RoomDesk from '@/components/RoomDesk';
 import DivProfile from '@/components/ui/DivProfile';
 import DivBgmPlayer from '@/components/ui/DivBgmPlayer';
-import DivGuide from '@/components/ui/DivGuide';
 // import DivFaq from '@/components/ui/DivFaq';
 import DivTemp from '@/components/ui/DivTemp';
 // import DivAbout from '@/components/ui/DivAbout';
@@ -44,7 +40,6 @@ export default {
       RoomDesk,
       DivProfile,
       DivBgmPlayer,
-      DivGuide,
       // DivFaq,
       DivTemp,
       // DivAbout,
@@ -52,7 +47,6 @@ export default {
    props: {},
    data() {
       return {
-         GuideShown: null,
          selectedSeatIdx: -1,
          time: [],
       };
@@ -90,7 +84,6 @@ export default {
       if (!this.socket || !this.stomp || !this.session) {
          this.joinSession();
       }
-      this.GuideShown = localStorage.getItem('GuideShown');
    },
    mounted() {
       window.addEventListener('beforeunload', this.leaveSession);
@@ -166,10 +159,6 @@ export default {
       closeProfile() {
          this.$store.commit('TOGGLE_PROFILE');
          this.$store.commit('CLEAR_DESK');
-      },
-      closeGuide() {
-         localStorage.setItem('GuideShown', 'Y'); // 이미 가이드가 보였음
-         this.GuideShown = 'Y';
       },
    },
 };
