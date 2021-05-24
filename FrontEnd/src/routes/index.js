@@ -47,6 +47,7 @@ import Room from '@/views/Room.vue';
 import Desk from '@/views/Desk.vue';
 import DeskEdit from '@/views/DeskEdit.vue';
 import Join from '@/views/Join.vue';
+import Test from '@/views/Test.vue';
 
 // ==============================
 // 여러개 태울 때, routes 변수 생성
@@ -58,7 +59,7 @@ const routes = [
    {
       path: '/',
       name: 'Enterance',
-      beforeEnter: requireAuth(),
+      // beforeEnter: requireAuth(),
       components: {
          default: Enterance,
       },
@@ -92,11 +93,19 @@ const routes = [
    {
       path: '/room',
       name: 'Room',
-      beforeEnter: requireAuth(),
+      // beforeEnter: requireAuth(),
       components: {
          header: Header,
          default: Room,
          footer: Footer,
+      },
+   },
+   {
+      path: '/test',
+      name: 'Test',
+      // beforeEnter: requireAuth(),
+      components: {
+         default: Test,
       },
    },
    {

@@ -15,23 +15,26 @@
          </div>
          <div class="grey-btn" @click="logout">로그아웃</div>
          <logo></logo>
+         <modal-guide :isOpenGuide="isOpenGuide" @onClick="toggleModalGuide"></modal-guide>
       </div>
    </div>
 </template>
 <script>
 import SvgSagam from '@/components/svg/SvgSagam';
+import EnteranceDoor from '@/components/EnteranceDoor';
 import Logo from '@/components/ui/Logo';
 import ModalFaq from '@/components/ui/ModalFaq';
-import EnteranceDoor from '@/components/EnteranceDoor';
+import ModalGuide from '@/components/ui/ModalGuide';
 import { mapState } from 'vuex';
 
 export default {
    name: 'Enterance',
-   components: { SvgSagam, Logo, EnteranceDoor, ModalFaq },
+   components: { SvgSagam, Logo, EnteranceDoor, ModalFaq, ModalGuide },
    props: {},
    data() {
       return {
          isOpenFAQ: false,
+         isOpenGuide: true,
       };
    },
    computed: {
@@ -61,6 +64,9 @@ export default {
       },
       toggleModalFAQ() {
          this.isOpenFAQ = !this.isOpenFAQ;
+      },
+      toggleModalGuide() {
+         this.isOpenGuide = !this.isOpenGuide;
       },
       logout() {
          if (confirm('정말 로그아웃하시겠어요? 😢')) {
