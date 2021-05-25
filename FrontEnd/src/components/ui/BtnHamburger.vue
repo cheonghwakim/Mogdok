@@ -34,8 +34,9 @@
 
       <transition name="slide-down">
          <div v-show="isOpenDropDown" class="dropdown-menu">
-            <p class="menu" @click="goBugURL">🐞 버그 신고</p>
-            <p class="menu" @click="goReportURL">🚨 불량 유저</p>
+            <p class="menu effect" @click="goURL(3)">✨ EVENT</p>
+            <p class="menu" @click="goURL(1)">🐞 버그 신고</p>
+            <p class="menu" @click="goURL(2)">🚨 불량 유저</p>
             <p class="menu" @click="toggleModalGuide">🚴‍♂️ 퀵 가이드</p>
             <p class="menu" @click="toggleModalFAQ">🗣 질의응답</p>
             <p class="menu" @click="toggleModalAbout">🐶 만든 사람들</p>
@@ -69,12 +70,18 @@ export default {
          this.isOpenDropDown = !this.isOpenDropDown;
       },
 
-      goBugURL() {
-         window.open('https://forms.gle/Ggp8dWPia4jfHthU7', '_blank');
-      },
-
-      goReportURL() {
-         window.open('https://docs.google.com/forms/d/e/1FAIpQLSd3Kw2ruc8p34dGy74RSD6bArRB5nQTh9_CUKU5fwJ8N0DdQw/viewform?usp=sf_link', '_blank');
+      goURL(type) {
+         switch (type) {
+            case 1: // BUG
+               window.open('https://forms.gle/Ggp8dWPia4jfHthU7', '_blank');
+               break;
+            case 2: // 불량유저 신고
+               window.open('https://docs.google.com/forms/d/e/1FAIpQLSd3Kw2ruc8p34dGy74RSD6bArRB5nQTh9_CUKU5fwJ8N0DdQw/viewform?usp=sf_link', '_blank');
+               break;
+            case 3: // 이벤트 / 피드백
+               window.open('https://forms.gle/vTrp8J8P9WBAKUpE6', '_blank');
+               break;
+         }
       },
 
       toggleModalFAQ() {
@@ -133,10 +140,29 @@ export default {
          font-weight: 600;
          color: rgb(46, 46, 46);
          font-size: 10pt;
-         margin-bottom: 10px;
+         margin-bottom: 15px;
 
          &:last-child {
             margin-bottom: 0px;
+         }
+      }
+
+      .effect {
+         animation: color-change 2s infinite;
+      }
+
+      @keyframes color-change {
+         0% {
+            color: #ffd900;
+         }
+         45% {
+            color: rgb(24, 24, 24);
+         }
+         55% {
+            color: rgb(24, 24, 24);
+         }
+         100% {
+            color: #ffd900;
          }
       }
    }
