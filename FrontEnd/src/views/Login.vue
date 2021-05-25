@@ -8,6 +8,8 @@
             <login-kakao-button></login-kakao-button>
             <p class="btnFAQ" @click="toggleModalFAQ"><i class="fas fa-question-circle"></i> 몽실이네 독서실이 궁금하세요?</p>
             <modal-faq :isOpenFAQ="isOpenFAQ" @onClick="toggleModalFAQ"></modal-faq>
+            <p class="btnFAQ btnGuide" @click="toggleModalGuide"><i class="fas fa-info-circle"></i> 퀵 가이드</p>
+            <modal-guide :isOpenGuide="isOpenGuide" @onClick="toggleModalGuide"></modal-guide>
          </div>
          <logo></logo>
       </div>
@@ -16,15 +18,17 @@
 <script>
 import LoginKakaoButton from '@/components/LoginKakaoButton';
 import ModalFaq from '@/components/ui/ModalFaq';
+import ModalGuide from '@/components/ui/ModalGuide';
 import Logo from '@/components/ui/Logo';
 
 export default {
    name: 'Login',
-   components: { LoginKakaoButton, Logo, ModalFaq },
+   components: { LoginKakaoButton, Logo, ModalFaq, ModalGuide },
    props: {},
    data() {
       return {
          isOpenFAQ: false,
+         isOpenGuide: false, // 가이드 토글용
       };
    },
    computed: {},
@@ -33,6 +37,9 @@ export default {
    methods: {
       toggleModalFAQ() {
          this.isOpenFAQ = !this.isOpenFAQ;
+      },
+      toggleModalGuide() {
+         this.isOpenGuide = !this.isOpenGuide;
       },
    },
 };
@@ -93,6 +100,10 @@ export default {
             color: rgb(176, 176, 176);
 
             margin-top: 30px;
+
+            &.btnGuide {
+               margin-top: 10px;
+            }
          }
       }
    }

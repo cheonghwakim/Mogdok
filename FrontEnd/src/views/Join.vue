@@ -1,7 +1,7 @@
 <template>
    <div class="join">
       <div class="container">
-         <p class="kyoboHand" style="color:gray; font-size:10pt">독서실 가입서를 작성해주세요!</p>
+         <p class="kyoboHand" style="color: gray; font-size: 10pt">독서실 가입서를 작성해주세요!</p>
          <!-- <v-lottie-player name="scooterAnim" :width="'200px'" :height="'200px'" loop path="https://assets7.lottiefiles.com/private_files/lf30_z8mfdyic.json" /> -->
          <div class="content">
             <!-- STPE 1 : 닉네임 -->
@@ -86,13 +86,13 @@ export default {
    },
    watch: {
       // userName 작성할 때마다 검사
-      userName: function() {
+      userName: function () {
          this.isValid = this.validation();
          this.isCheckNameDup = false; // 새로 작성시, 중복 체크 여부 초기화
       },
 
       // 다짐이 작성되어 있으면, 제출 버튼 활성화
-      promise: function() {
+      promise: function () {
          if (this.promise.length === 0) {
             this.last = false;
          } else {
@@ -111,7 +111,7 @@ export default {
    },
    methods: {
       // STEP1 : 닉네임 중복
-      validation: function() {
+      validation: function () {
          if (this.userName.length == 0) {
             this.isShowInfo = false;
             return false;
@@ -128,7 +128,7 @@ export default {
             return true;
          }
       },
-      checkuserNameDuplicate: function() {
+      checkuserNameDuplicate: function () {
          // 비워진 상태에서 실행시 거르기
          if (this.userName.length == 0) {
             //입력 안한경우
@@ -168,7 +168,7 @@ export default {
       },
 
       // STEP 2 : 카테고리 선택
-      clickCategory: function(item) {
+      clickCategory: function (item) {
          this.selectCategory = item;
          this.third = true;
       },
@@ -176,7 +176,7 @@ export default {
       // STEP 3 : 다짐 입력
 
       // LAST : 최종 제출
-      submit: function() {
+      submit: function () {
          if (!this.isValid) {
             //유효성 검사 통과못함
             alert('닉네임을 다시 확인해주세요');
@@ -409,6 +409,9 @@ export default {
 
                &:focus {
                   outline: none;
+                  &::placeholder {
+                     color: transparent;
+                  }
                }
                &::placeholder {
                   color: #2d2d2d;
