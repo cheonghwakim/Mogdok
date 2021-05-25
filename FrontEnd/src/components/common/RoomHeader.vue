@@ -54,7 +54,7 @@ export default {
    background-color: rgb(255, 255, 255);
    width: 100%;
    height: $HeaderHeight;
-   z-index: 40; // dropdown-menu 의 상위 고정을 위한
+   z-index: 25; // dropdown-menu 의 상위 고정을 위한
 
    //flex-shrink: 0; // flex에 영향 없는 고정 요소 셋팅
 
