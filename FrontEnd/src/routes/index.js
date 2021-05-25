@@ -58,7 +58,7 @@ const routes = [
    {
       path: '/',
       name: 'Enterance',
-      // beforeEnter: requireAuth(),
+      beforeEnter: requireAuth(),
       components: {
          default: Enterance,
       },
@@ -92,7 +92,7 @@ const routes = [
    {
       path: '/room',
       name: 'Room',
-      // beforeEnter: requireAuth(),
+      beforeEnter: requireAuth(),
       components: {
          header: Header,
          default: Room,
