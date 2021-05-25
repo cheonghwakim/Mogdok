@@ -1,38 +1,13 @@
 <template lang="">
-   <transition name="fade">
-      <div v-show="isOpenAbout" class="about-modal">
-         <div class="content-wrapper">
-            <div class="title-wrapper">
-               <p class="title">
-                  안녕하세요.
-               </p>
-               <typical class="typicalWrapper title bold" :steps="['몽실이네 독서실의 개발자,', 1500, '몽실이 제자들 입니다 👋', 1500]" :loop="Infinity" :wrapper="'div'"></typical>
-            </div>
-            <div class="desc-wrapper">
-               <span class="team">몽실이 제자들</span>은 <br /><span style="color:#1b0b88; font-weight:600">삼성 청년 SW 아카데미 4기</span> 개발자 5명으로 이루어진 팀입니다.<br />
-               코로나 걱정 없는, 독서실 빌런 걱정 없는, <br />당신의 꿈과 함께하는 공간, <span style="font-weight:600">몽실이네 독서실</span>에서 공부하세요! <br /><br />
-               <a class="notion-btn" href="https://www.notion.so/jusami/f54d54e271d84d46abe54ea0a56151ec#b5ab970d14b34986bd50ca66dcbd13e3" target="_blank">
-                  <img src="../../assets/img/about/notion.svg" alt="" /> 노션 페이지</a
-               >
-            </div>
-            <div class="member-wrapper">
-               <div v-for="(person, idx) in members" :key="idx" class="member">
-                  <div class="person-wrapper">
-                     <div class="pic" :style="{ 'background-image': 'url(' + person.src + ')' }"></div>
-                     <div class="name">{{ person.name }}</div>
-                     <div class="position">{{ person.position }}</div>
-                  </div>
-               </div>
-            </div>
-            <div class="powered-wrapper">
-               powered by.
-               <img src="../../assets/img/about/openvidu.png" alt="" />
-               <p class="version">v1.0.3 2105221441</p>
-            </div>
-         </div>
-         <btn-rounded class="btnClose" :label="'CLOSE'" :color="'red'" @onClick="closeAbout"></btn-rounded>
-      </div>
-   </transition>
+   <transition name="fade"> <div v-show="isOpenAbout" class="about-modal"> <div class="content-wrapper"> <div class="title-wrapper"> <p class="title"> 안녕하세요. </p> <typical class="typicalWrapper
+   title bold" :steps="['몽실이네 독서실의 개발자,', 1500, '몽실이 제자들 입니다 👋', 1500]" :loop="Infinity" :wrapper="'div'"></typical> </div> <div class="desc-wrapper"> <span class="team">몽실이
+   제자들</span>은 <br /><span style="color:#1b0b88; font-weight:600">삼성 청년 SW 아카데미 4기</span> 개발자 5명으로 이루어진 팀입니다.<br /> 코로나 걱정 없는, 독서실 빌런 걱정 없는, <br />당신의
+   꿈과 함께하는 공간, <span style="font-weight:600">몽실이네 독서실</span>에서 공부하세요! <br /><br /> <a class="notion-btn"
+   href="https://www.notion.so/jusami/f54d54e271d84d46abe54ea0a56151ec#b5ab970d14b34986bd50ca66dcbd13e3" target="_blank"> <img src="../../assets/img/about/notion.svg" alt="" /> 노션 페이지</a > </div>
+   <div class="member-wrapper"> <div v-for="(person, idx) in members" :key="idx" class="member"> <div class="person-wrapper"> <div class="pic" :style="{ 'background-image': 'url(' + person.src + ')'
+   }"></div> <div class="name">{{ person.name }}</div> <div class="position">{{ person.position }}</div> </div> </div> </div> <div class="powered-wrapper"> powered by. <img
+   src="../../assets/img/about/openvidu.png" alt="" /> <p class="version">v1.0.41 2105251053</p> </div> </div> <btn-rounded class="btnClose" :label="'CLOSE'" :color="'red'"
+   @onClick="closeAbout"></btn-rounded> </div> </transition>
 </template>
 <script>
 import BtnRounded from '@/components/ui/BtnRounded';
@@ -80,7 +55,7 @@ export default {
    },
 
    methods: {
-      closeAbout: function() {
+      closeAbout: function () {
          this.$emit('onClick');
       },
    },
